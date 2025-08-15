@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd heal7-project/frontend
-        npm ci
+        npm ci --legacy-peer-deps
     
     - name: Build frontend
       run: |
@@ -77,9 +77,40 @@ jobs:
         name: frontend-build
         path: build-output/
     
+    - name: Deploy to server
+      env:
+        DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      run: |
+        # SSH 키 설정
+        mkdir -p ~/.ssh
+        echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
+        
+        # 빌드 아티팩트를 서버에 업로드
+        scp -i ~/.ssh/deploy_key -r build-output/* $DEPLOY_USER@$DEPLOY_HOST:/var/www/heal7.com/
+        
+        # 서버에서 배포 스크립트 실행
+        ssh -i ~/.ssh/deploy_key $DEPLOY_USER@$DEPLOY_HOST << 'EOF'
+          echo "🚀 HEAL7 배포 시작"
+          
+          # 안전한 배포 스크립트 실행
+          if [ -f /home/ubuntu/scripts/deployment/heal7-deploy-master.sh ]; then
+            bash /home/ubuntu/scripts/deployment/heal7-deploy-master.sh
+          fi
+          
+          # Nginx 리로드
+          sudo systemctl reload nginx
+          
+          echo "✅ 배포 완료: $(date)"
+        EOF
+        
     - name: Deploy notification
       run: |
         echo "🚀 HEAL7 배포 완료"
         echo "✅ 프론트엔드 빌드 성공"
         echo "✅ 백엔드 빌드 성공"
         echo "📍 배포 위치: /var/www/heal7.com/"
+        echo "🔧 GitHub Actions에서 자동 배포됨"
