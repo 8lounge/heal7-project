@@ -28,12 +28,6 @@ jobs:
         cd heal7-project/frontend
         npm run build
     
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-build
-        path: heal7-project/frontend/.next/
-        retention-days: 30
 
   build-backend:
     runs-on: ubuntu-latest
@@ -68,12 +62,6 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-build
-        path: build-output/
     
     - name: Deploy to server
       env:
