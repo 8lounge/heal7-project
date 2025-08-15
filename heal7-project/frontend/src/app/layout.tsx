@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
-import { Providers } from '@/components/providers'
-import '@/styles/index.css'
+import { Inter } from 'next/font/google'
+import { Toaster } from 'sonner'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Heal7 - 힐링스페이스',
-  description: '당신만의 힐링 공간, Heal7에서 시작하세요.',
+  title: 'HEAL7 관리자 대시보드',
+  description: 'HEAL7 명리학 및 시스템 관리 대시보드',
 }
 
 export default function RootLayout({
@@ -14,10 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>
-        <Providers>
+      <body className={inter.className}>
+        <div className="min-h-screen bg-background">
           {children}
-        </Providers>
+          <Toaster richColors position="top-right" />
+        </div>
       </body>
     </html>
   )

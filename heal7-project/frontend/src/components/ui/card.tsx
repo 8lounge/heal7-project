@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -76,20 +78,4 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-// Healing-themed card variants
-const HealingCard = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "healing-card p-6 transform hover:scale-105 transition-all duration-300",
-      className
-    )}
-    {...props}
-  />
-))
-HealingCard.displayName = "HealingCard"
-
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, HealingCard }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
