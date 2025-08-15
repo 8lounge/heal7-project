@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142.1 76.2% 36.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 142.1 70.6% 45.3%;
+    --primary-foreground: 144.9 80.4% 10%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142.4 71.8% 29.2%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', 'Noto Sans KR', system-ui, sans-serif;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Focus styles */
+  .focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2;
+  }
+}
+
+@layer components {
+  /* Healing-themed gradients */
+  .gradient-healing {
+    background: linear-gradient(135deg, 
+      theme('colors.healing.400'), 
+      theme('colors.healing.600')
+    );
+  }
+
+  .gradient-earth {
+    background: linear-gradient(135deg, 
+      theme('colors.earth.400'), 
+      theme('colors.earth.600')
+    );
+  }
+
+  .gradient-sky {
+    background: linear-gradient(135deg, 
+      theme('colors.sky.400'), 
+      theme('colors.sky.600')
+    );
+  }
+
+  .gradient-lavender {
+    background: linear-gradient(135deg, 
+      theme('colors.lavender.400'), 
+      theme('colors.lavender.600')
+    );
+  }
+
+  /* Glass morphism effect */
+  .glass-morphism {
+    @apply bg-white/20 backdrop-blur-md border border-white/20;
+  }
+
+  .dark .glass-morphism {
+    @apply bg-black/20 backdrop-blur-md border border-white/10;
+  }
+
+  /* Healing card styles */
+  .healing-card {
+    @apply bg-white/80 backdrop-blur-sm border border-healing-200/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  .dark .healing-card {
+    @apply bg-gray-900/80 border-healing-800/50;
+  }
+
+  /* Interactive elements */
+  .btn-healing {
+    @apply bg-healing-500 hover:bg-healing-600 text-white font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-healing-500 focus:ring-offset-2;
+  }
+
+  .btn-earth {
+    @apply bg-earth-500 hover:bg-earth-600 text-white font-medium px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-earth-500 focus:ring-offset-2;
+  }
+
+  /* Animation utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-gentle {
+    animation: bounce 3s ease-in-out infinite;
+  }
+}
+
+/* Line clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Loading animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Typography classes */
+.heading-xl {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-healing-600 to-healing-800 bg-clip-text text-transparent;
+}
+
+.heading-lg {
+  @apply text-3xl md:text-4xl font-semibold text-gray-800 dark:text-gray-100;
+}
+
+.heading-md {
+  @apply text-2xl md:text-3xl font-medium text-gray-700 dark:text-gray-200;
+}
+
+.text-healing {
+  @apply text-healing-600 dark:text-healing-400;
+}
+
+.text-earth {
+  @apply text-earth-600 dark:text-earth-400;
+}
+
+.text-sky {
+  @apply text-sky-600 dark:text-sky-400;
+}
+
+.text-lavender {
+  @apply text-lavender-600 dark:text-lavender-400;
+}
+
+/* Responsive design helpers */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

@@ -1,0 +1,482 @@
+[
+  {
+    "index": 0,
+    "gapja": "갑자",
+    "cheongan": "갑",
+    "jiji": "자",
+    "cheongan_index": 0,
+    "jiji_index": 0
+  },
+  {
+    "index": 1,
+    "gapja": "을축",
+    "cheongan": "을",
+    "jiji": "축",
+    "cheongan_index": 1,
+    "jiji_index": 1
+  },
+  {
+    "index": 2,
+    "gapja": "병인",
+    "cheongan": "병",
+    "jiji": "인",
+    "cheongan_index": 2,
+    "jiji_index": 2
+  },
+  {
+    "index": 3,
+    "gapja": "정묘",
+    "cheongan": "정",
+    "jiji": "묘",
+    "cheongan_index": 3,
+    "jiji_index": 3
+  },
+  {
+    "index": 4,
+    "gapja": "무진",
+    "cheongan": "무",
+    "jiji": "진",
+    "cheongan_index": 4,
+    "jiji_index": 4
+  },
+  {
+    "index": 5,
+    "gapja": "기사",
+    "cheongan": "기",
+    "jiji": "사",
+    "cheongan_index": 5,
+    "jiji_index": 5
+  },
+  {
+    "index": 6,
+    "gapja": "경오",
+    "cheongan": "경",
+    "jiji": "오",
+    "cheongan_index": 6,
+    "jiji_index": 6
+  },
+  {
+    "index": 7,
+    "gapja": "신미",
+    "cheongan": "신",
+    "jiji": "미",
+    "cheongan_index": 7,
+    "jiji_index": 7
+  },
+  {
+    "index": 8,
+    "gapja": "임신",
+    "cheongan": "임",
+    "jiji": "신",
+    "cheongan_index": 8,
+    "jiji_index": 8
+  },
+  {
+    "index": 9,
+    "gapja": "계유",
+    "cheongan": "계",
+    "jiji": "유",
+    "cheongan_index": 9,
+    "jiji_index": 9
+  },
+  {
+    "index": 10,
+    "gapja": "갑술",
+    "cheongan": "갑",
+    "jiji": "술",
+    "cheongan_index": 0,
+    "jiji_index": 10
+  },
+  {
+    "index": 11,
+    "gapja": "을해",
+    "cheongan": "을",
+    "jiji": "해",
+    "cheongan_index": 1,
+    "jiji_index": 11
+  },
+  {
+    "index": 12,
+    "gapja": "병자",
+    "cheongan": "병",
+    "jiji": "자",
+    "cheongan_index": 2,
+    "jiji_index": 0
+  },
+  {
+    "index": 13,
+    "gapja": "정축",
+    "cheongan": "정",
+    "jiji": "축",
+    "cheongan_index": 3,
+    "jiji_index": 1
+  },
+  {
+    "index": 14,
+    "gapja": "무인",
+    "cheongan": "무",
+    "jiji": "인",
+    "cheongan_index": 4,
+    "jiji_index": 2
+  },
+  {
+    "index": 15,
+    "gapja": "기묘",
+    "cheongan": "기",
+    "jiji": "묘",
+    "cheongan_index": 5,
+    "jiji_index": 3
+  },
+  {
+    "index": 16,
+    "gapja": "경진",
+    "cheongan": "경",
+    "jiji": "진",
+    "cheongan_index": 6,
+    "jiji_index": 4
+  },
+  {
+    "index": 17,
+    "gapja": "신사",
+    "cheongan": "신",
+    "jiji": "사",
+    "cheongan_index": 7,
+    "jiji_index": 5
+  },
+  {
+    "index": 18,
+    "gapja": "임오",
+    "cheongan": "임",
+    "jiji": "오",
+    "cheongan_index": 8,
+    "jiji_index": 6
+  },
+  {
+    "index": 19,
+    "gapja": "계미",
+    "cheongan": "계",
+    "jiji": "미",
+    "cheongan_index": 9,
+    "jiji_index": 7
+  },
+  {
+    "index": 20,
+    "gapja": "갑신",
+    "cheongan": "갑",
+    "jiji": "신",
+    "cheongan_index": 0,
+    "jiji_index": 8
+  },
+  {
+    "index": 21,
+    "gapja": "을유",
+    "cheongan": "을",
+    "jiji": "유",
+    "cheongan_index": 1,
+    "jiji_index": 9
+  },
+  {
+    "index": 22,
+    "gapja": "병술",
+    "cheongan": "병",
+    "jiji": "술",
+    "cheongan_index": 2,
+    "jiji_index": 10
+  },
+  {
+    "index": 23,
+    "gapja": "정해",
+    "cheongan": "정",
+    "jiji": "해",
+    "cheongan_index": 3,
+    "jiji_index": 11
+  },
+  {
+    "index": 24,
+    "gapja": "무자",
+    "cheongan": "무",
+    "jiji": "자",
+    "cheongan_index": 4,
+    "jiji_index": 0
+  },
+  {
+    "index": 25,
+    "gapja": "기축",
+    "cheongan": "기",
+    "jiji": "축",
+    "cheongan_index": 5,
+    "jiji_index": 1
+  },
+  {
+    "index": 26,
+    "gapja": "경인",
+    "cheongan": "경",
+    "jiji": "인",
+    "cheongan_index": 6,
+    "jiji_index": 2
+  },
+  {
+    "index": 27,
+    "gapja": "신묘",
+    "cheongan": "신",
+    "jiji": "묘",
+    "cheongan_index": 7,
+    "jiji_index": 3
+  },
+  {
+    "index": 28,
+    "gapja": "임진",
+    "cheongan": "임",
+    "jiji": "진",
+    "cheongan_index": 8,
+    "jiji_index": 4
+  },
+  {
+    "index": 29,
+    "gapja": "계사",
+    "cheongan": "계",
+    "jiji": "사",
+    "cheongan_index": 9,
+    "jiji_index": 5
+  },
+  {
+    "index": 30,
+    "gapja": "갑오",
+    "cheongan": "갑",
+    "jiji": "오",
+    "cheongan_index": 0,
+    "jiji_index": 6
+  },
+  {
+    "index": 31,
+    "gapja": "을미",
+    "cheongan": "을",
+    "jiji": "미",
+    "cheongan_index": 1,
+    "jiji_index": 7
+  },
+  {
+    "index": 32,
+    "gapja": "병신",
+    "cheongan": "병",
+    "jiji": "신",
+    "cheongan_index": 2,
+    "jiji_index": 8
+  },
+  {
+    "index": 33,
+    "gapja": "정유",
+    "cheongan": "정",
+    "jiji": "유",
+    "cheongan_index": 3,
+    "jiji_index": 9
+  },
+  {
+    "index": 34,
+    "gapja": "무술",
+    "cheongan": "무",
+    "jiji": "술",
+    "cheongan_index": 4,
+    "jiji_index": 10
+  },
+  {
+    "index": 35,
+    "gapja": "기해",
+    "cheongan": "기",
+    "jiji": "해",
+    "cheongan_index": 5,
+    "jiji_index": 11
+  },
+  {
+    "index": 36,
+    "gapja": "경자",
+    "cheongan": "경",
+    "jiji": "자",
+    "cheongan_index": 6,
+    "jiji_index": 0
+  },
+  {
+    "index": 37,
+    "gapja": "신축",
+    "cheongan": "신",
+    "jiji": "축",
+    "cheongan_index": 7,
+    "jiji_index": 1
+  },
+  {
+    "index": 38,
+    "gapja": "임인",
+    "cheongan": "임",
+    "jiji": "인",
+    "cheongan_index": 8,
+    "jiji_index": 2
+  },
+  {
+    "index": 39,
+    "gapja": "계묘",
+    "cheongan": "계",
+    "jiji": "묘",
+    "cheongan_index": 9,
+    "jiji_index": 3
+  },
+  {
+    "index": 40,
+    "gapja": "갑진",
+    "cheongan": "갑",
+    "jiji": "진",
+    "cheongan_index": 0,
+    "jiji_index": 4
+  },
+  {
+    "index": 41,
+    "gapja": "을사",
+    "cheongan": "을",
+    "jiji": "사",
+    "cheongan_index": 1,
+    "jiji_index": 5
+  },
+  {
+    "index": 42,
+    "gapja": "병오",
+    "cheongan": "병",
+    "jiji": "오",
+    "cheongan_index": 2,
+    "jiji_index": 6
+  },
+  {
+    "index": 43,
+    "gapja": "정미",
+    "cheongan": "정",
+    "jiji": "미",
+    "cheongan_index": 3,
+    "jiji_index": 7
+  },
+  {
+    "index": 44,
+    "gapja": "무신",
+    "cheongan": "무",
+    "jiji": "신",
+    "cheongan_index": 4,
+    "jiji_index": 8
+  },
+  {
+    "index": 45,
+    "gapja": "기유",
+    "cheongan": "기",
+    "jiji": "유",
+    "cheongan_index": 5,
+    "jiji_index": 9
+  },
+  {
+    "index": 46,
+    "gapja": "경술",
+    "cheongan": "경",
+    "jiji": "술",
+    "cheongan_index": 6,
+    "jiji_index": 10
+  },
+  {
+    "index": 47,
+    "gapja": "신해",
+    "cheongan": "신",
+    "jiji": "해",
+    "cheongan_index": 7,
+    "jiji_index": 11
+  },
+  {
+    "index": 48,
+    "gapja": "임자",
+    "cheongan": "임",
+    "jiji": "자",
+    "cheongan_index": 8,
+    "jiji_index": 0
+  },
+  {
+    "index": 49,
+    "gapja": "계축",
+    "cheongan": "계",
+    "jiji": "축",
+    "cheongan_index": 9,
+    "jiji_index": 1
+  },
+  {
+    "index": 50,
+    "gapja": "갑인",
+    "cheongan": "갑",
+    "jiji": "인",
+    "cheongan_index": 0,
+    "jiji_index": 2
+  },
+  {
+    "index": 51,
+    "gapja": "을묘",
+    "cheongan": "을",
+    "jiji": "묘",
+    "cheongan_index": 1,
+    "jiji_index": 3
+  },
+  {
+    "index": 52,
+    "gapja": "병진",
+    "cheongan": "병",
+    "jiji": "진",
+    "cheongan_index": 2,
+    "jiji_index": 4
+  },
+  {
+    "index": 53,
+    "gapja": "정사",
+    "cheongan": "정",
+    "jiji": "사",
+    "cheongan_index": 3,
+    "jiji_index": 5
+  },
+  {
+    "index": 54,
+    "gapja": "무오",
+    "cheongan": "무",
+    "jiji": "오",
+    "cheongan_index": 4,
+    "jiji_index": 6
+  },
+  {
+    "index": 55,
+    "gapja": "기미",
+    "cheongan": "기",
+    "jiji": "미",
+    "cheongan_index": 5,
+    "jiji_index": 7
+  },
+  {
+    "index": 56,
+    "gapja": "경신",
+    "cheongan": "경",
+    "jiji": "신",
+    "cheongan_index": 6,
+    "jiji_index": 8
+  },
+  {
+    "index": 57,
+    "gapja": "신유",
+    "cheongan": "신",
+    "jiji": "유",
+    "cheongan_index": 7,
+    "jiji_index": 9
+  },
+  {
+    "index": 58,
+    "gapja": "임술",
+    "cheongan": "임",
+    "jiji": "술",
+    "cheongan_index": 8,
+    "jiji_index": 10
+  },
+  {
+    "index": 59,
+    "gapja": "계해",
+    "cheongan": "계",
+    "jiji": "해",
+    "cheongan_index": 9,
+    "jiji_index": 11
+  }
+]

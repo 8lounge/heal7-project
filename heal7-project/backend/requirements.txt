@@ -1,0 +1,13 @@
+# 핵심 의존성만 유지
+fastapi
+uvicorn
+pydantic
+httpx
+loguru
+aioredis
+asyncpg
+aiosqlite
+python-dotenv
+PyYAML
+python-dateutil
+pytz

@@ -1,0 +1,39 @@
+{
+  "일주_계산": {
+    "description": "일진 계산 공식",
+    "base_formula": "(기준일_갑자_인덱스 + 날짜차이) % 60",
+    "reference_points": [
+      {
+        "date": "1985-02-24",
+        "gapja": "甲午",
+        "index": 30,
+        "verified": "KASI_API"
+      },
+      {
+        "date": "1955-05-06",
+        "gapja": "丁卯",
+        "index": 3,
+        "verified": "KASI_API"
+      }
+    ],
+    "corrections": {
+      "solar_time": -32,
+      "description": "진태양시 보정 (한국 경도 127도 기준)"
+    }
+  },
+  "월주_계산": {
+    "description": "월주 계산 - 24절기 기준",
+    "formula": "절기 기준으로 월 천간 결정",
+    "base_rule": "년간에 따른 월간 시작점 결정"
+  },
+  "년주_계산": {
+    "description": "년주 계산 - 입춘 기준",
+    "formula": "입춘 이전은 전년도 간지 사용",
+    "base_year": "서기 4년을 갑자년으로 설정"
+  },
+  "시주_계산": {
+    "description": "시주 계산 - 시두법 적용",
+    "formula": "일간에 따른 시천간 배열 + 시지 결정",
+    "time_correction": "진태양시 기준으로 시간 보정"
+  }
+}
