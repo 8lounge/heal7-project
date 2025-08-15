@@ -32,7 +32,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-build
-        path: heal7-project/frontend/out/
+        path: heal7-project/frontend/.next/
         retention-days: 30
 
   build-backend:
@@ -87,17 +87,24 @@ jobs:
         chmod 600 ~/.ssh/deploy_key
         ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts
         
-        # 빌드 아티팩트를 서버에 업로드
-        scp -i ~/.ssh/deploy_key -r build-output/* $DEPLOY_USER@$DEPLOY_HOST:/var/www/heal7.com/
-        
-        # 서버에서 배포 스크립트 실행
+        # 서버에서 Git pull 및 재시작
         ssh -i ~/.ssh/deploy_key $DEPLOY_USER@$DEPLOY_HOST << 'EOF'
           echo "🚀 HEAL7 배포 시작"
           
-          # 안전한 배포 스크립트 실행
-          if [ -f /home/ubuntu/scripts/deployment/heal7-deploy-master.sh ]; then
-            bash /home/ubuntu/scripts/deployment/heal7-deploy-master.sh
-          fi
+          # heal7-project 저장소로 이동하여 최신 코드 pull
+          cd /home/ubuntu/heal7-project-github
+          git pull origin main
+          
+          # 프론트엔드 의존성 설치 및 빌드
+          cd heal7-project/frontend
+          npm install --legacy-peer-deps
+          npm run build
+          
+          # 기존 프로세스 종료 (포트 3001에서 실행 중인 Next.js)
+          pkill -f "next-server" || true
+          
+          # 새로운 프로세스 시작 (백그라운드)
+          nohup npm start > /dev/null 2>&1 &
           
           # Nginx 리로드
           sudo systemctl reload nginx
