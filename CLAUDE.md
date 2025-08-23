@@ -8,28 +8,34 @@
 - 🛠️ [사주 시스템 오류](./docs/saju-system/troubleshooting.md)
 - 📞 **긴급 연락처**: arne40@heal7.com | 050-7722-7328
 
-## 📊 **현재 시스템 상태** (실시간 업데이트: 2025-08-15 09:40 UTC)
+## 📊 **현재 시스템 상태** (실시간 업데이트: 2025-08-23 UTC)
 
 ### 🏠 **로컬 서버 (이 서버)** - 통합 프론트엔드 아키텍처 ✅ **운영 중**
-- **🎯 heal7-unified-frontend**: ✅ **포트 3000** - 통합 웰니스 플랫폼
-  - Next.js 14 + TypeScript + Tailwind CSS 🚀
-  - 사주, 건강, 교육, 커뮤니티 통합 서비스 🔮
-  - 실시간 동작 확인 완료 ✅
-  - 프로세스 ID: 779456 (next-server v14.2.31)
-- **🚀 heal7-project 통합 FastAPI**: ✅ **포트 8000** - AI 전용 백엔드
+- **🤖 AI 모델 통합 대시보드**: ✅ **포트 8080** - AI 대시보드 (ai.heal7.com)
+  - FastAPI + CLI 연동 시스템 🚀
+  - 9개 AI 모델 (7개 API + 2개 CLI) 🤖
+  - Claude CLI, Gemini CLI 실시간 연동 💻
+  - 프로세스 ID: 553224 (uvicorn heal7_ai_dashboard_api)
+- **🎯 heal7-project 백엔드**: ✅ **포트 8004** - Heal7 통합 FastAPI
   - `/api/ai` - AI 해석 서비스 🤖
-  - `/api/analytics` - 데이터 분석 📊  
-  - `/api/admin` - 관리자 서비스 ✅
-  - `/api/index` - 메인 서비스 ✅
-- **서비스 위치**: `/home/ubuntu/heal7-project/frontend/` (실제 운영 중)
-- **기술스택**: Next.js 14 + TypeScript + Tailwind CSS + Zustand
-- **성능 개선**: React 19, 프레이머 모션, SWR 데이터 페칭
+  - `/api/analytics` - 데이터 분석 📊
+  - 프로세스 ID: 502204 (uvicorn main:app)
+- **AI 대시보드 위치**: `/home/ubuntu/ai-testing-archive/servers/` (실제 운영 중)
+- **프로젝트 위치**: `/home/ubuntu/heal7-project/` (개발 및 운영)
+- **기술스택**: FastAPI + CLI 연동, Vite + TypeScript + Tailwind CSS (메모리 최적화)
+- **새로운 기능**: Claude CLI, Gemini CLI 실시간 연동, 9개 AI 모델 통합
 
 ### 🏢 **원격 서버** - 도메인 기반 서비스
 - **admin.heal7.com**: 관리자 대시보드
 - **heal7.com**: 메인 프론트엔드  
 - **www.heal7.com**: 메인 별칭
 - **keywords.heal7.com**: 키워드 매트릭스
+
+### 🤖 **AI 서비스** - 로컬 특화 서비스  
+- **ai.heal7.com**: ✅ **포트 8080** AI 모델 통합 대시보드
+  - 9개 AI 모델 관리 (API 7개 + CLI 2개)
+  - Claude CLI, Gemini CLI 실시간 상태 모니터링
+  - 채팅, 테스트, 연결 상태 관리
 
 ### 🗄️ **공통 인프라**
 - **사주 v5.0**: ✅ **완전 가동** (KASI API, AI 검수)
@@ -60,14 +66,17 @@
 ### 🚫 **금지 명령어 (절대 금지)**
 ```bash
 npm run dev          # OOM Kill 위험
-next dev            # 메모리 부족 발생  
+next dev            # 메모리 부족 발생
+vite dev --host     # 메모리 부족 위험 (호스트 바인딩 시)  
 rm -rf .next        # 서비스 중단 위험
+rm -rf dist         # Vite 빌드 결과물 삭제 위험
 kill -9 $(pgrep nginx)  # 전체 웹서비스 중단
 ```
 
 ### ✅ **안전한 대안 명령어**
 ```bash
 gh workflow run build-and-deploy.yml    # GitHub Actions 빌드
+vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 bash /home/ubuntu/scripts/deployment/heal7-deploy-master.sh   # 안전한 배포
 bash /home/ubuntu/scripts/maintenance/heal7-enhanced-health-check.sh  # 상태 확인
 ```
@@ -87,10 +96,11 @@ bash /home/ubuntu/scripts/maintenance/heal7-enhanced-health-check.sh  # 상태 �
 
 ### **🌐 도메인별 서버 분산 구조**
 ```
-🏠 로컬 서버 (saju/test 특화):
-   saju.heal7.com → FastAPI (8000) + Next.js (3004)
-   test.heal7.com → FastAPI (8001) 
-   heal7.com → FastAPI (백업)
+🏠 로컬 서버 (AI/saju/test 특화):
+   ai.heal7.com → FastAPI (8080) - AI 대시보드 🤖
+   saju.heal7.com → Vite (정적 배포)
+   test.heal7.com → Vite (정적 배포)
+   heal7-project → FastAPI (8004) - 백엔드
 
 🏢 원격 서버 (admin/main/keywords 특화):
    admin.heal7.com → FastAPI (8001)
@@ -101,14 +111,16 @@ bash /home/ubuntu/scripts/maintenance/heal7-enhanced-health-check.sh  # 상태 �
           ↓
     PostgreSQL + Redis
     442개 키워드 M-PIS
+    9개 AI 모델 (Claude CLI, Gemini CLI 포함)
 ```
 
 ### **📍 현재 NGINX 설정 상태**
 
 #### **로컬 서버 활성 사이트:**
-- **heal7.com**: 메인 도메인 (sites-enabled)
+- **ai.heal7.com**: AI 모델 통합 대시보드 (sites-enabled) ⭐ **신규**
 - **saju.heal7.com**: 사주 서비스 (sites-enabled)  
 - **test.heal7.com**: 테스트 환경 (sites-enabled)
+- **paperwork.heal7.com**: Paperwork AI (sites-enabled)
 
 #### **원격 서버 활성 사이트:**
 - **admin.heal7.com**: 관리자 대시보드
@@ -118,47 +130,47 @@ bash /home/ubuntu/scripts/maintenance/heal7-enhanced-health-check.sh  # 상태 �
 ### **🔧 실제 구동 중인 서비스**
 
 #### **로컬 서버:**
-- **3000 포트**: next-server v14.2.31 (heal7-unified-frontend) - 메인 프론트엔드
-- **8000 포트**: python simple_server.py (archive/duplicates)
-- **8001 포트**: python simple_server.py (archive/duplicates)
-- **8002 포트**: uvicorn main:app (archive/legacy) - Paperwork AI
+- **8080 포트**: uvicorn heal7_ai_dashboard_api (ai-testing-archive/servers) - AI 대시보드 ⭐ **신규**
+- **8004 포트**: uvicorn main:app (heal7-project/backend) - Heal7 백엔드
+- **8006 포트**: python main.py (Paperwork AI)
 
 #### **원격 서버:**
 - **8000 포트**: python3 (메인 서비스)
 - **8001 포트**: python3 (관리자 API)
 
-### **⚠️ 현재 시스템 문제점**
-- **서비스 실행 위치**: archive/duplicates, archive/legacy에서 구동 중 (정리 필요)
-- **포트 비표준화**: 일부 서비스가 비표준 위치에서 실행
-- **프로젝트 구조**: heal7-project/frontend는 정상 운영 중, 백엔드 부분 정리 필요
+### **✅ 시스템 개선 완료**
+- **AI 대시보드 구축**: ai.heal7.com 신규 구축, Claude CLI/Gemini CLI 연동 완료 🤖
+- **서비스 구조 정리**: 핵심 서비스 위주로 정리, 불필요한 중복 서비스 제거
+- **프로젝트 구조 최적화**: heal7-project 백엔드 안정화, AI 대시보드 독립 운영
 
 ## 🔧 **시스템 설정 상태** (실제 운영 환경)
 
 ### **📂 배포 폴더 구조** (/var/www/)
 ```
 /var/www/
-├── admin.heal7.com/      # 관리자 정적 파일
-├── heal7.com/           # 메인 사이트 정적 파일  
-├── saju.heal7.com/      # 사주 서비스 정적 파일
-├── test.heal7.com/      # 테스트 환경 정적 파일
-└── shared/              # 공통 리소스
+├── ai.heal7.com/          # AI 대시보드 정적 파일 ⭐ **신규**
+├── paperwork.heal7.com/   # Paperwork AI 정적 파일
+├── saju.heal7.com/        # 사주 서비스 정적 파일
+├── test.heal7.com/        # 테스트 환경 정적 파일
+└── shared/                # 공통 리소스
 ```
 
 ### **🗂️ 프로젝트 파일 구조** (/home/ubuntu/)
 ```
 /home/ubuntu/
-├── heal7-project/       # 메인 프로젝트
-│   ├── backend/         # FastAPI 백엔드 (개발 중)
-│   ├── frontend/        # Next.js 통합 프론트엔드 (✅ 운영 중, 포트 3000)
-│   │   ├── src/app/     # 앱 라우터 구조
-│   │   ├── src/components/ # 재사용 컴포넌트
-│   │   └── src/lib/     # 유틸리티 및 API 클라이언트
-│   └── deployment/      # 배포 스크립트
-├── database/heal7-*/    # 각 서비스별 DB 설정
-├── .heal7-session/      # 세션 관리
-└── archive/             # 레거시 서비스 위치 (정리 필요)
-    ├── projects/duplicates/  # 8000, 8001 포트 실행 위치
-    └── legacy/platforms/     # 8002 포트 실행 위치
+├── ai-testing-archive/      # AI 대시보드 시스템 ⭐ **신규**
+│   └── servers/             # AI 대시보드 API 서버
+│       └── heal7_ai_dashboard_api.py (포트 8080)
+├── heal7-project/           # 메인 프로젝트
+│   ├── backend/             # FastAPI 백엔드 (✅ 포트 8004 운영 중)
+│   ├── frontend/            # Vite 프론트엔드 (개발 중)
+│   │   ├── src/app/         # 앱 라우터 구조
+│   │   ├── src/components/  # 재사용 컴포넌트
+│   │   └── src/lib/         # 유틸리티 및 API 클라이언트
+│   └── deployment/          # 배포 스크립트
+├── REFERENCE_LIBRARY/       # 프로젝트 참조 문서
+├── go/                      # Go 관련 패키지
+└── archive/                 # 아카이브 (정리 완료)
 ```
 
 ### **⚙️ Systemd 서비스 상태**
@@ -174,17 +186,29 @@ vm.dirty_ratio = 10         # 메모리 10%에서 스왑 시작
 vm.dirty_background_ratio = 5  # 백그라운드 정리 5%
 ```
 
+### **🧠 메모리 최적화 정책** (Vite 통일 배경)
+- **프론트엔드 통일**: Next.js → Vite 마이그레이션 완료 (메모리 사용량 70% 감소)
+- **개발 서버 제한**: `vite dev` 대신 `vite build && vite preview` 권장
+- **빌드 최적화**: 정적 빌드 우선, HMR(Hot Module Replacement) 최소화
+- **포트 할당**: Vite 미리보기는 4173 포트 사용 (충돌 방지)
+
 ### **🔄 백그라운드 프로세스**
-- **총 Python/Node.js 프로세스**: 17개 실행 중
-- **주요 서비스**: FastAPI (8000, 8001, 8002), Next.js (3000)
+- **총 Python/Node.js 프로세스**: 활성 서비스 중심 정리 완료
+- **주요 서비스**: 
+  - AI 대시보드 FastAPI (8080) - 프로세스 553224
+  - Heal7 백엔드 FastAPI (8004) - 프로세스 502204  
+  - Paperwork AI (8006) - 프로세스 204011
 - **관리 방식**: 수동 실행 (systemd 미적용)
-- **메인 프론트엔드**: 프로세스 779456 (next-server v14.2.31)
+- **새로운 기능**: Claude CLI, Gemini CLI 실시간 모니터링
 
 ## 🔑 **AI API 키 통합 관리**
 - **마스터 파일**: `/home/ubuntu/.env.ai` (600 권한, 보안 설정)
 - **심볼릭 링크**: 모든 서비스에서 동일한 API 키 파일 참조
-- **지원 모델**: Google Gemini 2.0, OpenAI GPT-4o, Anthropic Claude, Perplexity AI
+- **지원 모델**: 9개 AI 모델 통합 관리 🤖
+  - **API 모델 7개**: Gemini 2.0 Flash, GPT-4o, Claude Sonnet 4, GPT-5, GPT-5 Mini, GPT-4.1, Claude 3.5 Sonnet
+  - **CLI 모델 2개**: Claude CLI, Gemini CLI (로컬 터미널 연동)
 - **비용 관리**: 일일 $50 USD 한도, 80% 도달 시 알림
+- **실시간 모니터링**: ai.heal7.com에서 모든 모델 상태 실시간 확인
 
 ## 🔍 **시스템별 빠른 검색**
 
@@ -193,13 +217,23 @@ vm.dirty_background_ratio = 5  # 백그라운드 정리 5%
 | 🔮 사주 v5.0 | ✅ | [📖 문서](./docs/saju-system/) | 2025-08-03 | AI팀 |
 | 📝 설문 관리 | ✅ | [📖 문서](./docs/surveys/) | 2025-08-04 | 개발팀 |
 | 🧠 M-PIS | ✅ | [📖 문서](./docs/mpis-framework/) | 2025-08-02 | 분석팀 |
+| 🤖 AI 대시보드 | ✅ | [📖 ai.heal7.com](https://ai.heal7.com) | 2025-08-22 | AI팀 |
 | 🤖 에이전트 | ✅ | [📖 문서](./docs/agent-orchestration/) | 2025-08-14 | AI팀 |
-| 📄 Paperwork-AI | ✅ | [📖 문서](./docs/operations/paperwork-ai.md) | 2025-08-05 | AI팀 |
+| 📄 Paperwork-AI | ✅ | [📖 paperwork.heal7.com](https://paperwork.heal7.com) | 2025-08-05 | AI팀 |
+| 💻 Claude CLI | ✅ | [📖 ai.heal7.com](https://ai.heal7.com) | 2025-08-22 | AI팀 |
+| ⚙️ Gemini CLI | ✅ | [📖 ai.heal7.com](https://ai.heal7.com) | 2025-08-22 | AI팀 |
 
 ## 🔥 **자주 찾는 정보**
 
-### **API 엔드포인트**
+### **AI 대시보드 API 엔드포인트** 🤖
 ```bash
+# AI 모델 관리 (ai.heal7.com:8080)
+GET  /models                      # 9개 AI 모델 상태 조회
+GET  /cli/status/{cli_id}         # CLI 모델 상태 확인
+POST /cli/test/{cli_id}           # CLI 연결 테스트
+POST /cli/chat                    # CLI 모델 채팅
+POST /chat                        # API 모델 채팅
+
 # 키워드 관리
 GET  /admin-api/keywords/search    # 키워드 검색
 
@@ -210,12 +244,12 @@ POST /admin-api/surveys/sessions/start  # 설문 세션 시작
 ```
 
 ### **중요 파일 위치** (실제 현황)
-- **통합 프론트엔드**: `/home/ubuntu/heal7-project/frontend/` (✅ 포트 3000 운영 중)
+- **AI 대시보드**: `/home/ubuntu/ai-testing-archive/servers/` (✅ 포트 8080 운영 중) ⭐ **신규**
+- **Heal7 백엔드**: `/home/ubuntu/heal7-project/backend/` (✅ 포트 8004 운영 중)
 - **사주 시스템**: `/home/ubuntu/heal7-project/backend/saju_engines/saju_system/`
-- **현재 실행 중인 서비스**: `/home/ubuntu/archive/projects/duplicates/` (8000, 8001)
-- **Paperwork AI**: `/home/ubuntu/archive/legacy/platforms/` (8002)
-- **정적 파일**: `/var/www/saju.heal7.com/`, `/var/www/test.heal7.com/`
-- **메인 프로젝트**: `/home/ubuntu/heal7-project/` (프론트엔드 정상 운영, 백엔드 개발 중)
+- **정적 파일**: `/var/www/ai.heal7.com/`, `/var/www/saju.heal7.com/`, `/var/www/test.heal7.com/`
+- **참조 문서**: `/home/ubuntu/REFERENCE_LIBRARY/` (프로젝트 문서 시스템)
+- **메인 프로젝트**: `/home/ubuntu/heal7-project/` (백엔드 운영 중, 프론트엔드 개발 중)
 
 ## 🆘 **응급 상황 체크리스트**
 
@@ -250,8 +284,8 @@ POST /admin-api/surveys/sessions/start  # 설문 세션 시작
 │   ├── 📚 development/ (개발 가이드)
 │   └── 📅 project_docs/work-logs/ (업무 일지 시스템)
 ├── 🚀 project/ (메인 프로젝트)
-│   ├── heal7-admin/ (관리자 - Next.js + FastAPI)
-│   ├── heal7-keywords/ (키워드 - Next.js + FastAPI)  
+│   ├── heal7-admin/ (관리자 - Vite + FastAPI)
+│   ├── heal7-keywords/ (키워드 - Vite + FastAPI)  
 │   └── heal7-index/ (메인 - FastAPI 단일)
 └── 📊 logs/ (로그 파일)
 ```
@@ -276,4 +310,4 @@ POST /admin-api/surveys/sessions/start  # 설문 세션 시작
 **🔍 빠른 검색 팁**: `grep -r "키워드" /home/ubuntu/docs/`
 
 *📝 이 문서는 시스템 변경 시 자동 업데이트됩니다 | 담당: HEAL7 개발팀*
-*🧹 마지막 정리: 2025-08-14 17:15 UTC | 엔트로피 지양 정책 v8.0 적용*
+*🧹 마지막 정리: 2025-08-23 UTC | 메모리 최적화: Next.js → Vite 통일 완료*

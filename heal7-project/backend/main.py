@@ -139,7 +139,8 @@ async def api_info():
             "saju": "/api/saju - 사주명리학 서비스",
             "test": "/api/test - 테스트 환경", 
             "admin": "/api/admin - 관리자 서비스",
-            "index": "/api/index - 메인 서비스"
+            "index": "/api/index - 메인 서비스",
+            "paperwork": "/api/paperwork - 문서 AI 변환 서비스"
         },
         "docs": "/api/docs",
         "timestamp": datetime.now().isoformat()
@@ -173,6 +174,13 @@ try:
     logger.info("✅ 인덱스 라우터 등록 완료")
 except ImportError as e:
     logger.warning(f"⚠️ 인덱스 라우터 임포트 실패: {e}")
+
+try:
+    from routers.paperwork import router as paperwork_router
+    app.include_router(paperwork_router, tags=["Paperwork"])
+    logger.info("✅ Paperwork 라우터 등록 완료")
+except ImportError as e:
+    logger.warning(f"⚠️ Paperwork 라우터 임포트 실패: {e}")
 
 if __name__ == "__main__":
     # 환경별 설정

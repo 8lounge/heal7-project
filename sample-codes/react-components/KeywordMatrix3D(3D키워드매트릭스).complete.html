@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대규모 3D 상태-인지 매트릭스 (v13: 상호작용 개선)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-color: #0c0a09;
+        }
+        .ui-layer {
+            position: absolute;
+            background-color: rgba(41, 37, 36, 0.8);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: #d6d3d1;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+        .keyword-label {
+            color: #e5e7eb;
+            font-size: 14px;
+            text-shadow: 0 0 8px #000;
+            pointer-events: none;
+            transition: opacity 0.3s, font-size 0.3s;
+        }
+        #legend {
+            bottom: 1.5rem;
+            left: 1.5rem;
+            font-size: 0.875rem;
+            pointer-events: none;
+        }
+        .legend-item { display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .legend-color { width: 1rem; height: 1rem; border-radius: 50%; margin-right: 0.75rem; border: 1px solid rgba(255,255,255,0.2); }
+        
+        #search-container {
+            top: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+        }
+        #keyword-search { background-color: transparent; border: none; border-bottom: 2px solid #6b7280; color: white; padding: 0.25rem 0.5rem; transition: border-color 0.3s; }
+        #keyword-search:focus { outline: none; border-bottom-color: #f59e0b; }
+        #search-button { background-color: #f59e0b; color: #1c1917; border: none; padding: 0.35rem 0.75rem; border-radius: 0.25rem; margin-left: 0.5rem; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
+        #search-button:hover { background-color: #fbbf24; }
+
+        #controls-container {
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 200px;
+        }
+        .control-group { margin-bottom: 0.75rem; }
+        .control-group:last-child { margin-bottom: 0; }
+        .control-group label { display: block; font-size: 0.875rem; margin-bottom: 0.25rem; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group button { width: 100%; background-color: #3f3f46; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer; transition: background-color 0.3s; }
+        .control-group button:hover { background-color: #52525b; }
+        .zoom-buttons button { flex: 1; }
+    </style>
+</head>
+<body>
+    <div id="legend" class="ui-layer">
+        <h3 class="font-bold mb-2 text-white">상태 색상</h3>
+        <div class="legend-item"><div class="legend-color" style="background-color: #4ade80;"></div>긍정</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: #facc15;"></div>중립</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: #f87171;"></div>부정</div>
+        <div class="legend-item"><div class="legend-color" style="background-color: #6b7280;"></div>비활성</div>
+    </div>
+    <div id="search-container" class="ui-layer">
+        <input type="text" id="keyword-search" placeholder="키워드 검색...">
+        <button id="search-button">검색</button>
+    </div>
+    <div id="controls-container" class="ui-layer">
+        <div class="control-group">
+            <button id="reset-button">초기화</button>
+        </div>
+        <div class="control-group">
+            <label for="speed-slider">회전 속도</label>
+            <input type="range" id="speed-slider" min="0" max="5" step="0.1" value="0.5">
+        </div>
+        <div class="control-group">
+            <label for="text-size-slider">텍스트 크기</label>
+            <input type="range" id="text-size-slider" min="10" max="24" step="1" value="14">
+        </div>
+        <div class="control-group zoom-buttons flex justify-between gap-2">
+            <button id="zoom-in-button">줌인 (+)</button>
+            <button id="zoom-out-button">줌아웃 (-)</button>
+        </div>
+    </div>
+    <div id="container"></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        let scene, camera, renderer, labelRenderer, controls, raycaster, group;
+        const nodes = {};
+        const edges = [];
+        const hitboxes = [];
+        const mouse = new THREE.Vector2(-100, -100); // Initialize mouse off-screen
+        let cameraTween, targetTween;
+
+        // --- IMPROVED STATE MANAGEMENT ---
+        let highlightedNode = null; // Node currently under the mouse
+        let isFocused = false;      // Is the camera focused on a node set?
+        let isHovering = false;     // Is the mouse currently over a node?
+        let hasUserInteracted = false; // Has the user moved the mouse for the first time?
+
+        const initialCameraPosition = new THREE.Vector3(0, 0, 80);
+
+        const keywordData = {
+            '논리': ['분석적사고', '추론능력', '문해력', '판단력', '지성'], '창의력': ['상상력', '아이디어', '시각적사고', '융통성', '혁신지향'],
+            '메타인지': ['성찰력', '자기인식', '자기수용', '학습능력'], '분석력': ['패턴인식', '추론능력', '통찰력', '직관성', '문제정의'],
+            '문제해결': ['문제정의', '전략적사고', '응용력', '분석력', '창의력'], '학습능력': ['기억력', '집중력', '주의력', '학습촉진', '몰입'],
+            '판단력': ['의사결정력', '비판적사고', '정확성', '논리'], '인지유연성': ['시스템사고', '통합적사고', '맥락적사고', '전체적사고'],
+            '정보처리': ['문해력', '언어유창성', '수치감각', '정보처리속도'], '관찰분석': ['관찰', '사고력', '질문력', '의심', '비판'],
+            '혁신지향': ['미래지향', '변화적응력', '개방성'], '융통성': ['임기응변', '환경적응력', '인지유연성'],
+            '활력': ['에너지수준', '추진력', '지구력', '도전정신'], '목표지향성': ['성취욕구', '완벽성', '야망', '의지력'],
+            '의지력': ['인내', '끈기', '지속성', '참을성'], '도전정신': ['진취적', '능동적', '개척', '모험심'],
+            '계획성': ['조직력', '체계성', '시간관리', '규칙성'], '자기조절': ['자기통제', '지연만족', '충동억제', '감정조절'],
+            '성취감': ['효능감', '사명감', '헌신', '동기부여'], '동기부여': ['자율동기', '기대감', '호기심', '성취욕구'],
+            '책임감': ['실천력', '일관성', '신뢰성'], '협동성': ['배려심', '포용력', '타협', '팀워크'],
+            '공감력': ['사회친화성', '외교력', '감정인식', '배려심'], '리더십': ['카리스마', '지도자성', '의사결정력', '영향력'],
+            '소통능력': ['언어표현', '경청능력', '설득력', '협상력'], '사회성': ['외향적', '호감적', '사회적민감성', '네트워킹'],
+            '내향성': ['독립적', '개별적', '자율성', '사고력'], '신뢰성': ['믿음직함', '일관성', '신뢰구축', '양심성'],
+            '정서안정성': ['평온함', '감정조절', '스트레스관리'], '회복탄력성': ['스트레스관리', '인내심', '긍정성향', '적응능력'],
+            '감정지능': ['감정인식', '감정표현', '정서적지능', '공감력'], '자존감': ['자신감', '자존심', '자기수용'],
+            '집행기능': ['인지통제', '작업기억', '메타인지', '계획수립'], '언어처리': ['언어이해', '언어생성', '언어유창성', '문해력'],
+            '사회인지': ['마음이론', '관점수용', '사회적민감성'], '기억형성': ['장기기억', '단기기억', '학습능력'],
+            '애착형성': ['사회적유대', '신뢰형성', '애정', '사랑'], '불안처리': ['위험인식', '경계반응', '불안', '두려움', '걱정'],
+            '보상감각': ['즐움', '만족감', '행복감', '긍정성향'], '습관형성': ['자동화행동', '패턴학습', '절차기억'],
+            '도파민시스템': ['보상', '동기', '쾌락', '주의', '집중력'], '세로토닌시스템': ['기분안정', '행복감', '평온함', '수면조절'],
+            '코르티솔시스템': ['스트레스', '각성', '압박감', '경계반응'], '불안장애': ['불안', '초조', '걱정', '불안정감', '공포반응'],
+            '스트레스과부하': ['압박감', '과부하', '만성스트레스', '긴장과잉'], '인지경직': ['완고', '경직성', '고지식함', '변화저항'],
+            '확증편향': ['선입견', '편견', '독단', '정보차단'], '분노조절장애': ['분노', '화', '격노', '공격성', '충동성'],
+            '우울경향': ['슬픔', '침울', '비애', '염세적', '무기력감'], '무기력감': ['무력감', '무능감', '의욕상실', '체념'],
+            '상실감': ['허무감', '공허감', '무의미감', '좌절'], '수치심': ['부끄러움', '창피', '굴욕감', '자기혐오'],
+            '죄책감': ['자책', '후회', '죄의식', '뉘우침'], '나르시시즘': ['자기도취', '자기과신', '자기애', '특권의식'],
+            '자기중심성': ['이기심', '독선', '공감결여', '무관심'],
+        };
+
+        function getStateColor(state) {
+            if (state > 0.5) return new THREE.Color("#4ade80"); // Positive
+            if (state > -0.2) return new THREE.Color("#facc15"); // Neutral
+            if (state > -1) return new THREE.Color("#f87171"); // Negative
+            return new THREE.Color("#6b7280"); // Inactive
+        }
+
+        init();
+        animate();
+
+        function init() {
+            const container = document.getElementById('container');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.copy(initialCameraPosition);
+            raycaster = new THREE.Raycaster();
+
+            group = new THREE.Group();
+            scene.add(group);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+            
+            labelRenderer = new CSS2DRenderer();
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.domElement.style.position = 'absolute';
+            labelRenderer.domElement.style.top = '0px';
+            labelRenderer.domElement.style.pointerEvents = 'none';
+            container.appendChild(labelRenderer.domElement);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 10;
+            controls.maxDistance = 200;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+
+            createGraph();
+            setupUIAndListeners();
+        }
+
+        function createGraph() {
+            const mainKeywords = Object.keys(keywordData);
+            const allKeywords = new Set();
+            mainKeywords.forEach(key => {
+                allKeywords.add(key);
+                if(keywordData[key]) keywordData[key].forEach(dep => allKeywords.add(dep));
+            });
+
+            const keywordStates = {};
+            allKeywords.forEach(k => keywordStates[k] = (Math.random() * 2 - 1));
+
+            mainKeywords.forEach(mainK => {
+                const deps = keywordData[mainK];
+                if (deps && deps.length > 0) {
+                    const avgState = deps.reduce((acc, depK) => acc + (keywordStates[depK] || 0), 0) / deps.length;
+                    keywordStates[mainK] = avgState;
+                }
+            });
+
+            const sphereRadius = 40;
+            const positions = [];
+            const numPoints = allKeywords.size;
+            for (let i = 0; i < numPoints; i++) {
+                const phi = Math.acos(-1 + (2 * i) / numPoints);
+                const theta = Math.sqrt(numPoints * Math.PI) * phi;
+                positions.push(new THREE.Vector3(
+                    sphereRadius * Math.cos(theta) * Math.sin(phi),
+                    sphereRadius * Math.sin(theta) * Math.sin(phi),
+                    sphereRadius * Math.cos(phi)
+                ));
+            }
+            
+            let i = 0;
+            allKeywords.forEach(keyword => {
+                const isMain = mainKeywords.includes(keyword);
+                const state = keywordStates[keyword];
+                const color = getStateColor(state);
+                
+                const geometry = new THREE.SphereGeometry(isMain ? 0.5 : 0.25, 32, 32);
+                const material = new THREE.MeshPhongMaterial({ color: color, emissive: color.clone().multiplyScalar(0.3), shininess: 80, transparent: true });
+                const node = new THREE.Mesh(geometry, material);
+                node.position.copy(positions[i++]);
+                node.userData = { id: keyword, isNode: true, connections: new Set(), waveOffset: Math.random() * Math.PI * 2 };
+                
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'keyword-label';
+                labelDiv.textContent = keyword;
+                labelDiv.style.fontWeight = isMain ? 'bold' : 'normal';
+                
+                const label = new CSS2DObject(labelDiv);
+                label.position.set(0, isMain ? 0.8 : 0.5, 0);
+                node.add(label);
+                node.userData.label = label;
+                
+                nodes[keyword] = node;
+                group.add(node);
+
+                const hitboxGeometry = new THREE.SphereGeometry(2, 8, 8);
+                const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
+                const hitbox = new THREE.Mesh(hitboxGeometry, hitboxMaterial);
+                hitbox.position.copy(node.position);
+                hitbox.userData.visibleNode = node;
+                hitboxes.push(hitbox);
+                group.add(hitbox);
+            });
+
+            mainKeywords.forEach(mainKeyword => {
+                const startNode = nodes[mainKeyword];
+                if (!startNode || !keywordData[mainKeyword]) return;
+
+                keywordData[mainKeyword].forEach(depKeyword => {
+                    const endNode = nodes[depKeyword];
+                    if (!endNode) return;
+                    
+                    const points = [startNode.position, endNode.position];
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const material = new THREE.LineBasicMaterial({ color: 0x4b5563, transparent: true, opacity: 0.15 });
+                    const edge = new THREE.Line(geometry, material);
+                    edge.userData = { nodes: [startNode, endNode] };
+                    edges.push(edge);
+                    
+                    group.add(edge);
+                    
+                    startNode.userData.connections.add(endNode);
+                    endNode.userData.connections.add(startNode);
+                });
+            });
+        }
+        
+        function setupUIAndListeners() {
+            // Search
+            document.getElementById('search-button').addEventListener('click', searchKeyword);
+            document.getElementById('keyword-search').addEventListener('keydown', (e) => { if (e.key === 'Enter') searchKeyword(); });
+            
+            // Controls
+            document.getElementById('reset-button').addEventListener('click', resetCamera);
+            document.getElementById('speed-slider').addEventListener('input', (e) => { controls.autoRotateSpeed = parseFloat(e.target.value); });
+            document.getElementById('text-size-slider').addEventListener('input', (e) => {
+                const newSize = e.target.value + 'px';
+                Object.values(nodes).forEach(node => { node.userData.label.element.style.fontSize = newSize; });
+            });
+            document.getElementById('zoom-in-button').addEventListener('click', () => controls.dollyIn(1.2));
+            document.getElementById('zoom-out-button').addEventListener('click', () => controls.dollyOut(1.2));
+
+            // --- REFINED EVENT LISTENERS ---
+            window.addEventListener('resize', onWindowResize, false);
+            renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+            renderer.domElement.addEventListener('click', onCanvasClick, false);
+            renderer.domElement.addEventListener('wheel', onWheel, false); // For focus deactivation
+
+            // Deactivate focus on drag start
+            controls.addEventListener('start', () => {
+                if (cameraTween) cameraTween.kill();
+                if (targetTween) targetTween.kill();
+                controls.enabled = true;
+
+                if (isFocused) {
+                    isFocused = false;
+                    unhighlightAll();
+                    highlightedNode = null;
+                    // Gently reset orbit target so rotation is correct after drag
+                    gsap.to(controls.target, { duration: 0.5, x: 0, y: 0, z: 0, ease: "power2.out" });
+                }
+            });
+        }
+        
+        // --- EVENT HANDLER FUNCTIONS ---
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            // This flag ensures hover effects only start after the user first moves the mouse.
+            if (!hasUserInteracted) {
+                hasUserInteracted = true;
+            }
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onCanvasClick(event) {
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(hitboxes);
+
+            if (intersects.length > 0) {
+                const clickedNode = intersects[0].object.userData.visibleNode;
+                // Only focus on click
+                focusOnSet(clickedNode);
+            } else {
+                // If clicking on empty space while focused, reset the view.
+                if (isFocused) {
+                    resetCamera();
+                }
+            }
+        }
+        
+        function onWheel() {
+            // If user scrolls while focused, reset the view.
+            if (isFocused) {
+                resetCamera();
+            }
+        }
+
+        // --- CORE LOGIC FUNCTIONS ---
+
+        function resetCamera() {
+            if (cameraTween) cameraTween.kill();
+            if (targetTween) targetTween.kill();
+
+            isFocused = false;
+            
+            // Animate camera and target back to the initial "globe view"
+            gsap.to(camera.position, { 
+                duration: 1.2, 
+                x: initialCameraPosition.x, y: initialCameraPosition.y, z: initialCameraPosition.z, 
+                ease: "power3.inOut",
+                onStart: () => { controls.enabled = false; }, // Disable controls during animation
+                onComplete: () => { controls.enabled = true; } // Re-enable after
+            });
+            gsap.to(controls.target, { 
+                duration: 1.2, 
+                x: 0, y: 0, z: 0, 
+                ease: "power3.inOut"
+            });
+
+            if(highlightedNode) {
+                unhighlightAll();
+                highlightedNode = null;
+                isHovering = false;
+            }
+        }
+
+        function searchKeyword() {
+            const searchTerm = document.getElementById('keyword-search').value.trim();
+            if (!searchTerm) return;
+            
+            const foundKey = Object.keys(nodes).find(key => key.toLowerCase().includes(searchTerm.toLowerCase()));
+            const foundNode = foundKey ? nodes[foundKey] : null;
+
+            if (foundNode) {
+                focusOnSet(foundNode);
+            } else {
+                // Shake animation for feedback
+                const searchBox = document.getElementById('search-container');
+                searchBox.animate([
+                    { transform: 'translateX(0px)' }, { transform: 'translateX(-5px)' }, 
+                    { transform: 'translateX(5px)' }, { transform: 'translateX(0px)' }
+                ], { duration: 300, iterations: 2 });
+            }
+        }
+
+        function focusOnSet(centerNode) {
+            if (cameraTween) cameraTween.kill();
+            if (targetTween) targetTween.kill();
+
+            isFocused = true;
+            isHovering = false; // Disable hover state while focused
+            
+            if (highlightedNode !== centerNode) {
+                unhighlightAll();
+                highlightedNode = centerNode;
+            }
+            
+            const nodeSet = new Set([centerNode, ...centerNode.userData.connections]);
+            highlightSet(nodeSet);
+            
+            const box = new THREE.Box3();
+            nodeSet.forEach(node => box.expandByPoint(node.position));
+            
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+            cameraZ *= 1.8; // Add some padding
+            
+            const direction = center.clone().length() > 0 ? center.clone().normalize() : new THREE.Vector3(0,0,1);
+            const newPos = center.clone().add(direction.multiplyScalar(Math.max(cameraZ, 20))); // Ensure not too close
+
+            cameraTween = gsap.to(camera.position, { 
+                duration: 1.5, x: newPos.x, y: newPos.y, z: newPos.z, ease: "power3.inOut",
+                onStart: () => { controls.enabled = false; },
+                onComplete: () => { controls.enabled = true; }
+            });
+            targetTween = gsap.to(controls.target, { 
+                duration: 1.5, x: center.x, y: center.y, z: center.z, ease: "power3.inOut" 
+            });
+        }
+
+        function checkHighlight() {
+            // This function now only handles hover effects, not focus.
+            // It won't run until the user has moved the mouse, ensuring a stable start.
+            if (isFocused || !hasUserInteracted) return;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(hitboxes);
+
+            const newHighlight = intersects.length > 0 ? intersects[0].object.userData.visibleNode : null;
+
+            if (highlightedNode !== newHighlight) {
+                if (highlightedNode) {
+                    unhighlightAll();
+                }
+                if (newHighlight) {
+                    highlightSet(new Set([newHighlight, ...newHighlight.userData.connections]));
+                }
+                highlightedNode = newHighlight;
+            }
+            
+            // Update hover state, which controls rotation in the animate loop.
+            isHovering = !!newHighlight;
+        }
+
+        function highlightSet(nodeSet) {
+            Object.values(nodes).forEach(n => {
+                const isHighlighted = nodeSet.has(n);
+                n.material.opacity = isHighlighted ? 1.0 : 0.05;
+                n.userData.label.element.style.opacity = isHighlighted ? 1.0 : 0.05;
+            });
+
+            edges.forEach(edge => {
+                const [start, end] = edge.userData.nodes;
+                const isHighlighted = nodeSet.has(start) && nodeSet.has(end);
+                edge.material.color.set(isHighlighted ? 0xfbbf24 : 0x4b5563);
+                edge.material.opacity = isHighlighted ? 0.8 : 0.02;
+            });
+        }
+
+        function unhighlightAll() {
+             Object.values(nodes).forEach(n => {
+                n.material.opacity = 1;
+                n.userData.label.element.style.opacity = 1;
+            });
+            edges.forEach(edge => {
+                edge.material.color.set(0x4b5563);
+                edge.material.opacity = 0.15;
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Centralized rotation control. Rotates only when not focused and not hovering.
+            controls.autoRotate = !isFocused && !isHovering && hasUserInteracted;
+
+            const time = Date.now() * 0.002;
+            Object.values(nodes).forEach(node => {
+                if (node.userData.isNode) {
+                    const scale = 1 + Math.sin(time + node.userData.waveOffset) * 0.05;
+                    node.scale.set(scale, scale, scale);
+                }
+            });
+
+            checkHighlight(); // Check for mouse hover
+            controls.update(); // Update orbit controls
+            
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>

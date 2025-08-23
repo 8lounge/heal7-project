@@ -79,3 +79,34 @@ tmp/
 *.pack
 *.gz
 bulk-files/
+
+# IDE & Tooling
+.vscode-server/
+.gemini/
+
+# 핵심 파일만 추적 - 나머지는 모두 제외
+ai-testing-archive/
+archive/
+backups/
+docs/
+go/
+logs/
+playwright-env/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+
+# 단, 다음 디렉토리/파일은 추적
+!heal7-project/
+!scripts/
+!CLAUDE.md
+
+# REFERENCE_LIBRARY는 포함 (주석 처리)
+# REFERENCE_LIBRARY/
+
+# Claude CLI
+.claude/
+.claude.json
+.claude.json.backup
