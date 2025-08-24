@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paperwork AI 2.0 - 제출할 문서양식을 AI가 대신 작성해드립니다</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .document-card { transition: all 0.3s ease; }
+        .document-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .step-indicator.active { background: linear-gradient(45deg, #667eea, #764ba2); }
+        .conversion-flow { background: linear-gradient(45deg, #f093fb 0%, #f5576c 50%, #4facfe 100%); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        .ai-thinking { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <i data-lucide="file-text" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Paperwork AI 2.0</h1>
+                        <p class="text-white/80">제출할 문서양식을 AI가 대신 작성해드립니다</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <div class="text-sm text-white/60">AI 모델 상태</div>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-green-500/20 rounded text-xs">GPT-4o ✓</span>
+                            <span class="px-2 py-1 bg-green-500/20 rounded text-xs">Claude ✓</span>
+                            <span class="px-2 py-1 bg-green-500/20 rounded text-xs">Gemini ✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Step Indicator -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center space-x-4">
+                <div id="step1" class="step-indicator active flex items-center justify-center w-10 h-10 rounded-full text-white font-bold">1</div>
+                <div class="w-16 h-1 bg-gray-300 rounded"></div>
+                <div id="step2" class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold">2</div>
+                <div class="w-16 h-1 bg-gray-300 rounded"></div>
+                <div id="step3" class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold">3</div>
+                <div class="w-16 h-1 bg-gray-300 rounded"></div>
+                <div id="step4" class="step-indicator flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold">4</div>
+            </div>
+            <div class="flex items-center justify-center space-x-12 mt-2">
+                <span class="text-sm text-gray-600">문서 선택</span>
+                <span class="text-sm text-gray-600">파일 업로드</span>
+                <span class="text-sm text-gray-600">AI 조합</span>
+                <span class="text-sm text-gray-600">완성</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Template Selection -->
+        <div id="step1-content" class="step-content">
+            <!-- 문서 변환 시스템 배너 -->
+            <div class="conversion-flow text-white rounded-2xl p-6 mb-8 text-center">
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="file-input" class="w-6 h-6"></i>
+                        <span class="font-medium">기존 문서</span>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-8 h-8"></i>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="brain" class="w-6 h-6"></i>
+                        <span class="font-medium">AI 변환</span>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-8 h-8"></i>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="file-output" class="w-6 h-6"></i>
+                        <span class="font-medium">새로운 양식</span>
+                    </div>
+                </div>
+                <p class="text-white/90">SBA에서 떨어진 사업계획서를 KOSMES 양식으로 자동 변환하세요!</p>
+            </div>
+
+            <!-- 작업 방식 선택 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">작업 방식 선택</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div id="create-new" class="work-mode-card border-2 border-blue-200 bg-blue-50 rounded-xl p-4 cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <i data-lucide="plus" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">새 문서 작성</h4>
+                                <p class="text-sm text-gray-600">파편 자료들을 AI가 조합하여 완전한 문서 생성</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="convert-existing" class="work-mode-card border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-purple-200 hover:bg-purple-50">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i data-lucide="repeat" class="w-6 h-6 text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">문서 변환</h4>
+                                <p class="text-sm text-gray-600">기존 문서를 다른 기관의 양식으로 변환</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문서 템플릿 선택 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">📋 문서 템플릿 선택</h3>
+                
+                <!-- Category Filter -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="category-btn active px-4 py-2 rounded-full bg-blue-500 text-white" data-category="all">전체</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-category="government">정부 지원사업</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-category="contest">공모전</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-category="business">비즈니스</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700" data-category="internal">내부 문서</button>
+                </div>
+
+                <!-- Template Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="template-grid">
+                    <!-- Government Documents -->
+                    <div class="document-card bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5 cursor-pointer" data-category="government" data-template="support-business">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">🏛️</span>
+                            <span class="text-xs bg-blue-500 text-white px-2 py-1 rounded">정부</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">지원사업 신청서</h4>
+                        <p class="text-sm text-gray-600 mb-3">정부/기관 지원사업 신청을 위한 사업계획서</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">SBA</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">KOSMES</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">NIPA</span>
+                        </div>
+                    </div>
+
+                    <div class="document-card bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-5 cursor-pointer" data-category="contest" data-template="contest-proposal">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">🏆</span>
+                            <span class="text-xs bg-green-500 text-white px-2 py-1 rounded">공모전</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">공모전 제안서</h4>
+                        <p class="text-sm text-gray-600 mb-3">아이디어 공모전 및 경진대회 참가용</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">창업경진대회</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">아이디어공모</span>
+                        </div>
+                    </div>
+
+                    <div class="document-card bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5 cursor-pointer" data-category="business" data-template="budget-request">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">💰</span>
+                            <span class="text-xs bg-purple-500 text-white px-2 py-1 rounded">재무</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">예산신청서</h4>
+                        <p class="text-sm text-gray-600 mb-3">예산 신청 및 지출 결의를 위한 문서</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">예산신청</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">지출결의</span>
+                        </div>
+                    </div>
+
+                    <div class="document-card bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-5 cursor-pointer" data-category="business" data-template="activity-plan">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">📅</span>
+                            <span class="text-xs bg-orange-500 text-white px-2 py-1 rounded">기획</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">활동계획서</h4>
+                        <p class="text-sm text-gray-600 mb-3">프로젝트 및 행사 활동 계획 수립용</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">프로젝트</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">행사기획</span>
+                        </div>
+                    </div>
+
+                    <div class="document-card bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-xl p-5 cursor-pointer" data-category="business" data-template="operation-plan">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">⚙️</span>
+                            <span class="text-xs bg-red-500 text-white px-2 py-1 rounded">운영</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">운영계획서</h4>
+                        <p class="text-sm text-gray-600 mb-3">사업 및 조직 운영 계획 수립용</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">사업운영</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">조직관리</span>
+                        </div>
+                    </div>
+
+                    <div class="document-card bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 rounded-xl p-5 cursor-pointer" data-category="internal" data-template="draft-proposal">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl">📝</span>
+                            <span class="text-xs bg-teal-500 text-white px-2 py-1 rounded">내부</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">기안서</h4>
+                        <p class="text-sm text-gray-600 mb-3">내부 제안 및 기안을 위한 문서</p>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">기안</span>
+                            <span class="text-xs bg-gray-200 px-2 py-1 rounded">제안</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Template Info -->
+                <div id="selected-template-info" class="mt-6 p-4 bg-blue-50 rounded-lg hidden">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-blue-600"></i>
+                        <div>
+                            <span class="font-medium text-blue-800">선택된 템플릿: </span>
+                            <span id="selected-template-name" class="text-blue-600"></span>
+                        </div>
+                    </div>
+                    <div id="institution-selector" class="mt-3 hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">기관 선택:</label>
+                        <select id="institution-select" class="px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="">기관을 선택하세요</option>
+                            <option value="sba">중소벤처기업부 (SBA)</option>
+                            <option value="kosmes">중소기업진흥공단 (KOSMES)</option>
+                            <option value="nipa">정보통신산업진흥원 (NIPA)</option>
+                            <option value="techno">기술보증기금 (TECHNO)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button id="next-step1" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium disabled:bg-gray-300" disabled>다음 단계</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: File Upload -->
+        <div id="step2-content" class="step-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">📁 파일 업로드</h3>
+                
+                <!-- File Upload Area -->
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center mb-6">
+                    <div class="mb-4">
+                        <i data-lucide="cloud-upload" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                        <p class="text-lg font-medium text-gray-700 mb-2">파편 문서들을 업로드하세요</p>
+                        <p class="text-sm text-gray-500">소개서, 계획서, 재무자료, 기타 관련 문서들을 드래그하여 올리거나 클릭하여 선택하세요</p>
+                    </div>
+                    <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.txt,.hwp,.jpg,.png" class="hidden">
+                    <button onclick="document.getElementById('file-input').click()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium">파일 선택</button>
+                </div>
+
+                <!-- Supported File Types -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5 text-red-500"></i>
+                        <span class="text-sm">PDF, DOC</span>
+                    </div>
+                    <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                        <i data-lucide="file-image" class="w-5 h-5 text-blue-500"></i>
+                        <span class="text-sm">이미지 (OCR)</span>
+                    </div>
+                    <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                        <i data-lucide="table" class="w-5 h-5 text-green-500"></i>
+                        <span class="text-sm">Excel, CSV</span>
+                    </div>
+                    <div class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                        <i data-lucide="file" class="w-5 h-5 text-purple-500"></i>
+                        <span class="text-sm">한글 (HWP)</span>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="upload-progress" class="hidden mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">파일 업로드 중...</span>
+                        <span id="progress-text" class="text-sm text-gray-500">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progress-bar" class="progress-bar bg-blue-500 h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Uploaded Files List -->
+                <div id="uploaded-files" class="space-y-3 mb-6"></div>
+
+                <div class="flex justify-between">
+                    <button id="prev-step2" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium">이전</button>
+                    <button id="next-step2" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium disabled:bg-gray-300" disabled>AI 조합 시작</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: AI Processing -->
+        <div id="step3-content" class="step-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">🤖 AI 문서 조합 중</h3>
+                
+                <!-- Processing Status -->
+                <div class="space-y-4 mb-6">
+                    <div class="processing-step flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+                        <div class="ai-thinking w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i data-lucide="brain" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-blue-800">문서 내용 분석 중</div>
+                            <div class="text-sm text-blue-600">업로드된 파일들의 내용을 AI가 분석하고 있습니다...</div>
+                        </div>
+                        <div class="text-blue-500">
+                            <i data-lucide="loader" class="w-5 h-5 animate-spin"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-step flex items-center space-x-3 p-4 bg-gray-50 rounded-lg opacity-50">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i data-lucide="puzzle" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-700">섹션별 매핑</div>
+                            <div class="text-sm text-gray-500">내용을 템플릿 섹션에 자동 배치합니다</div>
+                        </div>
+                        <div class="text-gray-400">
+                            <i data-lucide="clock" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-step flex items-center space-x-3 p-4 bg-gray-50 rounded-lg opacity-50">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i data-lucide="settings" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-700">기관별 최적화</div>
+                            <div class="text-sm text-gray-500">선택한 기관의 요구사항에 맞게 조정합니다</div>
+                        </div>
+                        <div class="text-gray-400">
+                            <i data-lucide="clock" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-step flex items-center space-x-3 p-4 bg-gray-50 rounded-lg opacity-50">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i data-lucide="file-check" class="w-4 h-4 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-700">최종 문서 생성</div>
+                            <div class="text-sm text-gray-500">완성된 문서를 생성하고 검토합니다</div>
+                        </div>
+                        <div class="text-gray-400">
+                            <i data-lucide="clock" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Model Status -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 class="font-medium text-gray-800 mb-3">활성 AI 모델</h4>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="flex items-center space-x-2 p-2 bg-white rounded border">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span class="text-sm">GPT-4o</span>
+                            <span class="text-xs text-gray-500">분석</span>
+                        </div>
+                        <div class="flex items-center space-x-2 p-2 bg-white rounded border">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <span class="text-sm">Claude 3.5</span>
+                            <span class="text-xs text-gray-500">매핑</span>
+                        </div>
+                        <div class="flex items-center space-x-2 p-2 bg-white rounded border">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                            <span class="text-sm">Gemini Pro</span>
+                            <span class="text-xs text-gray-500">최적화</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Time -->
+                <div class="text-center">
+                    <p class="text-gray-600 mb-2">예상 소요 시간: <span class="font-medium">2-3분</span></p>
+                    <p class="text-sm text-gray-500">복잡한 문서의 경우 더 오래 걸릴 수 있습니다</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Result -->
+        <div id="step4-content" class="step-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="check" class="w-8 h-8 text-green-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">✨ 문서 조합 완료!</h3>
+                    <p class="text-gray-600">AI가 업로드된 파일들을 분석하여 완성된 문서를 생성했습니다.</p>
+                </div>
+
+                <!-- Document Preview -->
+                <div class="border rounded-lg p-6 mb-6 bg-gray-50">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-gray-800">📄 생성된 문서 미리보기</h4>
+                        <div class="flex space-x-2">
+                            <button class="text-sm text-blue-600 hover:text-blue-800">편집</button>
+                            <button class="text-sm text-green-600 hover:text-green-800">다운로드</button>
+                        </div>
+                    </div>
+                    <div class="prose max-w-none">
+                        <div class="bg-white p-6 rounded border">
+                            <h5 class="font-bold mb-3">중소벤처기업부 지원사업 신청서</h5>
+                            <div class="space-y-4 text-sm">
+                                <div>
+                                    <h6 class="font-medium text-gray-800">1. 사업 개요</h6>
+                                    <p class="text-gray-600 mt-1">업로드하신 자료를 바탕으로 혁신적인 AI 기반 솔루션 개발 사업에 대한 포괄적인 개요를 작성하였습니다. 본 사업은 기술적 차별화와 시장 경쟁력을 기반으로...</p>
+                                </div>
+                                <div>
+                                    <h6 class="font-medium text-gray-800">2. 시장 분석</h6>
+                                    <p class="text-gray-600 mt-1">제공해주신 시장 데이터와 경쟁사 분석 자료를 종합하여 타겟 시장 규모 500억원, 연평균 성장률 15%의 시장 환경 분석을 완료하였습니다...</p>
+                                </div>
+                                <div>
+                                    <h6 class="font-medium text-gray-800">3. 기술적 접근방법</h6>
+                                    <p class="text-gray-600 mt-1">업로드된 기술 문서를 바탕으로 핵심 기술의 독창성과 실현가능성을 중심으로 기술 개발 방향을 제시하였습니다...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality Score -->
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600 mb-1">92%</div>
+                        <div class="text-sm text-green-700">내용 완성도</div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600 mb-1">95%</div>
+                        <div class="text-sm text-blue-700">양식 적합도</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600 mb-1">88%</div>
+                        <div class="text-sm text-purple-700">기관 적합도</div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid md:grid-cols-2 gap-4">
+                    <button class="flex items-center justify-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium">
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                        <span>문서 다운로드</span>
+                    </button>
+                    <button class="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium">
+                        <i data-lucide="repeat" class="w-5 h-5"></i>
+                        <span>다른 기관으로 변환</span>
+                    </button>
+                </div>
+
+                <!-- Conversion Options -->
+                <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <h4 class="font-medium text-yellow-800 mb-3">💡 추천 기능</h4>
+                    <div class="grid md:grid-cols-2 gap-3">
+                        <button class="text-left p-3 bg-white border border-yellow-200 rounded-lg hover:border-yellow-300">
+                            <div class="font-medium text-gray-800">KOSMES 양식으로 변환</div>
+                            <div class="text-sm text-gray-600">중소기업진흥공단 지원사업용</div>
+                        </button>
+                        <button class="text-left p-3 bg-white border border-yellow-200 rounded-lg hover:border-yellow-300">
+                            <div class="font-medium text-gray-800">NIPA 양식으로 변환</div>
+                            <div class="text-sm text-gray-600">정보통신산업진흥원용</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Template data
+        const templates = {
+            'support-business': {
+                name: '지원사업 신청서',
+                description: '정부/기관 지원사업 신청을 위한 사업계획서',
+                hasInstitutions: true,
+                institutions: ['sba', 'kosmes', 'nipa', 'techno']
+            },
+            'contest-proposal': {
+                name: '공모전 제안서', 
+                description: '아이디어 공모전 및 경진대회 참가용',
+                hasInstitutions: false
+            },
+            'budget-request': {
+                name: '예산신청서',
+                description: '예산 신청 및 지출 결의를 위한 문서',
+                hasInstitutions: false
+            },
+            'activity-plan': {
+                name: '활동계획서',
+                description: '프로젝트 및 행사 활동 계획 수립용',
+                hasInstitutions: false
+            },
+            'operation-plan': {
+                name: '운영계획서',
+                description: '사업 및 조직 운영 계획 수립용',
+                hasInstitutions: false
+            },
+            'draft-proposal': {
+                name: '기안서',
+                description: '내부 제안 및 기안을 위한 문서',
+                hasInstitutions: false
+            }
+        };
+
+        let currentStep = 1;
+        let selectedTemplate = null;
+        let selectedInstitution = null;
+        let workMode = 'create-new'; // 'create-new' or 'convert-existing'
+        let uploadedFiles = [];
+
+        // Step management
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show current step
+            document.getElementById(`step${step}-content`).classList.remove('hidden');
+            
+            // Update step indicators
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById(`step${i}`);
+                if (i <= step) {
+                    stepEl.classList.add('active');
+                    stepEl.classList.remove('bg-gray-300', 'text-gray-600');
+                    stepEl.classList.add('text-white');
+                } else {
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('bg-gray-300', 'text-gray-600');
+                    stepEl.classList.remove('text-white');
+                }
+            }
+            
+            currentStep = step;
+        }
+
+        // Work mode selection
+        document.getElementById('create-new').addEventListener('click', function() {
+            workMode = 'create-new';
+            document.querySelectorAll('.work-mode-card').forEach(card => {
+                card.classList.remove('border-blue-200', 'bg-blue-50', 'border-purple-200', 'bg-purple-50');
+                card.classList.add('border-gray-200');
+            });
+            this.classList.remove('border-gray-200');
+            this.classList.add('border-blue-200', 'bg-blue-50');
+        });
+
+        document.getElementById('convert-existing').addEventListener('click', function() {
+            workMode = 'convert-existing';
+            document.querySelectorAll('.work-mode-card').forEach(card => {
+                card.classList.remove('border-blue-200', 'bg-blue-50', 'border-purple-200', 'bg-purple-50');
+                card.classList.add('border-gray-200');
+            });
+            this.classList.remove('border-gray-200');
+            this.classList.add('border-purple-200', 'bg-purple-50');
+        });
+
+        // Category filtering
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const category = this.dataset.category;
+                
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.remove('bg-blue-500', 'text-white');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                this.classList.add('bg-blue-500', 'text-white');
+                
+                // Filter templates
+                document.querySelectorAll('.document-card').forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Template selection
+        document.querySelectorAll('.document-card').forEach(card => {
+            card.addEventListener('click', function() {
+                selectedTemplate = this.dataset.template;
+                const templateData = templates[selectedTemplate];
+                
+                // Update selection UI
+                document.querySelectorAll('.document-card').forEach(c => {
+                    c.classList.remove('ring-2', 'ring-blue-500');
+                });
+                this.classList.add('ring-2', 'ring-blue-500');
+                
+                // Show template info
+                document.getElementById('selected-template-info').classList.remove('hidden');
+                document.getElementById('selected-template-name').textContent = templateData.name;
+                
+                // Show institution selector if needed
+                const institutionSelector = document.getElementById('institution-selector');
+                if (templateData.hasInstitutions) {
+                    institutionSelector.classList.remove('hidden');
+                } else {
+                    institutionSelector.classList.add('hidden');
+                    selectedInstitution = null;
+                    updateNextButton();
+                }
+            });
+        });
+
+        // Institution selection
+        document.getElementById('institution-select').addEventListener('change', function() {
+            selectedInstitution = this.value;
+            updateNextButton();
+        });
+
+        function updateNextButton() {
+            const nextBtn = document.getElementById('next-step1');
+            if (selectedTemplate && (!templates[selectedTemplate].hasInstitutions || selectedInstitution)) {
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.disabled = true;
+            }
+        }
+
+        // File upload handling
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            uploadedFiles = files;
+            
+            if (files.length > 0) {
+                simulateUpload();
+                displayUploadedFiles(files);
+                document.getElementById('next-step2').disabled = false;
+            }
+        });
+
+        function simulateUpload() {
+            const progressDiv = document.getElementById('upload-progress');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressDiv.classList.remove('hidden');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => progressDiv.classList.add('hidden'), 1000);
+                }
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+            }, 200);
+        }
+
+        function displayUploadedFiles(files) {
+            const container = document.getElementById('uploaded-files');
+            container.innerHTML = '';
+            
+            files.forEach(file => {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg';
+                fileDiv.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="file" class="w-5 h-5 text-green-600"></i>
+                        <div>
+                            <div class="font-medium text-gray-800">${file.name}</div>
+                            <div class="text-sm text-gray-500">${(file.size / 1024).toFixed(1)} KB</div>
+                        </div>
+                    </div>
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                `;
+                container.appendChild(fileDiv);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // Navigation buttons
+        document.getElementById('next-step1').addEventListener('click', () => showStep(2));
+        document.getElementById('prev-step2').addEventListener('click', () => showStep(1));
+        document.getElementById('next-step2').addEventListener('click', () => {
+            showStep(3);
+            startAIProcessing();
+        });
+
+        function startAIProcessing() {
+            const steps = document.querySelectorAll('.processing-step');
+            let currentProcessStep = 0;
+            
+            const processNext = () => {
+                if (currentProcessStep > 0) {
+                    // Complete previous step
+                    const prevStep = steps[currentProcessStep - 1];
+                    prevStep.classList.remove('bg-blue-50', 'opacity-50');
+                    prevStep.classList.add('bg-green-50');
+                    prevStep.querySelector('.ai-thinking, .w-8.h-8.bg-gray-300').classList.remove('ai-thinking', 'bg-blue-500', 'bg-gray-300');
+                    prevStep.querySelector('.w-8.h-8').classList.add('bg-green-500');
+                    prevStep.querySelector('.animate-spin').classList.remove('animate-spin');
+                    prevStep.querySelector('.text-blue-500').classList.remove('text-blue-500');
+                    prevStep.querySelector('.text-gray-400').classList.add('text-green-500');
+                    prevStep.querySelector('i[data-lucide="loader"], i[data-lucide="clock"]').setAttribute('data-lucide', 'check');
+                }
+                
+                if (currentProcessStep < steps.length) {
+                    // Start current step
+                    const currentStep = steps[currentProcessStep];
+                    currentStep.classList.remove('opacity-50', 'bg-gray-50');
+                    currentStep.classList.add('bg-blue-50');
+                    currentStep.querySelector('.w-8.h-8').classList.remove('bg-gray-300');
+                    currentStep.querySelector('.w-8.h-8').classList.add('bg-blue-500', 'ai-thinking');
+                    
+                    currentProcessStep++;
+                    setTimeout(processNext, 2000 + Math.random() * 2000);
+                } else {
+                    // All steps complete
+                    setTimeout(() => showStep(4), 1000);
+                }
+            };
+            
+            lucide.createIcons();
+            setTimeout(processNext, 1000);
+        }
+
+        // Initialize the page
+        updateNextButton();
+    </script>
+</body>
+</html>

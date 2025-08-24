@@ -586,7 +586,7 @@ class FileValidator:
                 )
             
             # 대략적인 페이지 수 추정 (단락 수 기반)
-            estimated_pages = max(1, paragraph_count // 10)  # 단락 10개당 1페이지로 추정
+            estimated_pages = max(1, len(doc.paragraphs) // 10)  # 단락 10개당 1페이지로 추정
             if estimated_pages >= 10:
                 return ValidationResult(
                     False,
@@ -698,6 +698,8 @@ class FileValidator:
         
         return metadata
 ```
+
+> 📌 **구현 노트:** 이 서비스의 전체 원자 모듈 구현은 `/core-logic/modules/data-validation/file-validation(파일검증).atomic.py` 파일에서 확인할 수 있습니다.
 
 ### **2.2 PDF 변환 서비스**
 

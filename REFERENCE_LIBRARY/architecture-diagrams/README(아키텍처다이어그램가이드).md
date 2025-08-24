@@ -8,44 +8,51 @@
 
 ## 📂 구조
 
-### **system-architecture/** - 시스템 아키텍처
+### **case-studies/** - 큐브 케이스 스터디
 ```
-heal7-overall-system.mermaid    # HEAL7 전체 시스템 구조
-microservices-map.mermaid      # 마이크로서비스 맵
-data-flow-diagram.mermaid      # 데이터 플로우 다이어그램
-deployment-architecture.mermaid # 배포 아키텍처
-```
-
-### **service-architecture/** - 서비스별 아키텍처
-```
-saju-service-architecture.mermaid    # 사주 서비스 아키텍처
-user-service-architecture.mermaid    # 사용자 서비스 아키텍처
-admin-service-architecture.mermaid   # 관리자 서비스 아키텍처
-api-gateway-architecture.mermaid     # API 게이트웨이 구조
+cube-case-study-ai-v2.0(AI큐브사례연구).md                           # AI 큐브 사례 연구
+cube-case-study-paperwork-crawler-v2.0(페이퍼워크크롤러큐브사례연구).md  # 페이퍼워크 크롤러 큐브 사례
+cube-case-study-saju-v2.0(사주큐브사례연구).md                       # 사주 큐브 사례 연구
 ```
 
-### **database-design/** - 데이터베이스 설계
+### **devops-architecture/** - DevOps 아키텍처
 ```
-heal7-erd.mermaid              # HEAL7 ERD (Entity Relationship Diagram)
-saju-data-model.mermaid        # 사주 데이터 모델
-user-data-model.mermaid        # 사용자 데이터 모델
-analytics-data-model.mermaid   # 분석 데이터 모델
+Deployment-Infrastructure-Design-v1.0(배포인프라설계).md  # 배포 인프라 설계
+```
+
+### **frameworks/** - 프레임워크 및 큐브 아키텍처
+```
+AI-Document-Composition-Engine-v2.0(AI문서조합엔진).complete.md          # AI 문서 조합 엔진
+HEAL7-Cube-Modular-Architecture-v1.0(HEAL7큐브모듈러아키텍처).md          # HEAL7 큐브 모듈러 아키텍처
+cube-assembly-patterns-v2.0(큐브조립패턴).md                           # 큐브 조립 패턴
+cube-color-system-v2.0(큐브색상체계가이드).md                          # 큐브 색상 체계 가이드
+cube-design-flow-v2.0(레고블럭설계플로우).md                           # 레고 블럭 설계 플로우
+cube-migration-strategy-v2.0(큐브마이그레이션전략).md                   # 큐브 마이그레이션 전략
+cube-modular-architecture(큐브모듈러아키텍처).complete.md               # 큐브 모듈러 아키텍처 완성본
+cube-modular-architecture-v2.0(큐브모듈러아키텍처심화).md               # 큐브 모듈러 아키텍처 심화
 ```
 
 ### **integration-flows/** - 통합 플로우
 ```
-kasi-api-integration.mermaid   # KASI API 통합 플로우
-ai-service-flow.mermaid        # AI 서비스 플로우
-payment-process-flow.mermaid   # 결제 프로세스 플로우
-notification-flow.mermaid      # 알림 플로우
+Frontend-Backend-Integration-v1.0(프론트엔드백엔드연동).md  # 프론트엔드-백엔드 통합 플로우
 ```
 
-### **infrastructure/** - 인프라 구조
+### **system-designs/** - 시스템 설계
 ```
-server-topology.mermaid        # 서버 토폴로지
-network-diagram.mermaid        # 네트워크 다이어그램
-security-architecture.mermaid  # 보안 아키텍처
-monitoring-setup.mermaid       # 모니터링 설정
+Backend-API-Architecture-v1.0(백엔드API아키텍처).md                           # 백엔드 API 아키텍처
+Cyber-Fantasy-Fortune-Platform-Architecture-v1.0(사이버판타지운명학플랫폼아키텍처).md  # 사이버 판타지 운명학 플랫폼
+Database-Schema-Performance-Architecture-v1.0(데이터베이스스키마성능아키텍처).md        # 데이터베이스 스키마 성능 아키텍처
+DevOps-CICD-Pipeline-Architecture-v1.0(데브옵스CICD파이프라인아키텍처).md             # DevOps CI/CD 파이프라인
+File-Structure-Project-Architecture-v1.0(파일구조프로젝트아키텍처).md              # 파일 구조 프로젝트 아키텍처
+Government-Portal-Intelligence-System-v2.0(정부포털지능화시스템).complete.md      # 정부 포털 지능화 시스템
+NGINX-Port-Configuration-v1.0(NGINX포트연동설계).md                           # NGINX 포트 연동 설계
+Omnichannel-Experience-Architecture-v2.0(옴니채널경험아키텍처).md                # 옴니채널 경험 아키텍처
+Operations-Management-Architecture-v2.0(운영관리아키텍처).md                   # 운영 관리 아키텍처
+SajuSite-Renovation-Architecture(사주사이트개편아키텍처).md                     # 사주 사이트 개편 아키텍처
+Security-Data-Protection-Architecture-v1.0(보안데이터보호아키텍처).md           # 보안 데이터 보호 아키텍처
+celestial-fortune-palace-architecture-v1.0(천체운명궁전아키텍처).md              # 천체 운명 궁전 아키텍처
+paperwork-ai-system(페이퍼워크AI시스템).guide.md                              # 페이퍼워크 AI 시스템 가이드
+service-cube-implementation-v2.0(서비스별큐브구현).md                         # 서비스별 큐브 구현
 ```
 
 ## 🎨 Mermaid 다이어그램 가이드
@@ -179,19 +186,19 @@ graph TB
 ## 🚀 활용 방법
 
 ### **시스템 이해**
-1. heal7-overall-system.mermaid 부터 전체 구조 파악
-2. 서비스별 상세 아키텍처 확인
-3. 데이터 플로우 이해
+1. **system-designs/** 폴더의 전체 시스템 아키텍처 문서 참조
+2. **frameworks/** 폴더의 큐브 모듈러 아키텍처로 구조 이해
+3. **case-studies/** 폴더의 실제 구현 사례 분석
 
 ### **개발 가이드**
-1. 해당 서비스의 아키텍처 다이어그램 참조
-2. 컴포넌트 간 관계 확인  
-3. 데이터 모델 구조 파악
+1. **frameworks/** - 개발 프레임워크 및 큐브 아키텍처 패턴 확인
+2. **integration-flows/** - 프론트엔드-백엔드 연동 방법 참조
+3. **system-designs/** - 백엔드 API, 데이터베이스 설계 확인
 
 ### **배포 및 운영**
-1. 배포 아키텍처 확인
-2. 인프라 구조 이해
-3. 모니터링 포인트 파악
+1. **devops-architecture/** - 배포 인프라 설계 확인
+2. **system-designs/** - NGINX 설정, CI/CD 파이프라인 이해
+3. **system-designs/** - 보안 및 운영 관리 아키텍처 참조
 
 ## 🛠️ 도구 사용
 

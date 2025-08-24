@@ -1,23 +1,23 @@
 # 🗺️ HEAL7 REFERENCE_LIBRARY 마스터 내비게이션
 
 > **목적**: 전체 개발 라이브러리 시스템의 완전한 탐색과 활용을 위한 통합 가이드  
-> **업데이트**: 2025-08-20 | AI 에이전트 팀 시스템 완성
+> **업데이트**: 2025-08-23 | 전체 구조 재구성 완료
 
 ## 🚀 **핵심 시작 문서 (필수 읽기)**
 
 ### **📋 기본 가이드**
 | 문서 | 목적 | 우선순위 |
 |------|------|----------|
-| [📚 README.md](./README.md) | 전체 시스템 개요 및 8대 카테고리 소개 | ⭐⭐⭐ |
+| [📚 README.md](../README.md) | 전체 시스템 개요 및 8대 카테고리 소개 | ⭐⭐⭐ |
 | [🚀 USAGE_GUIDE.md](./USAGE_GUIDE.md) | 레고블럭 조립 방식 활용법 | ⭐⭐⭐ |
 | [🔧 FEATURE_RESTORATION_GUIDE.md](./FEATURE_RESTORATION_GUIDE.md) | 삭제된 기능 복원 전략 | ⭐⭐ |
 | [📚 API_REFERENCE_INDEX.md](./API_REFERENCE_INDEX.md) | 빠른 모듈 검색 및 참조 | ⭐⭐⭐ |
 
-### **🤖 AI 에이전트 팀 시스템 (새로 추가)**
+### **🤖 AI 에이전트 팀 시스템**
 | 문서 | 목적 | 우선순위 |
 |------|------|----------|
-| [🤖 sub-agents/README.md](./sub-agents/README.md) | AI 에이전트 팀 전체 개요 | ⭐⭐⭐ |
-| [📊 metrics-system/metrics-framework.md](./metrics-system/metrics-framework.md) | 성과 측정 체계 | ⭐⭐ |
+| [🤖 sub-agents/README.md](../sub-agents/README.md) | AI 에이전트 팀 전체 개요 | ⭐⭐⭐ |
+| [📊 metrics-system/metrics-framework.md](../metrics-system/metrics-framework.md) | 성과 측정 체계 | ⭐⭐ |
 
 ## 🎯 **역할별 빠른 접근 경로**
 
@@ -25,11 +25,11 @@
 ```bash
 # 1. 시작 문서
 cat /home/ubuntu/REFERENCE_LIBRARY/README.md
-cat /home/ubuntu/REFERENCE_LIBRARY/USAGE_GUIDE.md
+cat /home/ubuntu/REFERENCE_LIBRARY/_guides/USAGE_GUIDE.md
 
 # 2. 기술별 참조
 find /home/ubuntu/REFERENCE_LIBRARY/sample-codes/ -name "*.complete.*"  # 완성 코드
-find /home/ubuntu/REFERENCE_LIBRARY/core-logic/ -name "*.atomic.*"      # 원자 로직
+find /home/ubuntu/REFERENCE_LIBRARY/core-logic/modules/ -name "*.atomic.*"      # 원자 로직
 
 # 3. AI 에이전트 활용
 cat /home/ubuntu/REFERENCE_LIBRARY/sub-agents/agent-profiles/engineer-master.profile.md
@@ -41,12 +41,13 @@ bash /home/ubuntu/REFERENCE_LIBRARY/sub-agents/automation/run-daily-automation.s
 # 1. 디자인 자료
 ls /home/ubuntu/REFERENCE_LIBRARY/screen-images/
 ls /home/ubuntu/REFERENCE_LIBRARY/sample-codes/react-components/
+ls /home/ubuntu/REFERENCE_LIBRARY/reference-docs/design-systems/
 
 # 2. 디자인 에이전트
 cat /home/ubuntu/REFERENCE_LIBRARY/sub-agents/agent-profiles/designer-master.profile.md
 
 # 3. 3D 시각화 (키워드 큐브)
-cat /home/ubuntu/REFERENCE_LIBRARY/sample-codes/react-components/KeywordMatrix3D\(3D키워드매트릭스\).complete.html
+cat /home/ubuntu/REFERENCE_LIBRARY/sample-codes/react-components/KeywordMatrix3D(3D키워드매트릭스).complete.html
 ```
 
 ### **🏗️ 시스템 아키텍트**
@@ -107,7 +108,7 @@ grep -A 10 "saju_cube_metrics" /home/ubuntu/REFERENCE_LIBRARY/metrics-system/met
 ### **🔮 사주 큐브 (Saju Cube)**
 ```bash
 # 핵심 자료
-ls /home/ubuntu/REFERENCE_LIBRARY/core-logic/saju-calculation/
+ls /home/ubuntu/REFERENCE_LIBRARY/core-logic/modules/saju-calculation/
 grep -A 10 "사주 큐브" /home/ubuntu/REFERENCE_LIBRARY/sub-agents/protocols/cube-integration.md
 
 # 성과 지표
@@ -133,7 +134,7 @@ grep -A 10 "admin_cube_metrics" /home/ubuntu/REFERENCE_LIBRARY/metrics-system/me
 # 핵심 자료
 find /home/ubuntu/REFERENCE_LIBRARY/ -name "*keyword*" -type f
 find /home/ubuntu/REFERENCE_LIBRARY/ -name "*matrix*" -type f
-cat /home/ubuntu/REFERENCE_LIBRARY/feature-specs/user-features/keyword-matrix-3d.spec.md
+cat /home/ubuntu/REFERENCE_LIBRARY/feature-specs/user-features/keyword-matrix-3d(3D키워드매트릭스).spec.md
 
 # 성과 지표
 grep -A 10 "keywords_cube_metrics" /home/ubuntu/REFERENCE_LIBRARY/metrics-system/metrics-framework.md
@@ -158,11 +159,11 @@ grep -A 10 "main_cube_metrics" /home/ubuntu/REFERENCE_LIBRARY/metrics-system/met
 ### **🆕 새로운 기능 개발**
 ```bash
 # Step 1: 요구사항 분석
-cat /home/ubuntu/REFERENCE_LIBRARY/USAGE_GUIDE.md
+cat /home/ubuntu/REFERENCE_LIBRARY/_guides/USAGE_GUIDE.md
 ls /home/ubuntu/REFERENCE_LIBRARY/feature-specs/
 
 # Step 2: 기존 자산 탐색
-cat /home/ubuntu/REFERENCE_LIBRARY/API_REFERENCE_INDEX.md
+cat /home/ubuntu/REFERENCE_LIBRARY/_guides/API_REFERENCE_INDEX.md
 find /home/ubuntu/REFERENCE_LIBRARY/ -name "*관련키워드*" -type f
 
 # Step 3: 에이전트 선택
@@ -186,7 +187,7 @@ python3 /home/ubuntu/REFERENCE_LIBRARY/sub-agents/automation/entropy-detector.py
 
 # Step 2: 관련 문서 검색
 grep -r "에러키워드" /home/ubuntu/REFERENCE_LIBRARY/
-find /home/ubuntu/REFERENCE_LIBRARY/ -name "*troubleshoot*" -type f
+find /home/ubuntu/REFERENCE_LIBRARY/reference-docs/troubleshooting/ -name "*.md"
 
 # Step 3: 메트릭 기반 분석
 cat /home/ubuntu/REFERENCE_LIBRARY/metrics-system/metrics-framework.md
@@ -314,4 +315,4 @@ ls /home/ubuntu/REFERENCE_LIBRARY/screen-images/
 - **안정성**: 엔트로피 관리와 품질 자동 검증
 - **집중성**: 각 도메인별 전문화된 에이전트 시스템
 
-*마스터 내비게이션 완성: 2025-08-20 | AI 에이전트 팀 시스템 통합*
+*마스터 내비게이션 완성: 2025-08-23 | 전체 구조 재구성 완료*
