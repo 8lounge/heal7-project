@@ -1,19 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App.tsx'
-import './styles/index.css'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import App from './App'
+import './index.css'
 
-const root = document.getElementById('root')
+// React Query 설정
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5분
+      refetchOnWindowFocus: false,
+      retry: 1
+    }
+  }
+})
 
-if (!root) {
-  throw new Error('Root element not found')
-}
-
-createRoot(root).render(
-  <StrictMode>
-    <BrowserRouter>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
       <App />
-    </BrowserRouter>
-  </StrictMode>,
+    </QueryClientProvider>
+  </React.StrictMode>,
 )

@@ -43,6 +43,7 @@
 - **데이터베이스**: ✅ **PostgreSQL 최적화**
 - **보안**: ✅ **SSL 인증서 유효**
 
+
 ## 🎯 **역할별 빠른 접근**
 
 ### 👨‍💼 **프로젝트 관리자** (3분 파악)
@@ -248,8 +249,9 @@ POST /admin-api/surveys/sessions/start  # 설문 세션 시작
 - **Heal7 백엔드**: `/home/ubuntu/heal7-project/backend/` (✅ 포트 8004 운영 중)
 - **사주 시스템**: `/home/ubuntu/heal7-project/backend/saju_engines/saju_system/`
 - **정적 파일**: `/var/www/ai.heal7.com/`, `/var/www/saju.heal7.com/`, `/var/www/test.heal7.com/`
-- **참조 문서**: `/home/ubuntu/REFERENCE_LIBRARY/` (프로젝트 문서 시스템)
+- **참조 문서**: `/home/ubuntu/docs/` (통합 프로젝트 문서 시스템)
 - **메인 프로젝트**: `/home/ubuntu/heal7-project/` (백엔드 운영 중, 프론트엔드 개발 중)
+- **운세 플랫폼 설계**: `/home/ubuntu/docs/architecture-diagrams/fortune-platform/` ⭐ **신규**
 
 ## 🆘 **응급 상황 체크리스트**
 
@@ -276,6 +278,8 @@ POST /admin-api/surveys/sessions/start  # 설문 세션 시작
 ├── 📋 CLAUDE.md (마스터 색인)
 ├── 🏗️ docs/ (문서 시스템)
 │   ├── system-architecture/ (시스템 전체 구조)
+│   ├── architecture-diagrams/ (아키텍처 다이어그램)
+│   │   └── fortune-platform/ (운세 플랫폼 아키텍처)
 │   ├── 🔮 saju-system/ (사주 명리학 v5.0)
 │   ├── 🧠 mpis-framework/ (M-PIS 진단)
 │   ├── 🤖 agent-orchestration/ (AI 에이전트 시스템)

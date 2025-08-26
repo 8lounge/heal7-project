@@ -3,28 +3,126 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="천년의 지혜와 현대적 성찰이 만나는 곳. 당신의 타고난 잠재력을 발견하고 진정한 자아실현의 여정을 시작하세요." />
-    <meta name="keywords" content="사주, 명리학, 자아실현, 개인성장, 운명, 인생철학, 전통지혜, 현대적해석" />
-    <meta name="author" content="HEAL7" />
+    <title>🔮 HEAL7 운세 - 차세대 디지털 운명학</title>
+    <meta name="description" content="포스텔러를 넘어선 차세대 웹 운세 플랫폼. 3D 시각화, AI 개인화, 게이미피케이션으로 새로운 운세 경험을 제공합니다." />
+    <meta name="keywords" content="사주, 타로, 운세, 명리학, 점성술, 12지신, AI 운세, 개인화 운세" />
     
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="사주명리학 - 운명을 읽고, 삶을 쓰다 | HEAL7" />
-    <meta property="og:description" content="천년의 지혜와 현대적 성찰이 만나는 곳. 당신의 타고난 잠재력을 발견하고 진정한 자아실현의 여정을 시작하세요." />
+    <!-- Open Graph -->
+    <meta property="og:title" content="HEAL7 운세 - 차세대 디지털 운명학" />
+    <meta property="og:description" content="3D 시각화와 AI로 만나는 새로운 운세 경험" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://saju.heal7.com" />
     
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#1e3a8a" />
-    
-    <title>사주명리학 - 운명을 읽고, 삶을 쓰다 | HEAL7</title>
-    
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Gmarket+Sans:wght@300;500;700&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/crystal-ball.svg" />
+    <link rel="apple-touch-icon" href="/crystal-ball-180.png" />
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#6366F1" />
+    
+    <!-- Performance hints -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preload" href="/api/health" as="fetch" crossorigin>
+    
+    <style>
+      /* Critical CSS - 초기 로딩 최적화 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+        overflow-x: hidden;
+      }
+      
+      /* 로딩 스크린 */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      .crystal-loader {
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 3px solid #fff;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        color: white;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+      }
+      
+      .loading-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        margin-top: 8px;
+      }
+    </style>
   </head>
   <body>
+    <!-- 로딩 스크린 -->
+    <div id="loading-screen">
+      <div class="crystal-loader"></div>
+      <div class="loading-text">🔮 HEAL7 운세</div>
+      <div class="loading-subtitle">차세대 디지털 운명학 플랫폼</div>
+    </div>
+    
+    <!-- React 앱 루트 -->
     <div id="root"></div>
+    
+    <script>
+      // 로딩 스크린 제거 (React 앱 로드 후)
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => loadingScreen.remove(), 500);
+          }
+        }, 1000);
+      });
+      
+      // Service Worker 등록 (PWA)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered: ', registration))
+            .catch(registrationError => console.log('SW registration failed: ', registrationError));
+        });
+      }
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,151 +1,171 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: ["class"],
+export default {
   content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
-        // Healing & Nature Color Palette
-        healing: {
-          50: "#f8fafc",   // Slate 50
-          100: "#f1f5f9",  // Slate 100
-          200: "#e2e8f0",  // Slate 200
-          300: "#cbd5e1",  // Slate 300
-          400: "#94a3b8",  // Slate 400
-          500: "#64748b",  // Slate 500 (Primary)
-          600: "#475569",  // Slate 600 (Dark)
-          700: "#334155",  // Slate 700 (Darker)
-          800: "#1e293b",  // Slate 800 (Very Dark)
-          900: "#0f172a",  // Slate 900 (Deepest)
+        // HEAL7 커스텀 컬러 팔레트
+        cosmic: {
+          50: '#f0f0ff',
+          100: '#e5e5ff',
+          200: '#d0d0ff',
+          300: '#a6a6ff',
+          400: '#7575ff',
+          500: '#6366f1', // 기본 cosmic
+          600: '#5248e3',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81'
         },
-        earth: {
-          50: "#fefdf9",   // Warm white
-          100: "#fef7ed",  // Cream
-          200: "#fed7aa",  // Light peach
-          300: "#fdba74",  // Peach
-          400: "#fb923c",  // Orange
-          500: "#f97316",  // Primary orange
-          600: "#ea580c",  // Dark orange
-          700: "#c2410c",  // Darker orange
-          800: "#9a3412",  // Very dark orange
-          900: "#7c2d12",  // Deepest orange
+        mystic: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#8b5cf6', // 기본 mystic
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95'
         },
-        sky: {
-          50: "#f0f9ff",   // Very light blue
-          100: "#e0f2fe",  // Light blue
-          200: "#bae6fd",  // Soft blue
-          300: "#7dd3fc",  // Medium blue
-          400: "#38bdf8",  // Blue
-          500: "#0ea5e9",  // Primary blue
-          600: "#0284c7",  // Dark blue
-          700: "#0369a1",  // Darker blue
-          800: "#075985",  // Very dark blue
-          900: "#0c4a6e",  // Deepest blue
+        fortune: {
+          50: '#fdf2f8',
+          100: '#fce7f3',
+          200: '#fbcfe8',
+          300: '#f9a8d4',
+          400: '#f472b6',
+          500: '#ec4899', // 기본 fortune
+          600: '#db2777',
+          700: '#be185d',
+          800: '#9d174d',
+          900: '#831843'
         },
-        lavender: {
-          50: "#faf5ff",   // Very light purple
-          100: "#f3e8ff",  // Light purple
-          200: "#e9d5ff",  // Soft purple
-          300: "#d8b4fe",  // Medium purple
-          400: "#c084fc",  // Purple
-          500: "#a855f7",  // Primary purple
-          600: "#9333ea",  // Dark purple
-          700: "#7c3aed",  // Darker purple
-          800: "#6b21a8",  // Very dark purple
-          900: "#581c87",  // Deepest purple
+        energy: {
+          50: '#ecfeff',
+          100: '#cffafe',
+          200: '#a5f3fc',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#06b6d4', // 기본 energy
+          600: '#0891b2',
+          700: '#0e7490',
+          800: '#155e75',
+          900: '#164e63'
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "fade-in": {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "scale-in": {
-          from: { opacity: "0", transform: "scale(0.95)" },
-          to: { opacity: "1", transform: "scale(1)" },
-        },
-        "slide-in-right": {
-          from: { opacity: "0", transform: "translateX(20px)" },
-          to: { opacity: "1", transform: "translateX(0)" },
-        },
-        "slide-in-left": {
-          from: { opacity: "0", transform: "translateX(-20px)" },
-          to: { opacity: "1", transform: "translateX(0)" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "scale-in": "scale-in 0.2s ease-out",
-        "slide-in-right": "slide-in-right 0.3s ease-out",
-        "slide-in-left": "slide-in-left 0.3s ease-out",
+        // 오행 컬러 시스템
+        wood: '#22c55e',
+        fire: '#ef4444',
+        earth: '#f59e0b',
+        metal: '#64748b',
+        water: '#3b82f6',
+        neon: '#00f5ff'
       },
       fontFamily: {
-        sans: ["Inter", "Noto Sans KR", "system-ui", "sans-serif"],
-        serif: ["Crimson Text", "Noto Serif KR", "serif"],
-        mono: ["JetBrains Mono", "Menlo", "monospace"],
+        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        accent: ['Gmarket Sans', 'sans-serif'],
+        mystical: ['Nanum Myeongjo', 'serif']
       },
+      backgroundImage: {
+        'cosmic-gradient': 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1))',
+        'hologram': 'linear-gradient(45deg, #FF00FF, #00FFFF)',
+        'crystal': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))'
+      },
+      backdropBlur: {
+        xs: '2px'
+      },
+      animation: {
+        'pulse-glow': 'pulse-glow 2s infinite alternate',
+        'hologram-scan': 'hologram-scan 3s infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'rotate-slow': 'rotate-slow 20s linear infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate'
+      },
+      keyframes: {
+        'pulse-glow': {
+          '0%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.5)' },
+          '100%': { boxShadow: '0 0 30px rgba(139, 92, 246, 0.7)' }
+        },
+        'hologram-scan': {
+          '0%': { backgroundPosition: '-100% 0' },
+          '100%': { backgroundPosition: '100% 0' }
+        },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' }
+        },
+        'rotate-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        'glow': {
+          '0%': { textShadow: '0 0 10px currentColor' },
+          '100%': { textShadow: '0 0 20px currentColor, 0 0 30px currentColor' }
+        }
+      },
+      boxShadow: {
+        'cosmic': '0 0 20px rgba(99, 102, 241, 0.5)',
+        'mystic': '0 0 20px rgba(139, 92, 246, 0.5)',
+        'fortune': '0 0 20px rgba(236, 72, 153, 0.5)',
+        'neon': '0 0 20px #00f5ff',
+        'inner-glow': 'inset 0 0 20px rgba(255, 255, 255, 0.1)'
+      }
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addComponents }) {
+      addComponents({
+        '.card-glass': {
+          '@apply backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl shadow-xl': {}
+        },
+        '.card-cosmic': {
+          '@apply bg-gradient-to-br from-indigo-900/50 via-purple-900/50 to-pink-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl': {}
+        },
+        '.card-crystal': {
+          'background': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
+          'backdrop-filter': 'blur(10px)',
+          'border': '1px solid rgba(255, 255, 255, 0.2)',
+          'border-radius': '12px',
+          'box-shadow': '0 8px 32px 0 rgba(31, 38, 135, 0.37)'
+        },
+        '.btn-cosmic': {
+          '@apply px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2': {}
+        },
+        '.btn-mystic': {
+          '@apply px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200': {}
+        },
+        '.btn-outline': {
+          '@apply px-6 py-3 border-2 border-purple-500 text-purple-500 font-medium rounded-lg hover:bg-purple-500 hover:text-white transition-all duration-200': {}
+        },
+        '.text-cosmic': {
+          'background': 'linear-gradient(45deg, #6366f1, #8b5cf6)',
+          '-webkit-background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+          'background-clip': 'text'
+        },
+        '.text-mystic': {
+          'background': 'linear-gradient(45deg, #8b5cf6, #ec4899)',
+          '-webkit-background-clip': 'text',
+          '-webkit-text-fill-color': 'transparent',
+          'background-clip': 'text'
+        },
+        '.glow-effect': {
+          'box-shadow': '0 0 20px rgba(99, 102, 241, 0.5)',
+          'animation': 'pulse-glow 2s infinite alternate'
+        },
+        '.level-badge': {
+          '@apply inline-flex items-center px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-sm font-bold rounded-full shadow-lg': {}
+        },
+        '.progress-bar': {
+          '@apply w-full bg-gray-700 rounded-full h-2 overflow-hidden': {}
+        },
+        '.progress-fill': {
+          '@apply h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-500': {}
+        }
+      })
+    }
+  ],
 }

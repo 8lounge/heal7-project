@@ -22,12 +22,33 @@ class NaverOCRService:
     """네이버 CLOVA OCR 서비스 클래스"""
     
     def __init__(self):
+        # API 키 로드
+        api_keys = self._load_api_keys()
+        
         self.api_url = os.getenv('NAVER_OCR_URL', 'https://your-ocr-api.apigw.ntruss.com/custom/v1/your-model/general')
-        self.secret_key = os.getenv('NAVER_OCR_SECRET_KEY')
+        self.secret_key = api_keys.get('NAVER_OCR_API_KEY') or os.getenv('NAVER_OCR_SECRET_KEY')
+        self.domain_code = api_keys.get('NAVER_OCR_DOMAIN_CODE', 'HealingSpace')
         self.invoke_url = os.getenv('NAVER_OCR_INVOKE_URL')
         
         if not self.secret_key:
             logger.warning("네이버 OCR SECRET KEY가 설정되지 않았습니다")
+        else:
+            logger.info(f"네이버 OCR API 설정 완료: {self.domain_code}")
+    
+    def _load_api_keys(self) -> Dict[str, str]:
+        """API 키 파일에서 키들을 로드"""
+        keys = {}
+        api_keys_file = "/home/ubuntu/.env.ai"
+        try:
+            if os.path.exists(api_keys_file):
+                with open(api_keys_file, 'r') as f:
+                    for line in f:
+                        if '=' in line and not line.strip().startswith('#'):
+                            key, value = line.strip().split('=', 1)
+                            keys[key] = value.strip('"\'')
+        except Exception as e:
+            logger.error(f"API 키 로드 실패: {e}")
+        return keys
     
     async def process_image_ocr(self, image_data: str, options: Dict[str, Any] = None) -> Dict[str, Any]:
         """

@@ -3,9 +3,23 @@
 *.key
 .env*
 !.env.example
+*.env.*
+config.json
+secrets.json
+credentials.json
+oauth_creds.json
+google_accounts.json
 
 # 캐시 및 임시 파일
 node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.tgz
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 __pycache__/
 *.pyc
 *.pyo
@@ -29,10 +43,15 @@ wheels/
 
 # IDE 및 에디터
 .vscode/
+**/.vscode/
 .idea/
+**/.idea/
 *.swp
 *.swo
 *~
+.settings/
+.project
+.classpath
 
 # OS 생성 파일
 .DS_Store
@@ -82,6 +101,7 @@ bulk-files/
 
 # IDE & Tooling
 .vscode-server/
+**/.vscode-server/
 .gemini/
 
 # 핵심 파일만 추적 - 나머지는 모두 제외
@@ -106,7 +126,61 @@ playwright-env/
 # REFERENCE_LIBRARY는 포함 (주석 처리)
 # REFERENCE_LIBRARY/
 
+# AI CLI 도구들
 # Claude CLI
 .claude/
 .claude.json
 .claude.json.backup
+# Gemini CLI
+.gemini/
+.ai/
+installation_id
+google_accounts.json
+oauth_creds.json
+
+# 시스템/사용자 설정 파일 (자동 생성)
+.bash_history
+.cache/
+.config/
+.dotnet/
+.npm/
+.pki/
+.ssh/
+.sudo_as_admin_successful
+.wget-hsts
+.zsh_history
+.bash_profile
+.profile
+.local/
+
+# 개발 도구 캐시
+.pytest_cache/
+.coverage
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Go 개발 환경
+go.work
+go.work.sum
+vendor/
+
+# 런타임 및 빌드 파일
+*.pid
+*.seed
+*.pid.lock
+.lock-wscript
+.wafpickle-*
+.node_repl_history
+.nyc_output
+
+# 백엔드 환경 설정
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+config.local.js
+config.development.js
+config.production.js

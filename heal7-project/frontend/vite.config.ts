@@ -1,42 +1,35 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, '.'),
-      '@/components': resolve(__dirname, './components'),
-      '@/lib': resolve(__dirname, './lib'),
-      '@/stores': resolve(__dirname, './lib/stores'),
-      '@/types': resolve(__dirname, './lib/types'),
-    },
+  server: {
+    host: '0.0.0.0',
+    port: 4173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8004',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
+    outDir: './dist',
+    emptyOutDir: true,
     sourcemap: false,
-    minify: 'esbuild',
     rollupOptions: {
-      external: ['react-is'],
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['lucide-react', 'framer-motion']
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['framer-motion', 'zustand'],
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei']
         }
       }
     }
   },
-  server: {
-    host: true,
-    port: 5173,
-    strictPort: true
-  },
-  preview: {
-    host: true,
-    port: 4173,
-    strictPort: true
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'three', '@react-three/fiber']
   }
 })

@@ -9,7 +9,7 @@ import asyncio
 # 경로 설정
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from services_new.saju_service import SajuService
+from app.services.saju_service import SajuService, BirthInfo, Gender
 
 async def test_core_service():
     """핵심 서비스 테스트"""
@@ -30,7 +30,6 @@ async def test_core_service():
         
         # 3. 기본 계산 능력 확인
         print("3️⃣ 기본 사주 계산 능력 확인...")
-        from services_new.saju_service import BirthInfo, Gender
         
         birth_info = BirthInfo(
             year=1990,
