@@ -38,14 +38,14 @@
     --primary-mystic: #8B5CF6;      /* 신비로운 바이올렛 */
     --primary-fortune: #EC4899;     /* 직관적 핑크 */
     --primary-energy: #06B6D4;      /* 차트용 사이안 */
-    
+
     /* 오행 기반 컬러 */
     --element-wood: #22C55E;        /* 목(木) - 생명력 */
     --element-fire: #EF4444;        /* 화(火) - 열정 */
     --element-earth: #F59E0B;       /* 토(土) - 안정 */
     --element-metal: #64748B;       /* 금(金) - 정밀 */
     --element-water: #3B82F6;       /* 수(水) - 지혜 */
-    
+
     /* 사이버 판타지 액센트 */
     --neon-glow: #00F5FF;          /* 네온 블루 */
     --crystal-white: rgba(255, 255, 255, 0.1);
@@ -88,7 +88,7 @@
 @layer components {
   /* 🔮 메인 버튼 스타일 */
   .btn-cosmic {
-    @apply px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-lg 
+    @apply px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-lg
            shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200
            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
   }
@@ -109,13 +109,13 @@
   }
 
   .card-cosmic {
-    @apply bg-gradient-to-br from-indigo-900/50 via-purple-900/50 to-pink-900/50 
+    @apply bg-gradient-to-br from-indigo-900/50 via-purple-900/50 to-pink-900/50
            backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl;
   }
 
   .card-crystal {
-    background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.1), 
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.1),
       rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -148,9 +148,9 @@
   }
 
   .holographic-effect {
-    background: linear-gradient(45deg, 
-      transparent 30%, 
-      rgba(255, 255, 255, 0.1) 50%, 
+    background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 50%,
       transparent 70%);
     animation: hologram-scan 3s infinite;
   }
@@ -205,9 +205,9 @@
   }
 
   .bg-cosmic-gradient {
-    background: linear-gradient(135deg, 
-      rgba(99, 102, 241, 0.1), 
-      rgba(139, 92, 246, 0.1), 
+    background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.1),
+      rgba(139, 92, 246, 0.1),
       rgba(236, 72, 153, 0.1));
   }
 
@@ -262,18 +262,18 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* 모바일 터치 스크롤 개선 */
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
     overscroll-behavior-x: contain;
   }
-  
+
   /* 모바일 네비게이션 스크롤 최적화 */
   .mobile-nav-scroll {
     -webkit-overflow-scrolling: touch;
@@ -282,12 +282,24 @@
     scroll-snap-type: x proximity;
     padding-left: 12px;
     padding-right: 12px;
+    touch-action: pan-x;
+    will-change: scroll-position;
   }
-  
+
   .mobile-nav-scroll > * {
     scroll-snap-align: start;
   }
-  
+
+  /* 강화된 모바일 스크롤 (iOS/Android 호환) */
+  .overflow-x-auto {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+    touch-action: pan-x !important;
+    will-change: scroll-position !important;
+  }
+
   /* 모바일 터치 반응성 개선 */
   .mobile-touch {
     -webkit-tap-highlight-color: transparent;

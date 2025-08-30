@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
+type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' |
                   'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 type ViewMode = 'basic' | 'cyber_fantasy'
 
@@ -13,7 +13,7 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, viewMode }) => {
   const [showMore, setShowMore] = useState(false)
-  
+
   // 핵심 메뉴 (항상 표시) - 띠운세 추가
   const coreNavItems = [
     { id: 'saju', label: '사주', icon: '🔮' },
@@ -22,7 +22,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
     { id: 'dream', label: '꿈풀이', icon: '🌙' },
     { id: 'consultation', label: '상담', icon: '💬' }
   ]
-  
+
   // 부가 메뉴 (더보기에 표시) - 운세 관련 통합
   const extraNavItems = [
     { id: 'fortune', label: '종합운세', icon: '⭐' },
@@ -35,11 +35,11 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
     { id: 'notices', label: '공지사항', icon: '📢' },
     { id: 'admin', label: '관리자', icon: '⚙️' }
   ]
-  
-  
+
+
   // 더보기 버튼이 필요한지 판단 (부가 메뉴가 있으면 더보기 버튼 표시)
   const needsMoreButton = extraNavItems.length > 0
-  
+
   // 표시할 항목과 숨길 항목 분리 - 핵심 메뉴는 항상 표시, 부가 메뉴는 더보기에
   const visibleItems = coreNavItems
   const hiddenItems = extraNavItems
@@ -51,7 +51,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
         relative px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white whitespace-nowrap
         ${isPrimary ? 'min-w-[70px] sm:min-w-[80px]' : 'min-w-[60px] sm:min-w-[70px]'}
         mobile-touch
-        ${currentPage === item.id 
+        ${currentPage === item.id
           ? viewMode === 'cyber_fantasy'
             ? 'bg-gradient-to-r from-purple-500/80 to-pink-500/80 shadow-lg'
             : 'bg-gradient-to-r from-indigo-500/80 to-purple-500/80 shadow-lg'
@@ -71,13 +71,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
           {item.label}
         </span>
       </div>
-      
+
       {/* 활성 상태 표시 */}
       {currentPage === item.id && (
         <motion.div
           className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-0.5 rounded-full ${
-            viewMode === 'cyber_fantasy' 
-              ? 'bg-gradient-to-r from-purple-400 to-pink-400' 
+            viewMode === 'cyber_fantasy'
+              ? 'bg-gradient-to-r from-purple-400 to-pink-400'
               : 'bg-gradient-to-r from-indigo-400 to-purple-400'
           }`}
           layoutId="activeCompactTab"
@@ -96,7 +96,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
           {visibleItems.map((item) => (
             <CompactNavButton key={item.id} item={item} isPrimary={true} />
           ))}
-          
+
           {/* 더보기 버튼 (필요할 때만 표시) */}
           {needsMoreButton && (
             <motion.button
@@ -123,22 +123,23 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
         <div className="sm:hidden">
           {/* 스크롤 컨테이너 */}
           <div className="relative overflow-hidden">
-            <motion.div 
-              className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll"
-              style={{ 
-                overflowX: 'scroll',
+            <div
+              className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll overflow-x-auto"
+              style={{
+                overflowX: 'auto',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
-                msOverflowStyle: 'none'
+                msOverflowStyle: 'none',
+                touchAction: 'pan-x',
+                scrollBehavior: 'smooth'
               }}
-              whileTap={{ cursor: 'grabbing' }}
             >
               {visibleItems.map((item) => (
                 <div key={item.id} className="flex-shrink-0">
                   <CompactNavButton item={item} isPrimary={true} />
                 </div>
               ))}
-              
+
               {/* 더보기 버튼 (필요할 때만 표시) */}
               {needsMoreButton && (
                 <div className="flex-shrink-0">
@@ -161,16 +162,16 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
                   </motion.button>
                 </div>
               )}
-            </motion.div>
-            
+            </div>
+
             {/* 좌우 그라데이션 힌트 (스크롤 가능함을 시각적으로 표시) */}
             <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-black/20 via-transparent to-transparent pointer-events-none" />
           </div>
-          
+
           {/* 스크롤 힌트 텍스트 */}
           <div className="flex justify-center mt-1">
-            <span className="text-xs text-white/60">← 좌우로 스크롤하세요 →</span>
+            <span className="text-xs text-white/60">← 손가락으로 밀어서 스크롤하세요 →</span>
           </div>
         </div>
       </div>
@@ -191,27 +192,28 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
                 <CompactNavButton key={item.id} item={item} isPrimary={false} />
               ))}
             </div>
-            
+
             {/* 모바일: 가로 스크롤 */}
             <div className="sm:hidden">
               <div className="relative overflow-hidden">
-                <motion.div
-                  className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll"
-                  style={{ 
-                    overflowX: 'scroll',
+                <div
+                  className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll overflow-x-auto"
+                  style={{
+                    overflowX: 'auto',
                     WebkitOverflowScrolling: 'touch',
                     scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
+                    msOverflowStyle: 'none',
+                    touchAction: 'pan-x',
+                    scrollBehavior: 'smooth'
                   }}
-                  whileTap={{ cursor: 'grabbing' }}
                 >
                   {hiddenItems.map((item) => (
                     <div key={item.id} className="flex-shrink-0">
                       <CompactNavButton item={item} isPrimary={false} />
                     </div>
                   ))}
-                </motion.div>
-                
+                </div>
+
                 {/* 더보기 메뉴 그라데이션 힌트 */}
                 <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-black/20 via-transparent to-transparent pointer-events-none" />
