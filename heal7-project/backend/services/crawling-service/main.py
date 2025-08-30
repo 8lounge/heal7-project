@@ -1025,6 +1025,11 @@ async def websocket_endpoint(websocket: WebSocket):
 async def get_services():
     return {"services": list(services_data.values())}
 
+@app.get("/health")
+async def health_check():
+    """헬스체크 엔드포인트"""
+    return {"status": "healthy", "service": "crawling-service", "port": 8003}
+
 @app.get("/api/stats")
 async def get_overall_stats():
     services = list(services_data.values())
@@ -1047,12 +1052,12 @@ async def get_overall_stats():
 
 if __name__ == "__main__":
     print("🚀 컴팩트 크롤링 모니터링 시스템 시작...")
-    print("📖 대시보드: http://localhost:8004")
+    print("📖 대시보드: http://localhost:8003")
     
     uvicorn.run(
         "main:app",
         host="0.0.0",
-        port=8004,
+        port=8003,
         reload=False,
         log_level="info"
     )

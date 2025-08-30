@@ -621,12 +621,12 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ 환경설정 라우터 임포트 실패: {e}")
 
-# try:
-#     from routers.fortune_contents import router as fortune_router
-#     app.include_router(fortune_router, prefix="/api", tags=["Fortune"])
-#     logger.info("✅ 운세 콘텐츠 라우터 등록 완료")
-# except ImportError as e:
-#     logger.warning(f"⚠️ 운세 콘텐츠 라우터 임포트 실패: {e}")
+try:
+    from routers.fortune_contents import router as fortune_router
+    app.include_router(fortune_router, prefix="/api", tags=["Fortune"])
+    logger.info("✅ 운세 콘텐츠 라우터 등록 완료")
+except ImportError as e:
+    logger.warning(f"⚠️ 운세 콘텐츠 라우터 임포트 실패: {e}")
 
 try:
     from routers.simple_tarot import router as tarot_router

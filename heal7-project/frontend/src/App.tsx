@@ -267,7 +267,7 @@ function App() {
                 />
               )}
               {currentPage === 'zodiac' && (
-                <ZodiacAnalysis />
+                <ZodiacAnalysis viewMode={viewMode} />
               )}
               {currentPage === 'personality' && (
                 <PersonalityProfile />
