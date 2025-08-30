@@ -1,8 +1,30 @@
-fastapi>=0.104.1
-uvicorn[standard]>=0.24.0
-pydantic>=2.5.0
-python-multipart>=0.0.6
-pyyaml>=6.0.1
-requests>=2.31.0
-beautifulsoup4>=4.12.2
-lxml>=4.9.3
+# 🕷️ 크롤링 서비스 최신 의존성 (2025-08-30)
+fastapi>=0.116.1
+uvicorn[standard]>=0.35.0
+pydantic>=2.11.7
+pydantic-settings>=2.10.1
+python-multipart>=0.0.12
+pyyaml>=6.0.2
+requests>=2.32.3
+beautifulsoup4>=4.12.3
+lxml>=5.3.0
+
+# 크롤링 특화 라이브러리
+playwright>=1.48.0
+selenium>=4.25.0
+httpx>=0.28.1
+aiohttp>=3.10.10
+fake-useragent>=1.5.1
+
+# AI 통합
+anthropic>=0.64.0
+openai>=1.54.4
+
+# 데이터 처리
+pandas>=2.3.2
+numpy>=2.3.2
+
+# 캐싱 및 데이터베이스
+aioredis>=2.0.1
+asyncpg>=0.30.0
+python-dotenv>=1.0.1

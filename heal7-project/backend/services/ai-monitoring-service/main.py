@@ -547,12 +547,12 @@ if __name__ == "__main__":
     print("🚀 HEAL7 AI Dashboard API with CLI Support 시작")
     print("🔧 지원 모델: 7개 API 모델 + 2개 CLI 모델")
     print("💻 CLI 지원: Claude CLI, Gemini CLI")
-    print("🌐 포트: 8005")
+    print("🌐 포트: 8004")
     
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8005,
+        port=8004,
         reload=False,
         access_log=True
     )

@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss'
+
 export default {
   content: [
     "./index.html",
@@ -116,7 +117,7 @@ export default {
     },
   },
   plugins: [
-    function({ addComponents }) {
+    function({ addComponents }: any) {
       addComponents({
         '.card-glass': {
           '@apply backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl shadow-xl': {}
@@ -168,4 +169,4 @@ export default {
       })
     }
   ],
-}
+} satisfies Config

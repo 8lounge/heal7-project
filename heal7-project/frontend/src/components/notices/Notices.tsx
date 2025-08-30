@@ -416,34 +416,6 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
         </p>
       </motion.div>
 
-      {/* 퀵 액세스 버튼 */}
-      <motion.div
-        className="flex flex-wrap gap-4 justify-center mb-8"
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <motion.button
-          onClick={() => setShowProfile(true)}
-          className={`px-6 py-3 rounded-lg font-medium ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          👤 내 프로필
-        </motion.button>
-        <motion.button
-          onClick={() => setShowSubscription(true)}
-          className={`px-6 py-3 rounded-lg font-medium ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          💎 구독 플랜
-        </motion.button>
-      </motion.div>
 
       {/* 공지 타입 필터 */}
       <motion.div

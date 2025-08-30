@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Sparkles, Star, Heart, Briefcase, Gem, ArrowRight, Users } from 'lucide-react';
-import { zodiacSigns, calculateZodiac, checkCompatibility, type ZodiacSign } from '../../data/zodiacData';
+import { Calendar, Sparkles, Star, Briefcase, Gem, ArrowRight, Users } from 'lucide-react';
+import { zodiacSigns, calculateZodiac, checkCompatibility, getMostRecentZodiacYear, calculateZodiacFromBirth, type ZodiacSign } from '../../data/zodiacData';
 
 type ViewMode = 'basic' | 'cyber_fantasy';
 
@@ -11,18 +11,30 @@ interface ZodiacAnalysisProps {
 
 export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basic' }) => {
   const [birthYear, setBirthYear] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthDay, setBirthDay] = useState('');
   const [selectedZodiac, setSelectedZodiac] = useState<ZodiacSign | null>(null);
   const [hoveredZodiac, setHoveredZodiac] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [compatibilityMode, setCompatibilityMode] = useState(false);
   const [, setPartnerZodiac] = useState<string | null>(null);
+  const [useDetailedBirth, setUseDetailedBirth] = useState(false);
 
-  // 출생년도 입력 시 자동으로 띠 계산
+  // 출생년도/생년월일 입력 시 자동으로 띠 계산
   useEffect(() => {
     if (birthYear && birthYear.length === 4) {
       const year = parseInt(birthYear);
       if (year >= 1900 && year <= 2030) {
-        const zodiacId = calculateZodiac(year);
+        let zodiacId: string;
+        
+        // 상세 생년월일 입력이 있으면 입춘 기준으로 계산
+        if (useDetailedBirth && birthMonth && birthDay) {
+          const month = parseInt(birthMonth);
+          const day = parseInt(birthDay);
+          zodiacId = calculateZodiacFromBirth(year, month, day);
+        } else {
+          zodiacId = calculateZodiac(year);
+        }
+        
         const zodiac = zodiacSigns.find(sign => sign.id === zodiacId);
         if (zodiac) {
           setSelectedZodiac(zodiac);
@@ -30,15 +42,14 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
         }
       }
     }
-  }, [birthYear]);
+  }, [birthYear, birthMonth, birthDay, useDetailedBirth]);
 
   const handleZodiacClick = (zodiac: ZodiacSign) => {
     setSelectedZodiac(zodiac);
     setShowDetails(true);
     
-    // 해당 띠의 최근 년도를 찾아서 입력값에 설정
-    const currentYear = new Date().getFullYear();
-    const recentYear = zodiac.years.find(year => year <= currentYear) || zodiac.years[0];
+    // 해당 띠의 가장 최근 년도를 설정
+    const recentYear = getMostRecentZodiacYear(zodiac.id);
     setBirthYear(recentYear.toString());
   };
 
@@ -73,56 +84,89 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
           나의 띠를 통해 알아보는 성향, 직업 적성, 2025년 운세
         </p>
         
-        {/* 모드 토글 */}
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <button
-            onClick={() => setCompatibilityMode(false)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-              !compatibilityMode
-                ? viewMode === 'cyber_fantasy'
-                  ? 'bg-gradient-to-r from-purple-500/80 to-pink-500/80'
-                  : 'bg-gradient-to-r from-indigo-500/80 to-purple-500/80'
-                : 'bg-white/10 hover:bg-white/20'
-            } text-white`}
-          >
-            <Star className="w-4 h-4" />
-            띠 운세
-          </button>
-          <button
-            onClick={() => setCompatibilityMode(true)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-              compatibilityMode
-                ? viewMode === 'cyber_fantasy'
-                  ? 'bg-gradient-to-r from-purple-500/80 to-pink-500/80'
-                  : 'bg-gradient-to-r from-indigo-500/80 to-purple-500/80'
-                : 'bg-white/10 hover:bg-white/20'
-            } text-white`}
-          >
-            <Heart className="w-4 h-4" />
-            띠 궁합
-          </button>
-        </div>
       </div>
 
-      {/* 출생년도 입력 */}
+      {/* 출생년도/생년월일 입력 */}
       <div className={`p-6 mb-8 rounded-xl ${
         viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
       }`}>
         <div className="flex items-center justify-center gap-4 mb-4">
           <Calendar className="w-5 h-5 text-white" />
-          <span className="text-white font-medium">출생년도를 입력하거나 아래에서 띠를 선택하세요</span>
+          <span className="text-white font-medium">생년월일을 입력하거나 아래에서 띠를 선택하세요</span>
         </div>
-        <div className="flex justify-center">
+        
+        {/* 입력 모드 토글 */}
+        <div className="flex justify-center mb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setUseDetailedBirth(false)}
+              className={`px-3 py-1 text-sm rounded-lg transition-all ${
+                !useDetailedBirth 
+                  ? 'bg-purple-500/80 text-white' 
+                  : 'bg-white/10 text-white/60 hover:bg-white/20'
+              }`}
+            >
+              년도만
+            </button>
+            <button
+              onClick={() => setUseDetailedBirth(true)}
+              className={`px-3 py-1 text-sm rounded-lg transition-all ${
+                useDetailedBirth 
+                  ? 'bg-purple-500/80 text-white' 
+                  : 'bg-white/10 text-white/60 hover:bg-white/20'
+              }`}
+            >
+              정확한 생년월일
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-center gap-2">
           <input
             type="number"
-            placeholder="예: 1990"
+            placeholder="년도"
             value={birthYear}
             onChange={(e) => setBirthYear(e.target.value)}
             min="1900"
             max="2030"
-            className="bg-white/20 border border-white/30 rounded-lg px-4 py-2 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 w-32 text-center"
+            className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 w-24 text-center"
           />
+          {useDetailedBirth && (
+            <>
+              <select
+                value={birthMonth}
+                onChange={(e) => setBirthMonth(e.target.value)}
+                className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">월</option>
+                {Array.from({length: 12}, (_, i) => (
+                  <option key={i+1} value={i+1} className="bg-gray-800">
+                    {i+1}월
+                  </option>
+                ))}
+              </select>
+              <select
+                value={birthDay}
+                onChange={(e) => setBirthDay(e.target.value)}
+                className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">일</option>
+                {Array.from({length: 31}, (_, i) => (
+                  <option key={i+1} value={i+1} className="bg-gray-800">
+                    {i+1}일
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
+
+        {useDetailedBirth && (
+          <div className="text-center mt-2 text-xs text-white/60">
+            💡 1~2월 초 출생은 입춘(2/4) 기준으로 정확한 띠를 계산합니다
+          </div>
+        )}
+
         {birthYear && selectedZodiac && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -130,7 +174,10 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
             className="text-center mt-4"
           >
             <p className="text-white/80">
-              {birthYear}년생은 <span className="text-purple-300 font-bold">{selectedZodiac.name}</span>입니다!
+              {useDetailedBirth && birthMonth && birthDay 
+                ? `${birthYear}년 ${birthMonth}월 ${birthDay}일생은`
+                : `${birthYear}년생은`
+              } <span className="text-purple-300 font-bold">{selectedZodiac.name}</span>입니다!
             </p>
           </motion.div>
         )}
@@ -173,7 +220,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                       exit={{ opacity: 0, height: 0 }}
                       className="mt-2 text-xs text-white/80"
                     >
-                      {zodiac.element} · {zodiac.years.slice(-1)[0]}년
+                      {zodiac.element} · {getMostRecentZodiacYear(zodiac.id)}년
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -203,7 +250,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                   오행: {selectedZodiac.element}
                 </span>
                 <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
-                  최근: {selectedZodiac.years.slice(-1)[0]}년
+                  최근: {getMostRecentZodiacYear(selectedZodiac.id)}년
                 </span>
               </div>
             </div>
@@ -311,8 +358,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
               </div>
             </div>
 
-            {/* 궁합 정보 (궁합 모드일 때만) */}
-            {compatibilityMode && (
+            {/* 궁합 정보 */}
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
                 <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                   <Users className="w-5 h-5 text-pink-400" />
@@ -342,7 +388,6 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                   })}
                 </div>
               </div>
-            )}
           </motion.div>
         )}
       </AnimatePresence>

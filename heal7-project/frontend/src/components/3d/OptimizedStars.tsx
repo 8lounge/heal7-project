@@ -100,7 +100,7 @@ const OptimizedStars: React.FC<OptimizedStarsProps> = ({
       >
         <bufferAttribute
           attach="geometry-attributes-opacity"
-          array={opacities}
+          args={[opacities, 1]}
           count={adjustedCount}
           itemSize={1}
         />

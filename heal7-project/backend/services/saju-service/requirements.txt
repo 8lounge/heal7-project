@@ -1,7 +1,30 @@
-fastapi>=0.100.0
-uvicorn[standard]>=0.23.0
-pydantic>=2.0.0
-pyyaml>=6.0.0
-aiohttp>=3.8.0
-pandas>=2.0.0
-numpy>=1.24.0
+# 🔮 사주 서비스 최신 의존성 (2025-08-30)
+fastapi>=0.116.1
+uvicorn[standard]>=0.35.0
+pydantic>=2.11.7
+pydantic-settings>=2.10.1
+pyyaml>=6.0.2
+aiohttp>=3.10.10
+httpx>=0.28.1
+
+# 데이터 처리 및 계산
+pandas>=2.3.2
+numpy>=2.3.2
+python-dateutil>=2.9.0
+pytz>=2024.2
+
+# 데이터베이스
+asyncpg>=0.30.0
+aioredis>=2.0.1
+python-dotenv>=1.0.1
+
+# KASI API 통합
+requests>=2.32.3
+aiofiles>=24.1.0
+
+# AI 연동
+anthropic>=0.64.0
+openai>=1.54.4
+
+# 로깅
+loguru>=0.7.2

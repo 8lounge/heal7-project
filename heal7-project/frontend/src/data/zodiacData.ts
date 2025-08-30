@@ -48,17 +48,55 @@ export const calculateZodiac = (year: number): string => {
   return zodiacCycle[cyclePosition];
 };
 
-// 최근 100년간 각 띠에 해당하는 연도 생성
+// 현재 년도 기준으로 각 띠에 해당하는 연도 생성
 const generateYears = (startIndex: number): number[] => {
   const years = [];
   const currentYear = new Date().getFullYear();
   
+  // 현재 년도부터 과거로 가면서 해당 띠의 년도들을 찾기
   for (let year = 1900; year <= currentYear + 20; year++) {
     if ((year - 1900) % 12 === startIndex) {
       years.push(year);
     }
   }
-  return years;
+  return years.sort((a, b) => b - a); // 내림차순 정렬 (최신년도 우선)
+};
+
+// 현재 년도에서 가장 가까운 해당 띠의 년도 구하기
+export const getMostRecentZodiacYear = (zodiacId: string): number => {
+  const currentYear = new Date().getFullYear();
+  const zodiac = zodiacSigns.find(sign => sign.id === zodiacId);
+  
+  if (!zodiac) return currentYear;
+  
+  // 현재 년도부터 과거로 가면서 해당 띠 찾기
+  for (let year = currentYear; year >= 1900; year--) {
+    if (calculateZodiac(year) === zodiacId) {
+      return year;
+    }
+  }
+  
+  return zodiac.years[0] || currentYear;
+};
+
+// 생년월일을 기준으로 띠 계산 (음력 고려)
+export const calculateZodiacFromBirth = (year: number, month: number, day: number): string => {
+  // 2월 4일 입춘 이전은 전년도 띠로 계산
+  // 음력 새해는 보통 1월 말~2월 중순 사이이지만, 
+  // 간단히 2월 4일(입춘) 기준으로 구분
+  let adjustedYear = year;
+  if (month === 1 || (month === 2 && day < 4)) {
+    adjustedYear = year - 1;
+  }
+  
+  return calculateZodiac(adjustedYear);
+};
+
+// 현재 사용자의 나이로부터 띠 추정
+export const getZodiacFromAge = (age: number): string => {
+  const currentYear = new Date().getFullYear();
+  const birthYear = currentYear - age;
+  return calculateZodiac(birthYear);
 };
 
 // 12지신 데이터

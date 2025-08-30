@@ -175,8 +175,8 @@ vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 
 ### **서비스 다운 시**
 1. `systemctl status nginx` - Nginx 상태 확인
-2. `sudo lsof -i :8003` - 사주 서비스 (saju.heal7.com)
-3. `sudo lsof -i :8004` - 크롤링 서비스 (crawling.heal7.com)
+2. `sudo lsof -i :8002` - 사주 서비스 (saju.heal7.com) ✅ 수정됨
+3. `sudo lsof -i :8003` - 크롤링 서비스 (crawling.heal7.com)
 4. `sudo lsof -i :4173` - Vite 미리보기 (개발환경)
 5. `sudo -u postgres psql -c "\l"` - DB 연결 확인
 6. [상세 복구 가이드](./docs/operations/emergency-recovery.md)
