@@ -82,6 +82,16 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               🃏 타로카드
             </button>
             <button 
+              onClick={() => onPageChange?.('zodiac')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                currentPage === 'zodiac' 
+                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+              }`}
+            >
+              🐭 띠운세
+            </button>
+            <button 
               onClick={() => onPageChange?.('fortune')}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
                 currentPage === 'fortune' 
@@ -90,16 +100,6 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               }`}
             >
               ⭐ 운세
-            </button>
-            <button 
-              onClick={() => onPageChange?.('profile')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                currentPage === 'profile' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              프로필
             </button>
           </nav>
 
@@ -209,6 +209,16 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               🃏 타로카드
             </button>
             <button 
+              onClick={() => onPageChange?.('zodiac')}
+              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+                currentPage === 'zodiac' 
+                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+              }`}
+            >
+              🐭 띠운세
+            </button>
+            <button 
               onClick={() => onPageChange?.('fortune')}
               className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
                 currentPage === 'fortune' 
@@ -217,16 +227,6 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               }`}
             >
               ⭐ 운세
-            </button>
-            <button 
-              onClick={() => onPageChange?.('profile')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
-                currentPage === 'profile' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              프로필
             </button>
           </nav>
         </div>
