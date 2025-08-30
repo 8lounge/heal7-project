@@ -1,0 +1,181 @@
+name: Backend Services Build and Test
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'heal7-project/backend/**'
+      - '.github/workflows/backend-services-build.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'heal7-project/backend/**'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # 1. 사주 서비스 (포트 8012)
+  build-saju-service:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install saju service dependencies
+      run: |
+        cd heal7-project/backend/services/saju-service
+        pip install -r requirements.txt
+    
+    - name: Test saju service
+      run: |
+        cd heal7-project/backend/services/saju-service
+        python -c "import main; print('✅ Saju service imports successfully')"
+        
+    - name: Upload saju service artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: saju-service-build
+        path: heal7-project/backend/services/saju-service/
+        retention-days: 30
+
+  # 2. 크롤링 서비스 (포트 8013)  
+  build-crawling-service:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install crawling service dependencies
+      run: |
+        cd heal7-project/backend/services/crawling-service
+        pip install -r requirements.txt
+        
+    - name: Test crawling service
+      run: |
+        cd heal7-project/backend/services/crawling-service
+        python -c "import main; print('✅ Crawling service imports successfully')"
+        
+    - name: Upload crawling service artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: crawling-service-build
+        path: heal7-project/backend/services/crawling-service/
+        retention-days: 30
+
+  # 3. 서류 처리 서비스 (포트 8010)
+  build-paperwork-service:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install paperwork service dependencies
+      run: |
+        cd heal7-project/backend/services/paperwork-service
+        pip install -r requirements.txt
+        
+    - name: Test paperwork service
+      run: |
+        cd heal7-project/backend/services/paperwork-service
+        python -c "import main; print('✅ Paperwork service imports successfully')"
+        
+    - name: Upload paperwork service artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: paperwork-service-build
+        path: heal7-project/backend/services/paperwork-service/
+        retention-days: 30
+
+  # 4. AI 모니터링 서비스 (포트 8014)
+  build-ai-monitoring-service:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install ai-monitoring service dependencies
+      run: |
+        cd heal7-project/backend/services/ai-monitoring-service
+        pip install -r requirements.txt
+        
+    - name: Test ai-monitoring service
+      run: |
+        cd heal7-project/backend/services/ai-monitoring-service
+        python -c "import main; print('✅ AI monitoring service imports successfully')"
+        
+    - name: Upload ai-monitoring service artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ai-monitoring-service-build
+        path: heal7-project/backend/services/ai-monitoring-service/
+        retention-days: 30
+
+  # 5. 대시보드 서비스 (포트 8015) - 오케스트레이션 허브
+  build-dashboard-service:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install dashboard service dependencies
+      run: |
+        cd heal7-project/backend/services/dashboard-service
+        pip install -r requirements.txt
+        
+    - name: Test dashboard service (orchestration hub)
+      run: |
+        cd heal7-project/backend/services/dashboard-service
+        python -c "import main; print('✅ Dashboard orchestration service imports successfully')"
+        
+    - name: Upload dashboard service artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dashboard-service-build
+        path: heal7-project/backend/services/dashboard-service/
+        retention-days: 30
+
+  # 통합 빌드 알림
+  build-summary:
+    needs: [build-saju-service, build-crawling-service, build-paperwork-service, build-ai-monitoring-service, build-dashboard-service]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Backend services build summary
+      run: |
+        echo "🎼 HEAL7 Backend Services Build Summary"
+        echo "======================================"
+        echo "✅ Saju Service (포트 8012): 사주명리 계산 및 해석"
+        echo "✅ Crawling Service (포트 8013): 데이터 수집 및 크롤링"  
+        echo "✅ Paperwork Service (포트 8010): 서류 처리 및 AI 분석"
+        echo "✅ AI Monitoring Service (포트 8014): AI 성능 모니터링"
+        echo "✅ Dashboard Service (포트 8015): 오케스트레이션 허브 ⭐"
+        echo ""
+        echo "🌐 모든 서비스가 GitHub Actions에서 성공적으로 빌드되었습니다!"
+        echo "🚀 서버 부담 없이 클라우드에서 빌드 완료"

@@ -1,0 +1,166 @@
+name: Service Selector - Manual Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_service:
+        description: '배포할 서비스 선택'
+        required: true
+        default: 'all-services'
+        type: choice
+        options:
+        - all-services
+        - frontend-only
+        - saju-service-only
+        - crawling-service-only
+        - paperwork-service-only
+        - ai-monitoring-only
+        - dashboard-service-only
+        - backend-services-only
+      
+      build_mode:
+        description: '빌드 모드'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - development
+        - testing
+      
+      notification_level:
+        description: '알림 수준'
+        required: true
+        default: 'normal'
+        type: choice
+        options:
+        - silent
+        - normal
+        - verbose
+
+jobs:
+  service-selector:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Service Selection Analysis
+      id: analyze
+      run: |
+        TARGET="${{ github.event.inputs.target_service }}"
+        BUILD_MODE="${{ github.event.inputs.build_mode }}"
+        NOTIFICATION="${{ github.event.inputs.notification_level }}"
+        
+        echo "🎯 Service Selection Analysis"
+        echo "============================"
+        echo "Target: $TARGET"
+        echo "Build Mode: $BUILD_MODE"
+        echo "Notification Level: $NOTIFICATION"
+        echo ""
+        
+        # Set deployment flags
+        case $TARGET in
+          "all-services")
+            echo "deploy_frontend=true" >> $GITHUB_OUTPUT
+            echo "deploy_saju=true" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=true" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=true" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=true" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=true" >> $GITHUB_OUTPUT
+            ;;
+          "frontend-only")
+            echo "deploy_frontend=true" >> $GITHUB_OUTPUT
+            echo "deploy_saju=false" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=false" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=false" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=false" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=false" >> $GITHUB_OUTPUT
+            ;;
+          "saju-service-only")
+            echo "deploy_frontend=false" >> $GITHUB_OUTPUT
+            echo "deploy_saju=true" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=false" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=false" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=false" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=false" >> $GITHUB_OUTPUT
+            ;;
+          "crawling-service-only")
+            echo "deploy_frontend=false" >> $GITHUB_OUTPUT
+            echo "deploy_saju=false" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=true" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=false" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=false" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=false" >> $GITHUB_OUTPUT
+            ;;
+          "paperwork-service-only")
+            echo "deploy_frontend=false" >> $GITHUB_OUTPUT
+            echo "deploy_saju=false" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=false" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=true" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=false" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=false" >> $GITHUB_OUTPUT
+            ;;
+          "ai-monitoring-only")
+            echo "deploy_frontend=false" >> $GITHUB_OUTPUT
+            echo "deploy_saju=false" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=false" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=false" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=true" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=false" >> $GITHUB_OUTPUT
+            ;;
+          "dashboard-service-only")
+            echo "deploy_frontend=false" >> $GITHUB_OUTPUT
+            echo "deploy_saju=false" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=false" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=false" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=false" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=true" >> $GITHUB_OUTPUT
+            ;;
+          "backend-services-only")
+            echo "deploy_frontend=false" >> $GITHUB_OUTPUT
+            echo "deploy_saju=true" >> $GITHUB_OUTPUT
+            echo "deploy_crawling=true" >> $GITHUB_OUTPUT
+            echo "deploy_paperwork=true" >> $GITHUB_OUTPUT
+            echo "deploy_ai_monitoring=true" >> $GITHUB_OUTPUT
+            echo "deploy_dashboard=true" >> $GITHUB_OUTPUT
+            ;;
+        esac
+    
+    - name: Trigger selected workflows
+      run: |
+        TARGET="${{ github.event.inputs.target_service }}"
+        echo "🚀 Triggering workflows for: $TARGET"
+        
+        # This is a simulation - in real implementation, you would trigger actual workflows
+        if [[ "${{ steps.analyze.outputs.deploy_frontend }}" == "true" ]]; then
+          echo "▶️ Would trigger: Frontend Build and Deploy"
+        fi
+        
+        if [[ "${{ steps.analyze.outputs.deploy_saju }}" == "true" ]] || \
+           [[ "${{ steps.analyze.outputs.deploy_crawling }}" == "true" ]] || \
+           [[ "${{ steps.analyze.outputs.deploy_paperwork }}" == "true" ]] || \
+           [[ "${{ steps.analyze.outputs.deploy_ai_monitoring }}" == "true" ]] || \
+           [[ "${{ steps.analyze.outputs.deploy_dashboard }}" == "true" ]]; then
+          echo "▶️ Would trigger: Backend Services Build and Test"
+        fi
+        
+        echo "▶️ Would trigger: Service Deployment Orchestration"
+    
+    - name: Service Selection Summary
+      run: |
+        echo "🎼 HEAL7 Service Selector Summary"
+        echo "================================"
+        echo ""
+        echo "📋 Selected Services:"
+        echo "- Frontend (포트 4173): ${{ steps.analyze.outputs.deploy_frontend }}"
+        echo "- Saju Service (포트 8012): ${{ steps.analyze.outputs.deploy_saju }}"
+        echo "- Crawling Service (포트 8013): ${{ steps.analyze.outputs.deploy_crawling }}"
+        echo "- Paperwork Service (포트 8010): ${{ steps.analyze.outputs.deploy_paperwork }}"
+        echo "- AI Monitoring (포트 8014): ${{ steps.analyze.outputs.deploy_ai_monitoring }}"
+        echo "- Dashboard Hub (포트 8015): ${{ steps.analyze.outputs.deploy_dashboard }}"
+        echo ""
+        echo "⚙️ Build Mode: ${{ github.event.inputs.build_mode }}"
+        echo "🔔 Notification Level: ${{ github.event.inputs.notification_level }}"
+        echo ""
+        echo "✅ Service selection completed!"
+        echo "🌐 Ready for GitHub Actions deployment"
