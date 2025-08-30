@@ -1,20 +1,18 @@
 // Service Worker for saju.heal7.com
 // 사주 서비스용 간단한 PWA 지원
 
-const CACHE_NAME = 'saju-v4'; // 버전 업데이트 - 최신 빌드 파일명 반영
+const CACHE_NAME = 'saju-v5'; // 강화된 chrome-extension 필터링
 const urlsToCache = [
   '/',
   '/index.html',
   '/crystal-ball.svg',
   '/manifest.json',
-  // 실제 빌드된 파일들
-  '/assets/index-kj6737nK.js',
-  '/assets/index-BnOUI4Gb.css',
+  // 최신 빌드 파일들로 업데이트 (실제 빌드 후 생성되는 파일명으로 교체 필요)
+  '/assets/index-DmWc4CBu.js',
+  '/assets/index-Za-sZ4XS.css',
   '/assets/react-vendor-C8w-UNLI.js',
-  '/assets/ui-vendor-CoQqhW55.js',
-  '/assets/three-vendor-CdMAxR4E.js',
-  '/assets/OptimizedCyberCrystal-XDdRvjI0.js',
-  '/assets/OptimizedStars-4nEhQaFf.js'
+  '/assets/ui-vendor-DFRbeLvN.js',
+  '/assets/three-vendor-Bkv47SOs.js'
 ];
 
 // 설치 이벤트
@@ -42,20 +40,47 @@ self.addEventListener('activate', event => {
 
 // 캐시 가능한 요청인지 확인하는 함수 추가
 function isValidCacheRequest(request) {
-  // 지원되지 않는 scheme 필터링
-  const unsupportedSchemes = ['chrome-extension', 'moz-extension', 'ms-browser-extension'];
-  const url = new URL(request.url);
+  try {
+    // 지원되지 않는 scheme 필터링
+    const unsupportedSchemes = ['chrome-extension', 'moz-extension', 'ms-browser-extension', 'chrome', 'moz', 'ms-browser'];
+    const url = new URL(request.url);
 
-  if (unsupportedSchemes.includes(url.protocol.replace(':', ''))) {
+    // 프로토콜 체크
+    const protocol = url.protocol.replace(':', '');
+    if (unsupportedSchemes.includes(protocol)) {
+      console.log(`[SW] Skipping unsupported scheme: ${protocol}`);
+      return false;
+    }
+
+    // HTTP/HTTPS만 캐시 허용
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      console.log(`[SW] Skipping non-HTTP(S) protocol: ${url.protocol}`);
+      return false;
+    }
+
+    // extension 관련 URL 패턴 체크
+    if (url.href.includes('extension') || url.href.includes('chrome-extension')) {
+      console.log(`[SW] Skipping extension URL: ${url.href}`);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('[SW] Error checking request validity:', error);
     return false;
   }
-
-  // HTTP/HTTPS만 캐시 허용
-  return url.protocol === 'http:' || url.protocol === 'https:';
 }
 
 // 요청 인터셉트
 self.addEventListener('fetch', event => {
+  // 빠른 프로토콜 체크
+  if (event.request.url.startsWith('chrome-extension:') ||
+    event.request.url.startsWith('moz-extension:') ||
+    event.request.url.startsWith('ms-browser-extension:')) {
+    console.log(`[SW] Ignoring extension request: ${event.request.url}`);
+    return; // 완전히 무시하고 처리하지 않음
+  }
+
   // 캐시 가능한 요청인지 확인
   if (!isValidCacheRequest(event.request)) {
     return; // 캐시하지 않고 그냥 넘어감
@@ -82,18 +107,20 @@ self.addEventListener('fetch', event => {
               .then(cache => {
                 // 다시 한 번 캐시 가능한 요청인지 확인
                 if (isValidCacheRequest(event.request)) {
-                  cache.put(event.request, responseToCache);
+                  cache.put(event.request, responseToCache).catch(error => {
+                    console.error('[SW] Cache put error:', error, 'URL:', event.request.url);
+                  });
                 }
               })
               .catch(error => {
-                console.log('Cache put error:', error);
+                console.error('[SW] Cache open error:', error);
               });
 
             return response;
           });
       })
       .catch(error => {
-        console.log('Fetch error:', error);
+        console.log('[SW] Fetch error:', error);
         return fetch(event.request);
       })
   );
