@@ -106,8 +106,8 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
           {/* 모드 전환 & 상태 */}
           <div className="flex items-center space-x-4">
 
-            {/* 테마 모드 전환 */}
-            <div className="flex items-center space-x-2 group relative">
+            {/* 테마 모드 전환 - 모바일에서 숨김 */}
+            <div className="hidden md:flex items-center space-x-2 group relative">
               <span className={`text-sm ${viewMode === 'basic' ? 'text-white' : 'text-gray-500'}`}>
                 🌙 클래식
               </span>
@@ -187,10 +187,14 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
 
         {/* 모바일 메뉴 - 주요 메뉴 */}
         <div className="md:hidden mt-4">
-          <nav className="flex items-center justify-center gap-2 px-4 flex-wrap">
+          {/* 드래그 안내 텍스트 */}
+          <div className="text-center text-xs text-gray-400 mb-2">
+            ← 좌우로 드래그하세요 →
+          </div>
+          <nav className="flex items-center gap-3 mobile-nav-scroll scrollbar-hide overflow-x-auto">
             <button 
               onClick={() => onPageChange?.('saju')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
                 currentPage === 'saju' 
                   ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
@@ -200,7 +204,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
             </button>
             <button 
               onClick={() => onPageChange?.('tarot')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
                 currentPage === 'tarot' 
                   ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
@@ -210,7 +214,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
             </button>
             <button 
               onClick={() => onPageChange?.('zodiac')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
                 currentPage === 'zodiac' 
                   ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
@@ -220,7 +224,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
             </button>
             <button 
               onClick={() => onPageChange?.('fortune')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
                 currentPage === 'fortune' 
                   ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
