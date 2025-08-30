@@ -14,24 +14,24 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, viewMode }) => {
   const [showMore, setShowMore] = useState(false)
   
-  // 핵심 메뉴 (항상 표시) - 타로 추가
+  // 핵심 메뉴 (항상 표시) - 띠운세 추가
   const coreNavItems = [
     { id: 'saju', label: '사주', icon: '🔮' },
     { id: 'tarot', label: '타로', icon: '🃏' },
-    { id: 'magazine', label: '매거진', icon: '📰' },
-    { id: 'consultation', label: '상담', icon: '💬' },
-    { id: 'store', label: '스토어', icon: '🛍️' }
+    { id: 'zodiac', label: '띠운세', icon: '🐭' },
+    { id: 'dream', label: '꿈풀이', icon: '🌙' },
+    { id: 'consultation', label: '상담', icon: '💬' }
   ]
   
   // 부가 메뉴 (더보기에 표시) - 운세 관련 통합
   const extraNavItems = [
     { id: 'fortune', label: '종합운세', icon: '⭐' },
-    { id: 'zodiac', label: '띠별운세', icon: '🐭' },
     { id: 'personality', label: '성격분석', icon: '🧠' },
     { id: 'love', label: '애정운', icon: '💕' },
     { id: 'compatibility', label: '궁합', icon: '💑' },
-    { id: 'dream', label: '꿈풀이', icon: '🌙' },
     { id: 'calendar', label: '운세달력', icon: '📅' },
+    { id: 'magazine', label: '매거진', icon: '📰' },
+    { id: 'store', label: '스토어', icon: '🛍️' },
     { id: 'notices', label: '공지사항', icon: '📢' },
     { id: 'admin', label: '관리자', icon: '⚙️' }
   ]
