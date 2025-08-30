@@ -1,18 +1,20 @@
 // Service Worker for saju.heal7.com
 // 사주 서비스용 간단한 PWA 지원
 
-const CACHE_NAME = 'saju-v2'; // 버전 업데이트
+const CACHE_NAME = 'saju-v4'; // 버전 업데이트 - 최신 빌드 파일명 반영
 const urlsToCache = [
   '/',
   '/index.html',
   '/crystal-ball.svg',
   '/manifest.json',
-  // 최신 빌드 파일들로 업데이트 (실제 빌드 후 생성되는 파일명으로 교체 필요)
-  '/assets/index-DmWc4CBu.js',
-  '/assets/index-Za-sZ4XS.css',
+  // 실제 빌드된 파일들
+  '/assets/index-kj6737nK.js',
+  '/assets/index-BnOUI4Gb.css',
   '/assets/react-vendor-C8w-UNLI.js',
-  '/assets/ui-vendor-DFRbeLvN.js',
-  '/assets/three-vendor-Bkv47SOs.js'
+  '/assets/ui-vendor-CoQqhW55.js',
+  '/assets/three-vendor-CdMAxR4E.js',
+  '/assets/OptimizedCyberCrystal-XDdRvjI0.js',
+  '/assets/OptimizedStars-4nEhQaFf.js'
 ];
 
 // 설치 이벤트
