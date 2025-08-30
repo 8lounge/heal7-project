@@ -1,0 +1,22 @@
+{
+  "name": "🔮 운명의 실을 찾아서",
+  "short_name": "사주운세",
+  "description": "삶의 여정에서 길을 잃었을 때, 별들이 속삭이는 이야기에 귀 기울여보세요",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#6366F1",
+  "theme_color": "#6366F1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/crystal-ball.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "entertainment"],
+  "lang": "ko",
+  "dir": "ltr",
+  "scope": "/"
+}

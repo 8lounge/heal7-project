@@ -23,14 +23,23 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
   const [animatedNumber, setAnimatedNumber] = useState(0)
   const [targetNumber] = useState(Math.floor(Math.random() * 300 + 1200)) // 1200-1500 범위
 
-  // API 헬스체크
+  // API 헬스체크 - 서버 로드 최적화 (중복 호출 제거)
   const { data: apiHealth } = useQuery({
     queryKey: ['api-health'],
     queryFn: async () => {
-      const response = await fetch('/api/health')
-      if (!response.ok) throw new Error('API 연결 실패')
-      return response.json()
-    }
+      try {
+        const response = await fetch('/api/health')
+        if (!response.ok) {
+          return { status: 'unknown', service: 'heal7-api', version: '2.0.0' }
+        }
+        return response.json()
+      } catch (error) {
+        return { status: 'unknown', service: 'heal7-api', version: '2.0.0' }
+      }
+    },
+    staleTime: 1000 * 60 * 30, // 30분 캐시 유지
+    enabled: false, // 대시보드에서는 별도 헬스체크 비활성화
+    initialData: { status: 'healthy', service: 'heal7-api', version: '2.0.0' }
   })
 
   // 오늘의 운세 자동 슬라이드
@@ -135,7 +144,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
             <div className="flex items-center">
               <span className="text-gray-300">📊 오늘&nbsp;</span>
               <motion.span 
-                className="text-4xl font-bold text-purple-400 mx-2"
+                className="text-4xl font-bold text-white mx-2"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ 
@@ -168,7 +177,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
               key={keyword}
               className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all
                 ${viewMode === 'cyber_fantasy' 
-                  ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-200 hover:from-purple-500/50 hover:to-pink-500/50' 
+                  ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white hover:from-purple-500/50 hover:to-pink-500/50' 
                   : 'bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-indigo-200 hover:from-indigo-500/50 hover:to-purple-500/50'
                 }`}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -362,7 +371,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                 <span className="text-sm text-gray-400">
                   오늘 운세 확인하기
                 </span>
-                <span className="text-purple-400">→</span>
+                <span className="text-white">→</span>
               </div>
             </motion.div>
           ))}
@@ -399,7 +408,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                       style={{ width: `${topic.popularity}%` }}
                     />
                   </div>
-                  <span className="text-sm text-purple-400">{topic.popularity}%</span>
+                  <span className="text-sm text-white">{topic.popularity}%</span>
                 </div>
               </div>
 
@@ -414,7 +423,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                 {topic.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded"
+                    className="px-2 py-1 bg-purple-500/20 text-white text-xs rounded"
                   >
                     #{tag}
                   </span>
@@ -458,7 +467,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                   className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium"
                   onClick={() => {
                     navigator.share && navigator.share({
-                      title: 'HEAL7 운세',
+                      title: '치유마녀 운세',
                       text: shareContent,
                       url: window.location.href
                     })

@@ -1,0 +1,24 @@
+cube:
+  color: purple
+  created: '2025-08-26T16:47:53.986987'
+  metaphor: 감각기관 - 시스템 인식
+  name: health-checker-system
+  port: 8051
+  purpose: 헬스 체크 및 진단
+  type: monitoring-cube
+  version: 1.0.0
+dependencies:
+  external:
+  - fastapi
+  - uvicorn
+  - pydantic
+  internal: []
+interfaces:
+  health_check: /health
+  rest_api: /api/health-checker
+  websocket: /ws/health-checker
+performance_targets:
+  cpu_utilization_pct: 70
+  error_rate_pct: 0.1
+  memory_limit_mb: 512
+  response_time_ms: 100

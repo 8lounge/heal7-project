@@ -26,13 +26,14 @@ logger = logging.getLogger("heal7.survey.engine")
 
 class SurveyEngine:
     def __init__(self):
-        # 환경변수에서 DB 설정 로드
+        # 환경변수에서 DB 설정 로드 - 통합 heal7 데이터베이스 사용
         self.db_config = {
             "host": os.getenv("DB_HOST", "localhost"),
             "port": int(os.getenv("DB_PORT", "5432")),
-            "database": os.getenv("DB_NAME", "livedb"), 
+            "database": os.getenv("DB_NAME", "heal7"), 
             "user": os.getenv("DB_USER", "postgres"),
-            "password": os.getenv("DB_PASSWORD", "")
+            "password": os.getenv("DB_PASSWORD", ""),
+            "options": "-c search_path=shared_common,public"
         }
         
         # Redis 클라이언트 설정

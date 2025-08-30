@@ -1,0 +1,24 @@
+cube:
+  color: blue
+  created: '2025-08-26T16:47:53.945720'
+  metaphor: 심장 - 지능적 처리의 펌프
+  name: ai-services-system
+  port: 8011
+  purpose: AI 통합 서비스 및 Paperwork 기능
+  type: feature-cube
+  version: 1.0.0
+dependencies:
+  external:
+  - fastapi
+  - uvicorn
+  - pydantic
+  internal: []
+interfaces:
+  health_check: /health
+  rest_api: /api/ai-services
+  websocket: /ws/ai-services
+performance_targets:
+  cpu_utilization_pct: 70
+  error_rate_pct: 0.1
+  memory_limit_mb: 512
+  response_time_ms: 100

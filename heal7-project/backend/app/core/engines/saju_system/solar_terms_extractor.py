@@ -4,6 +4,7 @@
 KASI API를 활용하여 1900-2026년까지의 24절기 데이터 수집
 """
 
+import os
 import requests
 import json
 import psycopg2
@@ -19,8 +20,8 @@ class SolarTermsExtractor:
     """24절기 데이터 추출기"""
     
     def __init__(self):
-        # KASI API 설정
-        self.kasi_api_key = "AR2zMFQPIPBFak+MdXzznzVmtsICp7dwd3eo9XCUP62kXpr4GrX3eqi28erzZhXfIemuo6C5AK58eLMKBw8VGQ=="
+        # KASI API 설정 - 보안을 위해 환경변수 사용
+        self.kasi_api_key = os.getenv('KASI_API_KEY', 'DEFAULT_KEY_NOT_SET')
         self.kasi_base_url = "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService"
         
         # 24절기 정의
@@ -61,12 +62,12 @@ class SolarTermsExtractor:
             "대설": 7, "동지": 22, "소한": 6, "대한": 21
         }
         
-        # DB 연결 정보
+        # DB 연결 정보 - 통합 heal7 데이터베이스 사용
         self.db_config = {
             'host': 'localhost',
-            'database': 'livedb',
-            'user': 'liveuser',
-            'password': 'livepass2024'
+            'database': 'heal7',
+            'user': 'postgres',
+            'options': '-c search_path=saju_service,shared_common,public'
         }
     
     def get_lunar_calendar_info(self, year: int, month: int, day: int) -> Optional[Dict]:
@@ -165,9 +166,9 @@ class SolarTermsExtractor:
             conn = psycopg2.connect(**self.db_config)
             cur = conn.cursor()
             
-            # 24절기 테이블 생성 (없으면)
+            # 24절기 테이블 생성 (없으면) - saju_service 스키마에 생성
             cur.execute("""
-                CREATE TABLE IF NOT EXISTS solar_terms_24 (
+                CREATE TABLE IF NOT EXISTS saju_service.solar_terms_24 (
                     id SERIAL PRIMARY KEY,
                     year INTEGER NOT NULL,
                     month INTEGER NOT NULL,
@@ -185,7 +186,7 @@ class SolarTermsExtractor:
             # 데이터 삽입 또는 업데이트
             for term in terms_data:
                 cur.execute("""
-                    INSERT INTO solar_terms_24 
+                    INSERT INTO saju_service.solar_terms_24 
                     (year, month, day, korean_name, chinese_name, english_name, solar_date, term_time)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (year, korean_name) 

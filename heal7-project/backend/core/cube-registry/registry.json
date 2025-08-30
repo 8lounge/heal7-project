@@ -1,0 +1,51 @@
+{
+  "cube_registry": {
+    "metadata": {
+      "version": "3.0.0",
+      "architecture": "unified_core_system",
+      "created_at": "2025-08-30T00:00:00Z",
+      "total_cubes": 6,
+      "core_principle": "single_source_of_truth"
+    },
+    
+    "core_data_layer": {
+      "schemas_location": "../data-layer/schemas/",
+      "migrations_location": "../data-layer/migrations/",
+      "principle": "All schemas exist only in core/data-layer, services reference them"
+    },
+
+    "active_cubes": {
+      "shared-cube": {
+        "schema_path": "shared/",
+        "description": "공통 사용자, 인증 관리"
+      },
+      "saju-cube": {
+        "schema_path": "saju/",
+        "description": "사주명리학 계산 및 해석"
+      },
+      "crawling-cube": {
+        "schema_path": "crawling/",
+        "description": "데이터 수집 및 크롤링 관리"
+      },
+      "dream-cube": {
+        "schema_path": "dream/",
+        "description": "꿈풀이 및 해몽 서비스"
+      },
+      "paperwork-cube": {
+        "schema_path": "paperwork/",
+        "description": "서류처리 및 OCR 관리"
+      },
+      "monitoring-cube": {
+        "schema_path": "monitoring/",
+        "description": "시스템 모니터링 및 성능 추적"
+      }
+    },
+
+    "integration_rules": {
+      "schema_access": "All services must reference core/data-layer/schemas/",
+      "no_local_schemas": "Services cannot contain local schema files",
+      "migration_process": "All migrations go through core/data-layer/migrations/",
+      "backup_location": "core/backup-system/"
+    }
+  }
+}

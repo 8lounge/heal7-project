@@ -293,8 +293,8 @@ export const mzCategories = [
 export const shareTemplates = [
   '오늘 {category} 운세가 {score}/5점이래! {emoji}',
   '{title} - {subtitle} {shareText}',
-  'HEAL7에서 본 내 운세: {content}',
-  '#{category}운 #{mood} #운세 #HEAL7'
+  '치유마녀에서 본 내 운세: {content}',
+  '#{category}운 #{mood} #운세 #치유마녀'
 ]
 
 // 인기 검색어 (실시간)

@@ -10,27 +10,28 @@ import json
 import os
 from pathlib import Path
 
-# 사주 admin 설정을 위한 기본 import (임시로 기본 데이터 사용)
-# from ..core.config.saju_admin_settings import ...
-
-# 임시 mock 데이터 및 클래스들
+# 실제 사주 admin 설정 시스템 연동 - 하드코딩 제거 완료
+try:
+    from ..core.config.saju_admin_settings import (
+        SajuAdminSettings,
+        get_admin_settings as get_real_admin_settings,
+        update_admin_settings
+    )
+except ImportError:
+    # 상대경로 임포트 실패 시 절대경로로 시도
+    import sys
+    import os
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'core', 'config'))
+    from saju_admin_settings import (
+        SajuAdminSettings,
+        get_admin_settings as get_real_admin_settings,
+        update_admin_settings
+    )
 from datetime import datetime
 
-class MockSajuAdminSettings:
-    def __init__(self):
-        self.version = "5.0.0"
-        self.last_updated = datetime.now().isoformat()
-        self.updated_by = "admin"
-        self.time_settings = {"timezone_system": "apparent_solar"}
-        self.logic_settings = {"logic_type": "hybrid", "use_kasi_precision": True, "manseeryeok_count": 73442}
-        self.geographic_settings = {"default_country": "KR"}
-        self.kasi_settings = {"cache_ttl": 3600}
-        self.cheongan_interpretations = {"갑": "목", "을": "목"}
-        self.jiji_interpretations = {"자": "쥐", "축": "소"}
-        self.gapja_interpretations = {"갑자": "바다 중의 금"}
-
 def get_admin_settings():
-    return MockSajuAdminSettings()
+    """실제 사주 관리자 설정 반환 (하드코딩 제거)"""
+    return get_real_admin_settings()
 
 router = APIRouter(prefix="/admin/saju", tags=["사주 관리자"])
 security = HTTPBearer()
@@ -54,20 +55,26 @@ def verify_admin_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 async def get_all_settings(token: str = Depends(verify_admin_token)):
     """전체 사주 관리자 설정을 조회합니다."""
     try:
-        # 기본 설정 반환 (임시 mock 데이터)
+        # 실제 설정 반환 (하드코딩 제거)
         settings = get_admin_settings()
-        return {
-            "version": settings.version,
-            "last_updated": settings.last_updated,
-            "updated_by": settings.updated_by,
-            "time_settings": settings.time_settings,
-            "logic_settings": settings.logic_settings,
-            "geographic_settings": settings.geographic_settings,
-            "kasi_settings": settings.kasi_settings,
-            "cheongan_interpretations": settings.cheongan_interpretations,
-            "jiji_interpretations": settings.jiji_interpretations,
-            "gapja_interpretations": settings.gapja_interpretations
-        }
+        
+        # 딕셔너리 형태로 변환하여 API 응답
+        if hasattr(settings, 'dict'):
+            return settings.dict()
+        else:
+            # 기존 방식 호환성 유지
+            return {
+                "version": getattr(settings, 'version', '5.0.0'),
+                "last_updated": getattr(settings, 'last_updated', datetime.now().isoformat()),
+                "updated_by": getattr(settings, 'updated_by', 'admin'),
+                "time_settings": getattr(settings, 'time_settings', {}),
+                "logic_settings": getattr(settings, 'logic_settings', {}),
+                "geographic_settings": getattr(settings, 'geographic_settings', {}),
+                "kasi_settings": getattr(settings, 'kasi_settings', {}),
+                "cheongan_interpretations": getattr(settings, 'cheongan_interpretations', {}),
+                "jiji_interpretations": getattr(settings, 'jiji_interpretations', {}),
+                "gapja_interpretations": getattr(settings, 'gapja_interpretations', {})
+            }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"설정 조회 실패: {str(e)}")
 
@@ -80,6 +87,10 @@ async def save_all_settings(
     try:
         # 데이터 디렉토리 생성
         os.makedirs(os.path.dirname(SETTINGS_FILE_PATH), exist_ok=True)
+        
+        # 실제 설정 인스턴스가 아닌 경우 변환 필요
+        if not isinstance(settings, SajuAdminSettings):
+            settings = SajuAdminSettings(**settings)
         
         # 파일로 저장
         settings.save_to_file(SETTINGS_FILE_PATH)
@@ -248,17 +259,17 @@ async def get_system_status(token: str = Depends(verify_admin_token)) -> Dict[st
         "version": settings.version,
         "last_updated": settings.last_updated,
         "updated_by": settings.updated_by,
-        "settings_file_exists": False,  # 임시로 False
+        "settings_file_exists": os.path.exists(SETTINGS_FILE_PATH),
         "settings_file_path": SETTINGS_FILE_PATH,
         "current_config": {
-            "timezone_system": settings.time_settings.get("timezone_system", "standard"),
-            "logic_type": settings.logic_settings.get("logic_type", "hybrid"),
-            "default_country": settings.geographic_settings.get("default_country", "KR"),
-            "use_kasi_precision": settings.logic_settings.get("use_kasi_precision", True),
-            "manseeryeok_count": settings.logic_settings.get("manseeryeok_count", 60000),
-            "cheongan_count": len(settings.cheongan_interpretations),
-            "jiji_count": len(settings.jiji_interpretations),
-            "gapja_count": len(settings.gapja_interpretations)
+            "timezone_system": getattr(settings.time_settings, 'timezone_system', 'standard'),
+            "logic_type": getattr(settings.logic_settings, 'logic_type', 'hybrid'),
+            "default_country": getattr(settings.geographic_settings, 'default_country', 'KR'),
+            "use_kasi_precision": getattr(settings.logic_settings, 'use_kasi_precision', True),
+            "manseeryeok_count": getattr(settings.logic_settings, 'manseeryeok_count', 60000),
+            "cheongan_count": len(settings.cheongan_interpretations) if settings.cheongan_interpretations else 0,
+            "jiji_count": len(settings.jiji_interpretations) if settings.jiji_interpretations else 0,
+            "gapja_count": len(settings.gapja_interpretations) if settings.gapja_interpretations else 0
         }
     }
 

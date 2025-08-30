@@ -15,7 +15,7 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
 
   const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-purple-300'
+  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
   let filteredProducts = products
 
@@ -209,10 +209,8 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
-          viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic'
-        }`}>
-          🛍️ {viewMode === 'cyber_fantasy' ? '사이버 스토어' : 'HEAL7 스토어'}
+        <h1 className="text-4xl font-bold mb-6 text-white">
+          🛍️ {viewMode === 'cyber_fantasy' ? '사이버 스토어' : '치유마녀 스토어'}
         </h1>
         <p className="text-gray-300 text-lg">
           {viewMode === 'cyber_fantasy' 

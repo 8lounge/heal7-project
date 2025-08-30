@@ -32,7 +32,7 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
 
   const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-purple-300'
+  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
   // 카드 뽑기 함수
   const drawCards = async () => {
@@ -168,7 +168,7 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
                         spread.category === 'love' ? 'bg-pink-500/20 text-pink-300' :
                         spread.category === 'career' ? 'bg-blue-500/20 text-blue-300' :
                         spread.category === 'daily' ? 'bg-green-500/20 text-green-300' :
-                        'bg-purple-500/20 text-purple-300'
+                        'bg-purple-500/20 text-white'
                       }`}>
                         {spread.category.toUpperCase()}
                       </span>
@@ -442,7 +442,7 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
                           </div>
 
                           <div className="bg-purple-500/20 p-3 rounded-lg">
-                            <h4 className="font-semibold text-purple-300 mb-1">💡 조언</h4>
+                            <h4 className="font-semibold text-white mb-1">💡 조언</h4>
                             <p className="text-gray-300">{interpretation.advice}</p>
                           </div>
 

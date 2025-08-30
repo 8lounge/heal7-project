@@ -197,14 +197,14 @@ export const ZodiacAnalysis: React.FC = () => {
               <div className="bg-white/10 backdrop-blur-md border border-purple-200/30 rounded-xl p-6">
                 <div className="mb-4">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-purple-400" />
+                    <Zap className="w-5 h-5 text-white" />
                     숨겨진 잠재력
                   </h3>
                 </div>
                 <div>
                   <div className="flex flex-wrap gap-2">
                     {result.hidden_potential.map((potential, index) => (
-                      <span key={index} className="inline-block border border-purple-400/50 text-purple-300 px-3 py-1 rounded-full text-sm bg-white/10 backdrop-blur-sm">
+                      <span key={index} className="inline-block border border-purple-400/50 text-white px-3 py-1 rounded-full text-sm bg-white/10 backdrop-blur-sm">
                         {potential}
                       </span>
                     ))}
@@ -283,7 +283,7 @@ export const ZodiacAnalysis: React.FC = () => {
                   프리미엄 서비스로 연애운, 결혼운, 상세 궁합까지 확인해보세요!
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  <button className="border border-purple-400/50 text-purple-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
+                  <button className="border border-purple-400/50 text-white px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
                     💕 연애운 분석
                   </button>
                   <button className="border border-pink-400/50 text-pink-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">

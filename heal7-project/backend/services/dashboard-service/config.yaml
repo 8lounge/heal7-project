@@ -1,0 +1,42 @@
+api:
+  docs_url: /docs
+  prefix: /api/v1
+  redoc_url: /redoc
+  title: HEAL7 Cube Dashboard Service
+  version: 1.0.0
+orchestration:
+  managed_services:
+    paperwork:
+      health_endpoint: /health
+      port: 8001
+    saju:
+      health_endpoint: /health
+      port: 8003
+    crawling:
+      health_endpoint: /health
+      port: 8004
+    ai-monitoring:
+      health_endpoint: /health
+      port: 8005
+  workflows:
+    data_collection: 데이터 수집 파이프라인
+    document_automation: 서류 자동화 워크플로우
+    saju_processing: 사주 종합 처리 워크플로우
+server:
+  host: 0.0.0.0
+  log_level: info
+  port: 8000
+  reload: false
+  workers: 1
+service:
+  functions:
+  - orchestration
+  - dashboard
+  - authentication
+  - configuration
+  - gateway
+  is_orchestration_hub: true
+  name: cube-dashboard-service
+  port: 8000
+  purpose: 큐브 시스템 오케스트레이션 허브
+  version: 1.0.0

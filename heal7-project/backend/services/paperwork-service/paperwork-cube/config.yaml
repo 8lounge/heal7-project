@@ -1,0 +1,23 @@
+cube:
+  name: "paperwork-system"
+  version: "1.0.0"
+  service: "paperwork.heal7.com"
+  port: 8002
+  
+server:
+  host: "0.0.0.0"
+  reload: true
+  log_level: "info"
+  
+features:
+  - "문서 AI 처리"
+  - "스크래핑 대시보드"
+  - "컬렉션 관리"
+  - "환경 설정 API"
+  
+dependencies:
+  - fastapi
+  - uvicorn
+  - requests
+  - beautifulsoup4
+  - pandas

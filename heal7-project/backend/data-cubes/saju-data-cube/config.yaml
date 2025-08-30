@@ -1,0 +1,197 @@
+# 🔮 HEAL7 사주 데이터큐브 설정
+# 사주명리학 데이터의 완전한 캡슐화 및 관리
+
+cube_info:
+  name: "saju-data-cube"
+  version: "2.0.0"
+  description: "사주명리학 계산, 해석, 궁합 분석 데이터 처리 큐브"
+  maintainer: "HEAL7 사주팀"
+  created_at: "2024-03-15"
+  category: "core_service"
+
+# 데이터베이스 설정
+database:
+  postgresql:
+    schema_name: "saju_service"
+    description: "사주 계산 결과, 대운/세운, 궁합 분석 데이터"
+    tables:
+      - "saju_charts"          # 사주 차트 기본 정보
+      - "daewoon_cycles"       # 대운 정보
+      - "sewoon_cycles"        # 세운 정보  
+      - "compatibility_analyses" # 궁합 분석 결과
+      - "calculation_performance" # 성능 로그
+    pool_size: 20
+    max_overflow: 30
+    
+  redis:
+    db_number: 1
+    namespace: "saju_service"
+    description: "사주 계산 결과 캐시, KASI 데이터 캐시"
+    key_patterns:
+      - "saju_service:chart:{chart_id}"
+      - "saju_service:daewoon:{chart_id}"
+      - "saju_service:kasi:*"
+      - "saju_service:compatibility:*"
+    connection_pool: 15
+    default_ttl: 604800  # 7 days
+    
+  jsonb:
+    enabled: false
+    reason: "사주 데이터는 정규화된 관계형 구조 사용"
+
+# API 인터페이스 설정
+interfaces:
+  rest_api:
+    enabled: true
+    port: 8001
+    prefix: "/api/v1/saju"
+    endpoints:
+      - "/charts"              # 사주 차트 조회/생성
+      - "/compatibility"       # 궁합 분석
+      - "/fortune"            # 운세 조회
+      - "/cache"              # 캐시 관리
+    
+  message_queue:
+    enabled: true
+    topics:
+      subscribe:
+        - "user.created"        # 새 사용자 생성 시
+        - "user.updated"        # 사용자 정보 업데이트 시
+      publish:
+        - "saju.calculation.completed"  # 사주 계산 완료
+        - "saju.cache.invalidated"     # 캐시 무효화
+    
+  grpc:
+    enabled: false
+    reason: "현재는 REST API만 사용"
+
+# 데이터 처리 설정
+processing:
+  saju_calculation:
+    enabled: true
+    engine_version: "2.0.0"
+    kasi_api_integration: true
+    cache_results: true
+    
+  compatibility_analysis:
+    enabled: true
+    analysis_types: ["romantic", "business", "friendship"]
+    detailed_scoring: true
+    
+  performance_optimization:
+    parallel_processing: true
+    batch_size: 100
+    cache_warming: true
+
+# 외부 의존성
+dependencies:
+  cubes:
+    - name: "shared-data-cube"
+      reason: "사용자 정보 조회"
+      endpoints: ["/users", "/sessions"]
+  
+  external_apis:
+    - name: "KASI API"
+      url: "https://kasi.re.kr/api"
+      description: "절기 및 음력 변환 데이터"
+      rate_limit: "1000/hour"
+
+# 모니터링 설정
+monitoring:
+  metrics_enabled: true
+  health_check_interval: 30
+  performance_logging: true
+  
+  alerts:
+    calculation_latency_threshold: 5000  # ms
+    cache_hit_rate_threshold: 0.8       # 80%
+    database_connection_threshold: 0.9   # 90%
+  
+  dashboards:
+    - "사주 계산 성능 대시보드"
+    - "캐시 효율성 대시보드"
+    - "KASI API 사용량 대시보드"
+
+# 보안 설정
+security:
+  encryption_enabled: true
+  encryption_algorithm: "AES-256"
+  
+  access_control: "role_based"
+  allowed_roles: ["saju_service", "dashboard_service", "admin"]
+  
+  audit_logging: true
+  sensitive_fields: ["birth_time", "birth_location"]
+  
+  api_authentication: "jwt_token"
+  rate_limiting:
+    requests_per_minute: 1000
+    requests_per_hour: 10000
+
+# 백업 및 복구
+backup:
+  auto_backup: true
+  backup_interval: "daily"
+  backup_time: "02:00"
+  retention_days: 30
+  
+  backup_targets:
+    postgresql: true
+    redis: true  # 중요한 캐시 데이터만
+    
+  restore_testing: "weekly"
+
+# 성능 최적화
+performance:
+  connection_pooling: true
+  query_optimization: true
+  index_maintenance: "auto"
+  
+  cache_strategies:
+    - "calculation_results"      # 계산 결과 캐시
+    - "frequent_queries"        # 자주 조회되는 쿼리
+    - "kasi_api_responses"      # KASI API 응답
+  
+  scaling:
+    horizontal_scaling: false   # 현재는 단일 인스턴스
+    vertical_scaling: true
+    max_memory: "2GB"
+    max_cpu_cores: 4
+
+# 데이터 품질
+data_quality:
+  validation_enabled: true
+  validation_rules:
+    - "birth_date_range_check"   # 출생일자 유효성
+    - "saju_structure_integrity" # 사주 구조 무결성
+    - "calculation_consistency"  # 계산 일관성
+  
+  cleanup_policies:
+    - name: "old_cache_cleanup"
+      schedule: "daily"
+      action: "delete_expired_cache"
+    - name: "performance_log_rotation"  
+      schedule: "weekly"
+      action: "archive_old_logs"
+
+# 개발 환경
+development:
+  debug_mode: false
+  test_data_enabled: true
+  mock_kasi_api: false
+  
+  test_configurations:
+    unit_tests: true
+    integration_tests: true
+    performance_tests: true
+    
+# 운영 환경
+production:
+  high_availability: true
+  load_balancing: false  # 향후 구현
+  disaster_recovery: true
+  
+  maintenance_windows:
+    - day: "Sunday"
+      time: "03:00-04:00"
+      description: "주간 정기 점검"

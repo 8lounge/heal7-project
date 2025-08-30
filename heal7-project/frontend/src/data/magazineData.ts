@@ -235,7 +235,7 @@ export const magazineArticles: MagazineArticle[] = [
     title: '[독점 인터뷰] 유명 유튜버가 말하는 "운세와 콘텐츠 창작"',
     subtitle: '구독자 100만 크리에이터의 운세 활용법',
     category: 'interview',
-    author: 'HEAL7 에디터팀',
+    author: '치유마녀 에디터팀',
     authorImage: '🎤',
     publishDate: '2025-08-10',
     readTime: '12분',

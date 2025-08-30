@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-toast": "^1.2.15",
     "@react-three/drei": "^9.112.0",
     "@react-three/fiber": "^8.17.6",
     "@tanstack/react-query": "^5.54.1",
@@ -19,12 +23,15 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "framer-motion": "^11.5.4",
     "lucide-react": "^0.541.0",
     "postcss": "^8.4.44",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.10",
     "three": "^0.168.0",
     "typescript": "^5.5.3",
@@ -33,11 +40,14 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0",
     "@types/three": "^0.168.0",
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@typescript-eslint/parser": "^8.4.0",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.9"
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "playwright": "^1.55.0"
   }
 }

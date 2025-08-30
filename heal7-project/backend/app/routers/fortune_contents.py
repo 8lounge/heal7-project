@@ -5,7 +5,7 @@ HEAL7 운세 콘텐츠 API
 
 from fastapi import APIRouter, HTTPException, Query, Depends
 from pydantic import BaseModel, Field
-from typing import Dict, List, Optional, Literal, Union
+from typing import Dict, List, Optional, Literal, Union, Any
 from datetime import datetime, date
 from enum import Enum
 
@@ -194,11 +194,14 @@ async def get_sasang_constitution(birth_info: BirthInfo) -> SasangConstitution:
 @router.get("/daily-fortune", summary="오늘의 운세")
 async def get_daily_fortune(
     birth_date: date = Query(..., description="생년월일"),
-    target_date: date = Query(default_factory=date.today, description="운세를 볼 날짜")
+    target_date: Optional[date] = Query(None, description="운세를 볼 날짜")
 ) -> DailyFortune:
     """특정 날짜의 개인 맞춤 운세를 제공합니다."""
     
     # 간단한 운세 계산 (실제로는 복잡한 사주 계산 필요)
+    if target_date is None:
+        target_date = date.today()
+    
     import random
     random.seed(hash(str(birth_date) + str(target_date)))
     
@@ -308,7 +311,7 @@ async def get_compatibility_analysis(
 @router.post("/family-compatibility", summary="가족 궁합 분석")
 async def get_family_compatibility(
     family_members: List[BirthInfo] = Field(..., description="가족 구성원들의 출생 정보")
-) -> Dict[str, Any]:
+) -> dict:
     """가족 구성원 전체의 궁합과 역할을 분석합니다."""
     
     if len(family_members) < 2:
@@ -376,7 +379,7 @@ async def get_workplace_compatibility(
     person1: BirthInfo = Field(..., description="첫 번째 사람"),
     person2: BirthInfo = Field(..., description="두 번째 사람"),
     work_relationship: Literal["동료", "상사-부하", "팀원", "파트너"] = Query("동료")
-) -> Dict[str, Any]:
+) -> dict:
     """직장에서의 협업 관계와 시너지 분석을 제공합니다."""
     
     return {

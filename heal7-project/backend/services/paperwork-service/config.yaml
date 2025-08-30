@@ -1,0 +1,23 @@
+api:
+  docs_url: /docs
+  prefix: /api/v1
+  redoc_url: /redoc
+  title: HEAL7 Paperwork Service
+  version: 1.0.0
+server:
+  host: 0.0.0.0
+  log_level: info
+  port: 8001
+  reload: false
+  workers: 1
+service:
+  functions:
+  - ocr
+  - ai_analysis
+  - document_generation
+  - classification
+  is_orchestration_hub: false
+  name: paperwork-service
+  port: 8001
+  purpose: AI 기반 서류 자동 처리
+  version: 1.0.0

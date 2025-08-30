@@ -2,6 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 관리자 페이지 select 옵션 다크 테마 */
+.admin-select {
+  @apply bg-white/10 border border-white/20 rounded backdrop-blur-sm text-white focus:bg-white/15 transition-all;
+}
+
+.admin-select option {
+  background-color: rgba(15, 23, 42, 0.95) !important; /* slate-900 with opacity */
+  color: white !important;
+  padding: 8px 12px;
+}
+
+.admin-select option:hover,
+.admin-select option:focus,
+.admin-select option:checked {
+  background-color: rgba(59, 130, 246, 0.8) !important; /* blue-500 with opacity */
+  color: white !important;
+}
+
+/* 관리자 페이지 입력 필드 공통 스타일 */
+.admin-input {
+  @apply bg-white/10 border border-white/20 rounded backdrop-blur-sm text-white placeholder-white/60 focus:bg-white/15 transition-all;
+}
+
+.admin-textarea {
+  @apply bg-white/10 border border-white/20 rounded backdrop-blur-sm text-white placeholder-white/60 focus:bg-white/15 transition-all resize-none;
+}
+
 /* 🎨 HEAL7 커스텀 스타일 - 포스텔러 영감 + 사이버 판타지 */
 
 @layer base {
@@ -98,17 +125,11 @@
 
   /* 🎯 텍스트 스타일 */
   .text-cosmic {
-    background: linear-gradient(45deg, var(--primary-cosmic), var(--primary-mystic));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white;
   }
 
   .text-mystic {
-    background: linear-gradient(45deg, var(--primary-mystic), var(--primary-fortune));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white;
   }
 
   /* ✨ 애니메이션 효과 */
@@ -232,5 +253,34 @@
       animation: none;
       transition: none;
     }
+  }
+}
+
+/* 스크롤바 숨김 유틸리티 */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* 모바일 터치 스크롤 개선 */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* 모바일 터치 반응성 개선 */
+  .mobile-touch {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 }

@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
+import { AuthModal } from '../auth/AuthModal'
+import { useAuth } from '../../hooks/useAuth'
 
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
-                  'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin'
+                  'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
 interface HeaderProps {
   viewMode: 'basic' | 'cyber_fantasy'
@@ -13,6 +15,27 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage, onPageChange }) => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const handleProfileClick = () => {
+    if (isAuthenticated) {
+      // 로그인된 경우 프로필 페이지로 이동 또는 메뉴 표시
+      onPageChange?.('profile');
+    } else {
+      // 로그인되지 않은 경우 인증 모달 열기
+      setIsAuthModalOpen(true);
+    }
+  };
+
   return (
     <motion.header 
       className="sticky top-0 z-50 bg-black/20 backdrop-blur-md border-b border-white/10"
@@ -31,23 +54,13 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
           >
             <div className="text-3xl">🧙‍♀️</div>
             <div>
-              <h1 className="text-2xl font-bold text-cosmic">치유 마녀</h1>
+              <h1 className="text-2xl font-bold text-cosmic">치유마녀</h1>
               <p className="text-sm text-gray-300">HEAL-WITCH</p>
             </div>
           </motion.button>
 
-          {/* 중앙 네비게이션 */}
+          {/* 중앙 네비게이션 - 주요 메뉴 */}
           <nav className="hidden md:flex items-center space-x-4">
-            <button 
-              onClick={() => onPageChange?.('dashboard')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                currentPage === 'dashboard' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              메인
-            </button>
             <button 
               onClick={() => onPageChange?.('saju')}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
@@ -56,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
               }`}
             >
-              사주명리
+              🔮 사주명리
             </button>
             <button 
               onClick={() => onPageChange?.('tarot')}
@@ -66,7 +79,17 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
               }`}
             >
-              타로카드
+              🃏 타로카드
+            </button>
+            <button 
+              onClick={() => onPageChange?.('fortune')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                currentPage === 'fortune' 
+                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+              }`}
+            >
+              ⭐ 운세
             </button>
             <button 
               onClick={() => onPageChange?.('profile')}
@@ -120,29 +143,51 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
             </div>
 
             {/* 사용자 프로필 */}
-            <motion.div 
-              className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center cursor-pointer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="text-white font-bold">U</span>
-            </motion.div>
+            <div className="flex items-center space-x-2">
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-3">
+                  <motion.div 
+                    className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center cursor-pointer"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleProfileClick}
+                    title={`${user?.username || user?.full_name || user?.email || '사용자'}님`}
+                  >
+                    <span className="text-white font-bold">
+                      {
+                        user?.username?.charAt(0).toUpperCase() || 
+                        user?.full_name?.charAt(0).toUpperCase() ||
+                        user?.email?.charAt(0).toUpperCase() || 
+                        '사'
+                      }
+                    </span>
+                  </motion.div>
+                  <motion.button
+                    className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                  >
+                    로그아웃
+                  </motion.button>
+                </div>
+              ) : (
+                <motion.button
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-medium transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsAuthModalOpen(true)}
+                >
+                  로그인
+                </motion.button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* 모바일 메뉴 */}
+        {/* 모바일 메뉴 - 주요 메뉴 */}
         <div className="md:hidden mt-4">
-          <nav className="flex items-center justify-center gap-2 px-4">
-            <button 
-              onClick={() => onPageChange?.('dashboard')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
-                currentPage === 'dashboard' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              메인
-            </button>
+          <nav className="flex items-center justify-center gap-2 px-4 flex-wrap">
             <button 
               onClick={() => onPageChange?.('saju')}
               className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
@@ -151,7 +196,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
               }`}
             >
-              사주명리
+              🔮 사주명리
             </button>
             <button 
               onClick={() => onPageChange?.('tarot')}
@@ -161,7 +206,17 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                   : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
               }`}
             >
-              타로카드
+              🃏 타로카드
+            </button>
+            <button 
+              onClick={() => onPageChange?.('fortune')}
+              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
+                currentPage === 'fortune' 
+                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+              }`}
+            >
+              ⭐ 운세
             </button>
             <button 
               onClick={() => onPageChange?.('profile')}
@@ -176,6 +231,13 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
           </nav>
         </div>
       </div>
+
+      {/* 인증 모달 */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </motion.header>
   )
 }

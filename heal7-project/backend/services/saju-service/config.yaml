@@ -1,0 +1,23 @@
+api:
+  docs_url: /docs
+  prefix: /api/v1
+  redoc_url: /redoc
+  title: HEAL7 Saju Service
+  version: 1.0.0
+server:
+  host: 0.0.0.0
+  log_level: info
+  port: 8003
+  reload: false
+  workers: 1
+service:
+  functions:
+  - saju_calculation
+  - myeongrihak_analysis
+  - dream_interpretation
+  - fortune_reading
+  is_orchestration_hub: false
+  name: saju-service
+  port: 8003
+  purpose: 사주명리학 계산 및 해석
+  version: 1.0.0

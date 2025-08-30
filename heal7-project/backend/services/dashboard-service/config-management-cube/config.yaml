@@ -1,0 +1,24 @@
+cube:
+  color: yellow
+  created: '2025-08-26T16:47:53.974867'
+  metaphor: 내분비계 - 시스템 조절
+  name: config-management-system
+  port: 8031
+  purpose: 설정 및 구성 관리
+  type: data-cube
+  version: 1.0.0
+dependencies:
+  external:
+  - fastapi
+  - uvicorn
+  - pydantic
+  internal: []
+interfaces:
+  health_check: /health
+  rest_api: /api/config-management
+  websocket: /ws/config-management
+performance_targets:
+  cpu_utilization_pct: 70
+  error_rate_pct: 0.1
+  memory_limit_mb: 512
+  response_time_ms: 100

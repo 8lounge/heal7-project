@@ -1,0 +1,24 @@
+cube:
+  color: blue
+  created: '2025-08-26T16:47:53.952237'
+  metaphor: 뇌하수체 - 무의식 해석
+  name: dream-interpretation-system
+  port: 8012
+  purpose: 꿈 해몽 및 분석 시스템
+  type: feature-cube
+  version: 1.0.0
+dependencies:
+  external:
+  - fastapi
+  - uvicorn
+  - pydantic
+  internal: []
+interfaces:
+  health_check: /health
+  rest_api: /api/dream-interpretation
+  websocket: /ws/dream-interpretation
+performance_targets:
+  cpu_utilization_pct: 70
+  error_rate_pct: 0.1
+  memory_limit_mb: 512
+  response_time_ms: 100
