@@ -271,6 +271,21 @@
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+  }
+  
+  /* 모바일 네비게이션 스크롤 최적화 */
+  .mobile-nav-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .mobile-nav-scroll > * {
+    scroll-snap-align: start;
   }
   
   /* 모바일 터치 반응성 개선 */

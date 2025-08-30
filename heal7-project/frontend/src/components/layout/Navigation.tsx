@@ -124,14 +124,14 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
           {/* 스크롤 컨테이너 */}
           <div className="relative overflow-hidden">
             <motion.div 
-              className="flex items-center gap-2 pb-2 scrollbar-hide mobile-scroll"
+              className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll"
               style={{ 
-                overflowX: 'auto'
+                overflowX: 'scroll',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
               }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.1}
-              whileDrag={{ cursor: 'grabbing' }}
+              whileTap={{ cursor: 'grabbing' }}
             >
               {visibleItems.map((item) => (
                 <div key={item.id} className="flex-shrink-0">
@@ -164,13 +164,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
             </motion.div>
             
             {/* 좌우 그라데이션 힌트 (스크롤 가능함을 시각적으로 표시) */}
-            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-transparent via-black/5 to-transparent pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-transparent via-black/5 to-transparent pointer-events-none" />
+            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-black/20 via-transparent to-transparent pointer-events-none" />
           </div>
           
           {/* 스크롤 힌트 텍스트 */}
           <div className="flex justify-center mt-1">
-            <span className="text-xs text-white/60">← 좌우로 드래그하세요 →</span>
+            <span className="text-xs text-white/60">← 좌우로 스크롤하세요 →</span>
           </div>
         </div>
       </div>
@@ -196,13 +196,14 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
             <div className="sm:hidden">
               <div className="relative overflow-hidden">
                 <motion.div
-                  className="flex items-center gap-2 pb-2 scrollbar-hide mobile-scroll"
+                  className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll"
                   style={{ 
-                    overflowX: 'auto'
+                    overflowX: 'scroll',
+                    WebkitOverflowScrolling: 'touch',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
                   }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.1}
+                  whileTap={{ cursor: 'grabbing' }}
                 >
                   {hiddenItems.map((item) => (
                     <div key={item.id} className="flex-shrink-0">
@@ -212,8 +213,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
                 </motion.div>
                 
                 {/* 더보기 메뉴 그라데이션 힌트 */}
-                <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-transparent via-black/3 to-transparent pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-transparent via-black/3 to-transparent pointer-events-none" />
+                <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-black/20 via-transparent to-transparent pointer-events-none" />
               </div>
             </div>
           </motion.div>
