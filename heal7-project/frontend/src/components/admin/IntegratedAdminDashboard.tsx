@@ -207,7 +207,7 @@ const IntegratedAdminDashboard: React.FC = () => {
       <div className="fixed top-1/2 right-20 w-24 h-24 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-xl animate-pulse delay-1000"></div>
       <div className="fixed bottom-20 left-1/3 w-40 h-40 bg-gradient-to-br from-indigo-400/20 to-blue-400/20 rounded-full blur-2xl animate-pulse delay-2000"></div>
       
-      <div className="max-w-7xl mx-auto relative z-10 -mt-8">
+      <div className="max-w-7xl mx-auto relative z-10 -mt-28">
         {/* 헤더 */}
         <div className="mb-8">
           <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
