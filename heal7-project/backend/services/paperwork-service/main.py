@@ -8,7 +8,7 @@ AI 기반 서류 자동 처리
 """
 
 from fastapi import FastAPI
-from fastapi.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import yaml
 from pathlib import Path
 

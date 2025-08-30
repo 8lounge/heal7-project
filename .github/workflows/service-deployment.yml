@@ -117,24 +117,24 @@ jobs:
         SERVICE_NAME="${{ matrix.service }}"
         
         case $SERVICE_NAME in
+          "paperwork")
+            PORT=8001
+            DESC="서류 처리 및 AI 분석"
+            ;;
           "saju")
-            PORT=8012
+            PORT=8002
             DESC="사주명리 계산 및 해석"
             ;;
           "crawling") 
-            PORT=8013
+            PORT=8003
             DESC="데이터 수집 및 크롤링"
             ;;
-          "paperwork")
-            PORT=8010
-            DESC="서류 처리 및 AI 분석"
-            ;;
           "ai-monitoring")
-            PORT=8014
+            PORT=8004
             DESC="AI 성능 모니터링"
             ;;
           "dashboard")
-            PORT=8015
+            PORT=8005
             DESC="오케스트레이션 허브 ⭐"
             ;;
         esac
@@ -165,11 +165,11 @@ jobs:
         echo ""
         echo "🌐 Service Architecture:"
         echo "- 🎨 Frontend: saju.heal7.com (Vite Preview)"
-        echo "- 📄 Paperwork Service: localhost:8010"
-        echo "- 🔮 Saju Service: localhost:8012"  
-        echo "- 🕷️ Crawling Service: localhost:8013"
-        echo "- 🧪 AI Monitoring: localhost:8014"
-        echo "- 🎼 Dashboard Hub: localhost:8015 ⭐"
+        echo "- 📄 Paperwork Service: localhost:8001"
+        echo "- 🔮 Saju Service: localhost:8002"  
+        echo "- 🕷️ Crawling Service: localhost:8003"
+        echo "- 🧪 AI Monitoring: localhost:8004"
+        echo "- 🎼 Dashboard Hub: localhost:8005 ⭐"
         echo ""
         echo "✅ GitHub Actions 기반 무서버 빌드/배포 완료!"
         echo "🚀 로컬 서버 부담 제거 성공"

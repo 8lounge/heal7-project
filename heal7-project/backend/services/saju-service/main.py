@@ -8,7 +8,7 @@ HEAL7 Saju Service
 """
 
 from fastapi import FastAPI
-from fastapi.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import yaml
 from pathlib import Path
 
@@ -64,7 +64,7 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 
 # 메인 백엔드의 사주 서비스 로직 추가
-sys.append(str(Path(__file__).parent.parent / "app"))
+sys.path.append(str(Path(__file__).parent.parent / "app"))
 
 try:
     from services_new.saju_service import SajuService, BirthInfo, SajuResult as SajuServiceResult, Gender

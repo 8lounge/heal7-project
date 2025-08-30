@@ -1,6 +1,6 @@
 # 🏠 HEAL7 프로젝트 마스터 색인
 
-> **빠른 시작**: 30분 내 전체 시스템 이해하기 | **최종 업데이트**: 2025-08-29
+> **빠른 시작**: 30분 내 전체 시스템 이해하기 | **최종 업데이트**: 2025-08-30
 
 ## 🚀 **긴급 상황 대응**
 - 🔥 [시스템 장애 시](./docs/operations/troubleshooting.md#system-failure)
@@ -31,6 +31,36 @@
 ### 🗄️ **공통 인프라**
 - **데이터베이스**: ✅ PostgreSQL 최적화
 - **보안**: ✅ SSL 인증서 유효
+
+### ⚡ **GitHub Actions 빌드 시스템** (2025-08-30 구축 완료)
+> 🚀 **무서버 빌드**: 로컬 서버 부담 제로, 클라우드에서 안전한 빌드/배포
+
+#### 🎼 **서비스별 그룹 분류 완료** ✅
+- **🎨 frontend-build-deploy.yml**: 프론트엔드 전용 (Node.js 18, Vite)
+- **🎼 backend-services-build.yml**: 5개 백엔드 서비스 병렬 빌드
+  - 📄 paperwork-service (포트 8001): 서류 처리 및 AI 분석 ✅ 
+  - 🔮 saju-service (포트 8002): 사주명리 계산 및 해석 ✅
+  - 🕷️ crawling-service (포트 8003): 데이터 수집 및 크롤링  
+  - 🧪 ai-monitoring-service (포트 8004): AI 성능 모니터링
+  - 🎼 dashboard-service (포트 8005): 오케스트레이션 허브 ⭐
+- **🚀 service-deployment.yml**: 배포 오케스트레이션 자동화
+- **🎯 service-selector.yml**: 수동 서비스 선택 빌드 (관리자용)
+
+#### 🔥 **빌드 규칙 & 주요 공지**
+```bash
+# ✅ 권장 사용법
+gh workflow run service-selector.yml -f target_service=saju-service-only -f build_mode=production
+gh workflow run backend-services-build.yml    # 모든 백엔드 서비스 빌드
+gh workflow run frontend-build-deploy.yml      # 프론트엔드만 빌드
+
+# ⚠️ 레거시 (사용 금지)
+gh workflow run build-and-deploy.yml          # DEPRECATED - 사용 불가
+```
+
+#### 📋 **배포 자동화 트리거**
+- **Push**: `main` 브랜치에 코드 푸시 시 자동 빌드
+- **PR**: Pull Request 생성 시 테스트 빌드
+- **Manual**: `workflow_dispatch`로 수동 실행 가능
 
 ## 🎯 **역할별 빠른 접근**
 
@@ -63,7 +93,13 @@ kill -9 $(pgrep nginx)  # 전체 웹서비스 중단
 
 ### ✅ **안전한 대안 명령어**
 ```bash
-gh workflow run build-and-deploy.yml    # GitHub Actions 빌드/배포
+# 🎯 서비스별 빌드/배포 (권장)
+gh workflow run service-selector.yml -f target_service=saju-service-only    # 사주서비스만
+gh workflow run service-selector.yml -f target_service=all-services         # 전체 서비스
+gh workflow run frontend-build-deploy.yml                                   # 프론트엔드만
+gh workflow run backend-services-build.yml                                  # 백엔드만
+
+# 🏗️ 로컬 테스트용
 vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 ```
 
