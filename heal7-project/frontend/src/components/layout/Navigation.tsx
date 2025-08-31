@@ -122,16 +122,18 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
         {/* 모바일: 가로 스크롤 가능한 배치 */}
         <div className="sm:hidden">
           {/* 스크롤 컨테이너 */}
-          <div className="relative overflow-hidden">
+          <div className="relative">
             <div
               className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll overflow-x-auto"
               style={{
                 overflowX: 'auto',
+                overflowY: 'hidden',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 touchAction: 'pan-x',
-                scrollBehavior: 'smooth'
+                scrollBehavior: 'smooth',
+                willChange: 'scroll-position'
               }}
             >
               {visibleItems.map((item) => (
@@ -195,16 +197,18 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
 
             {/* 모바일: 가로 스크롤 */}
             <div className="sm:hidden">
-              <div className="relative overflow-hidden">
+              <div className="relative">
                 <div
                   className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll overflow-x-auto"
                   style={{
                     overflowX: 'auto',
+                    overflowY: 'hidden',
                     WebkitOverflowScrolling: 'touch',
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
                     touchAction: 'pan-x',
-                    scrollBehavior: 'smooth'
+                    scrollBehavior: 'smooth',
+                    willChange: 'scroll-position'
                   }}
                 >
                   {hiddenItems.map((item) => (
