@@ -164,6 +164,22 @@
       min-width: 44px;
     }
   }
+  
+  /* 모바일 드래그 메뉴 스타일 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE와 Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;            /* Chrome, Safari, Opera */
+  }
+  
+  /* 터치 스크롤 최적화 */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
 
   /* 🎨 오행 컬러 유틸리티 */
   .wood-gradient { @apply bg-gradient-to-r from-green-500 to-emerald-500; }

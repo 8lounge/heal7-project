@@ -132,48 +132,103 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
 
         {/* 모바일 메뉴 */}
         <div className="md:hidden mt-4">
-          <nav className="flex items-center justify-center gap-2 px-4">
-            <button 
-              onClick={() => onPageChange?.('dashboard')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
-                currentPage === 'dashboard' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              메인
-            </button>
-            <button 
-              onClick={() => onPageChange?.('saju')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
-                currentPage === 'saju' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              사주명리
-            </button>
-            <button 
-              onClick={() => onPageChange?.('tarot')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
-                currentPage === 'tarot' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              타로카드
-            </button>
-            <button 
-              onClick={() => onPageChange?.('profile')}
-              className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-xs ${
-                currentPage === 'profile' 
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                  : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
-              }`}
-            >
-              프로필
-            </button>
-          </nav>
+          {/* 드래그 안내 텍스트 */}
+          <div className="text-center mb-2">
+            <p className="text-white/70 text-xs">👈 좌우로 드래그 하세요 👉</p>
+          </div>
+          
+          {/* 드래그 가능한 메뉴 */}
+          <div className="relative">
+            <nav className="flex gap-3 px-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth touch-scroll">
+              <button 
+                onClick={() => onPageChange?.('dashboard')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'dashboard' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                🏠 메인
+              </button>
+              <button 
+                onClick={() => onPageChange?.('saju')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'saju' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                🔮 사주명리
+              </button>
+              <button 
+                onClick={() => onPageChange?.('tarot')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'tarot' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                🃏 타로카드
+              </button>
+              <button 
+                onClick={() => onPageChange?.('magazine')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'magazine' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                📰 매거진
+              </button>
+              <button 
+                onClick={() => onPageChange?.('consultation')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'consultation' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                💬 상담
+              </button>
+              <button 
+                onClick={() => onPageChange?.('store')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'store' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                🛍️ 스토어
+              </button>
+              <button 
+                onClick={() => onPageChange?.('notices')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'notices' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                📢 공지사항
+              </button>
+              <button 
+                onClick={() => onPageChange?.('profile')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'profile' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                👤 프로필
+              </button>
+            </nav>
+            
+            {/* 스크롤 인디케이터 */}
+            <div className="absolute -bottom-1 left-0 right-0 flex justify-center">
+              <div className="w-16 h-1 bg-white/20 rounded-full">
+                <div className="w-8 h-1 bg-white/50 rounded-full animate-pulse"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </motion.header>
