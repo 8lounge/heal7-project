@@ -1,0 +1,273 @@
+# 🕷️ HEAL7 크롤링 데이터큐브 설정
+# 웹 스크래핑 및 데이터 수집의 완전한 라이프사이클 관리
+
+cube_info:
+  name: "crawling-data-cube"
+  version: "2.0.0"
+  description: "정부포털, 꿈풀이, 일반 웹사이트 데이터 수집 및 처리 큐브"
+  maintainer: "HEAL7 크롤링팀"
+  created_at: "2024-03-15"
+  category: "data_collection"
+
+# 데이터베이스 설정 (JSONB 중심)
+database:
+  postgresql:
+    schema_name: "crawling_service"
+    description: "스크래핑 세션 관리 및 메타데이터"
+    tables:
+      - "scraping_sessions"        # 스크래핑 세션 관리
+      - "data_sources"            # 데이터 소스 정보
+      - "quality_metrics"         # 데이터 품질 지표
+    pool_size: 10
+    max_overflow: 20
+    
+  redis:
+    db_number: 2
+    namespace: "crawling_service"
+    description: "크롤링 큐, 속도 제한, 임시 저장소"
+    key_patterns:
+      - "crawling_service:queue:{domain}"
+      - "crawling_service:rate_limit:{domain}"
+      - "crawling_service:session:{session_id}"
+      - "crawling_service:duplicate_check:*"
+    connection_pool: 20
+    default_ttl: 86400  # 1 day
+    
+  jsonb:
+    enabled: true
+    primary_use: true
+    description: "스크래핑된 원본 데이터의 유연한 저장"
+    tables:
+      - "government_portal_raw_data"    # 정부포털 원본 데이터
+      - "dream_interpretation_raw_data" # 꿈풀이 원본 데이터
+      - "general_web_scraping_data"     # 일반 웹 데이터
+    optimization: "gin_indexes"
+
+# API 인터페이스 설정
+interfaces:
+  rest_api:
+    enabled: true
+    port: 8002
+    prefix: "/api/v1/crawling"
+    endpoints:
+      - "/scraping-sessions"       # 스크래핑 세션 관리
+      - "/collected-data"         # 수집된 데이터 조회
+      - "/quality-reports"        # 품질 보고서
+      - "/data-export"           # 데이터 내보내기
+    
+  message_queue:
+    enabled: true
+    topics:
+      subscribe:
+        - "crawling.request.new"     # 새 크롤링 요청
+        - "crawling.schedule.trigger" # 스케줄 트리거
+      publish:
+        - "crawling.data.collected"   # 데이터 수집 완료
+        - "crawling.session.completed" # 세션 완료
+        - "crawling.error.critical"   # 심각한 오류 발생
+    
+  scheduler:
+    enabled: true
+    engine: "celery"
+    description: "주기적 크롤링 작업 스케줄링"
+
+# 데이터 수집 설정
+data_collection:
+  targets:
+    government_portals:
+      - name: "bizinfo"
+        url: "https://www.bizinfo.go.kr"
+        schedule: "daily"
+        priority: "high"
+      - name: "k-startup"
+        url: "https://www.k-startup.go.kr"
+        schedule: "daily"
+        priority: "high"
+    
+    dream_sites:
+      - name: "sajuforum"
+        url: "https://www.sajuforum.com"
+        schedule: "weekly"
+        priority: "medium"
+      - name: "unse2u"
+        url: "https://www.unse2u.co.kr"  
+        schedule: "weekly"
+        priority: "medium"
+  
+  crawler_settings:
+    user_agent: "HEAL7-Crawler/2.0 (+https://heal7.com/crawler)"
+    delay_range: [2, 5]  # seconds
+    max_retries: 3
+    timeout: 30
+    respect_robots_txt: true
+    
+  rate_limiting:
+    global_rate: "100/minute"
+    per_domain_rate: "10/minute"
+    burst_allowance: 5
+
+# 데이터 처리 파이프라인
+processing:
+  data_validation:
+    enabled: true
+    rules:
+      - "content_length_check"      # 최소 콘텐츠 길이
+      - "duplicate_detection"       # 중복 콘텐츠 탐지
+      - "quality_scoring"          # AI 품질 점수
+      - "malicious_content_filter" # 악성 콘텐츠 필터
+  
+  data_cleaning:
+    enabled: true
+    operations:
+      - "html_tag_removal"         # HTML 태그 제거
+      - "special_character_normalize" # 특수문자 정규화
+      - "encoding_standardization"  # 인코딩 통일
+      - "whitespace_cleanup"       # 공백 정리
+  
+  ai_analysis:
+    enabled: true
+    models:
+      - name: "content_classifier"
+        purpose: "콘텐츠 분류"
+      - name: "quality_assessor"
+        purpose: "품질 평가"
+      - name: "duplicate_detector"
+        purpose: "중복 탐지"
+
+# 외부 의존성
+dependencies:
+  cubes:
+    - name: "shared-data-cube"
+      reason: "사용자 인증 및 세션 관리"
+      endpoints: ["/auth", "/sessions"]
+    - name: "ai-monitoring-data-cube"  
+      reason: "AI 모델 사용량 추적"
+      endpoints: ["/model-usage"]
+  
+  external_services:
+    - name: "Proxy Services"
+      description: "IP 차단 방지용 프록시"
+      required: false
+    - name: "Content APIs"
+      description: "추가적인 데이터 소스 API"
+      required: false
+
+# 모니터링 설정
+monitoring:
+  metrics_enabled: true
+  health_check_interval: 60
+  performance_logging: true
+  
+  key_metrics:
+    - "pages_crawled_per_hour"
+    - "data_quality_score_average"
+    - "duplicate_detection_rate"
+    - "crawler_success_rate"
+    - "storage_usage_growth"
+  
+  alerts:
+    crawler_failure_threshold: 3      # 연속 실패 횟수
+    storage_usage_threshold: 0.8      # 80% 사용량
+    quality_score_threshold: 6.0      # 품질 점수 하한선
+    duplicate_rate_threshold: 0.3     # 30% 중복률
+
+# 보안 설정
+security:
+  encryption_enabled: true
+  
+  access_control: "service_based"
+  allowed_services: ["dashboard_service", "saju_service"]
+  
+  data_privacy:
+    anonymization: true
+    personal_data_detection: true
+    gdpr_compliance: true
+  
+  crawler_ethics:
+    respect_robots_txt: true
+    rate_limiting_strict: true
+    no_aggressive_crawling: true
+    copyright_awareness: true
+
+# 백업 및 보존
+backup:
+  auto_backup: true
+  backup_interval: "daily"
+  backup_time: "01:00"
+  retention_days: 90  # 더 긴 보존기간 (데이터 가치)
+  
+  backup_targets:
+    postgresql: true
+    jsonb_data: true
+    redis: false  # 임시 데이터는 백업 안함
+  
+  archive_policy:
+    old_data_archive: true
+    archive_after_days: 365
+    compressed_storage: true
+
+# 성능 최적화  
+performance:
+  parallel_crawling: true
+  max_concurrent_crawlers: 10
+  
+  storage_optimization:
+    compression: "gzip"
+    indexing: "gin_jsonb"
+    partitioning: "by_month"
+  
+  cache_strategies:
+    - "frequently_accessed_data"
+    - "recent_crawling_results"
+    - "quality_analysis_cache"
+  
+  scaling:
+    horizontal_scaling: true
+    auto_scaling_trigger: "queue_size > 1000"
+    max_instances: 5
+
+# 데이터 품질 관리
+data_quality:
+  validation_pipeline: true
+  
+  quality_rules:
+    - name: "minimum_content_length"
+      threshold: 50
+    - name: "content_language_detection"
+      expected: "korean"
+    - name: "data_freshness_check" 
+      max_age_days: 30
+    - name: "source_reliability_score"
+      min_score: 7.0
+  
+  cleanup_policies:
+    - name: "low_quality_data_removal"
+      schedule: "weekly"  
+      criteria: "quality_score < 5.0"
+    - name: "duplicate_data_deduplication"
+      schedule: "daily"
+      method: "content_hash_comparison"
+    - name: "expired_session_cleanup"
+      schedule: "daily"
+      age_threshold: "7 days"
+
+# 개발 환경
+development:
+  debug_mode: true
+  test_crawling_enabled: true
+  mock_external_sites: true
+  
+  test_data:
+    sample_sites: ["httpbin.org", "example.com"]
+    mock_responses: true
+    
+# 운영 환경
+production:
+  distributed_crawling: true
+  fault_tolerance: true
+  automatic_recovery: true
+  
+  maintenance_windows:
+    - day: "Sunday"  
+      time: "02:00-03:00"
+      description: "크롤러 정기 점검 및 캐시 정리"

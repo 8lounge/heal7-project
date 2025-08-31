@@ -1,85 +1,61 @@
-name: HEAL7 Build and Deploy
+name: HEAL7 Legacy Build (Deprecated)
+
+# ⚠️ DEPRECATED: This workflow is replaced by service-specific workflows
+# Use the following instead:
+# - frontend-build-deploy.yml
+# - backend-services-build.yml  
+# - service-deployment.yml
+# - service-selector.yml
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
+    inputs:
+      legacy_mode:
+        description: 'Use legacy build (not recommended)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+        - 'false'
+        - 'true'
 
 jobs:
-  build-frontend:
+  deprecation-notice:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: heal7-project/frontend/package-lock.json
-    
-    - name: Install dependencies
+    - name: Deprecation Warning
       run: |
-        cd heal7-project/frontend
-        npm ci
-    
-    - name: Build frontend
-      run: |
-        cd heal7-project/frontend
-        npm run build
-    
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: frontend-build
-        path: heal7-project/frontend/out/
-        retention-days: 30
+        echo "⚠️  LEGACY WORKFLOW DEPRECATION NOTICE"
+        echo "====================================="
+        echo ""
+        echo "This workflow has been replaced by:"
+        echo "🎨 frontend-build-deploy.yml - Frontend builds"
+        echo "🎼 backend-services-build.yml - Service-specific builds"  
+        echo "🚀 service-deployment.yml - Orchestrated deployment"
+        echo "🎯 service-selector.yml - Manual service selection"
+        echo ""
+        echo "Please use the new service-specific workflows instead."
+        echo "Legacy mode: ${{ github.event.inputs.legacy_mode }}"
+        
+        if [[ "${{ github.event.inputs.legacy_mode }}" == "true" ]]; then
+          echo "⚠️ Legacy mode enabled - proceed with caution"
+        else
+          echo "❌ Legacy build blocked - use new workflows"
+          exit 1
+        fi
 
-  build-backend:
+  legacy-build:
+    needs: deprecation-notice
     runs-on: ubuntu-latest
+    if: github.event.inputs.legacy_mode == 'true'
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-        cache: 'pip'
-    
-    - name: Install dependencies
+    - name: Legacy build simulation
       run: |
-        cd heal7-project/backend
-        pip install -r requirements.txt
-    
-    - name: Run tests
-      run: |
-        cd heal7-project/backend
-        python -m pytest test_core_service.py -v || echo "Tests completed"
-    
-    - name: Build backend
-      run: |
-        cd heal7-project/backend
-        echo "Backend build completed"
-
-  deploy:
-    needs: [build-frontend, build-backend]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-build
-        path: build-output/
-    
-    - name: Deploy notification
-      run: |
-        echo "🚀 HEAL7 배포 완료"
-        echo "✅ 프론트엔드 빌드 성공"
-        echo "✅ 백엔드 빌드 성공"
-        echo "📍 배포 위치: /var/www/heal7.com/"
+        echo "🏗️ Running legacy build simulation..."
+        echo "✅ Legacy build completed (simulation only)"
+        echo ""
+        echo "👉 Migrate to new workflows:"
+        echo "   gh workflow run frontend-build-deploy.yml"
+        echo "   gh workflow run backend-services-build.yml"

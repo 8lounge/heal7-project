@@ -1,176 +1,236 @@
-# 🚀 Heal7 통합 플랫폼
+# 🎼 HEAL7 Project - 서비스별 그룹화 및 GitHub Actions 빌드 환경
 
-> **React 19 + Next.js + FastAPI** 기반의 현대적이고 메모리 효율적인 통합 웰니스 플랫폼
+> **🚀 GitHub Actions 기반 무서버 빌드/배포 시스템**  
+> **📊 6개 서비스 그룹으로 체계화된 아키텍처**  
+> **⚡ 로컬 서버 부담 제거 완료**
 
-## 📁 프로젝트 구조
+## 🎯 **서비스 아키텍처 (6개 그룹)**
 
-```
-heal7-unified/                          ← 🎯 통합 플랫폼 루트
-├── frontend/                           ← React 19 + Next.js 14
-│   ├── app/                           ← App Router 기반 라우팅
-│   │   ├── (services)/               ← 서비스별 라우트 그룹
-│   │   │   ├── saju/                 ← 사주명리학 서비스
-│   │   │   ├── test/                 ← 테스트 환경
-│   │   │   ├── admin/                ← 관리자 서비스
-│   │   │   └── index/                ← 메인 서비스
-│   │   ├── api/                      ← API Routes
-│   │   └── layout.tsx                ← 루트 레이아웃
-│   ├── components/                   ← 재사용 가능한 컴포넌트
-│   ├── lib/                          ← 유틸리티 함수들
-│   └── package.json                  ← 프론트엔드 의존성
-├── backend/                          ← FastAPI 통합 백엔드
-│   ├── main.py                       ← FastAPI 메인 애플리케이션
-│   ├── routers/                      ← 서비스별 API 라우터
-│   │   ├── saju.py                   ← 사주 API
-│   │   ├── test.py                   ← 테스트 API
-│   │   ├── admin.py                  ← 관리자 API
-│   │   └── index.py                  ← 메인 API
-│   ├── models/                       ← Pydantic 데이터 모델
-│   ├── database/                     ← 데이터베이스 연결
-│   ├── utils/                        ← 백엔드 유틸리티
-│   └── requirements.txt              ← Python 의존성
-├── shared/                           ← 공통 설정 및 스크립트
-│   ├── scripts/                      ← 배포/관리 스크립트
-│   │   └── deploy.sh                 ← 통합 배포 스크립트
-│   ├── nginx/                        ← Nginx 설정 템플릿
-│   └── systemd/                      ← SystemD 서비스 파일
-└── docs/                             ← 📚 체계화된 문서
-    ├── architecture/                 ← 아키텍처 및 설계
-    ├── development/                  ← 개발 가이드
-    ├── deployment/                   ← 배포 및 운영
-    ├── database/                     ← 데이터베이스 문서
-    └── testing/                      ← 테스트 관련
-```
+### **🎨 Frontend Service**
+- **포트**: 4173 (Vite Preview)
+- **도메인**: saju.heal7.com
+- **기술**: Vite + React + TypeScript + Tailwind CSS
+- **빌드**: `frontend-build-deploy.yml`
 
-## 🎯 핵심 기능
+### **🎼 Backend Services (5개 서비스)**
 
-### 🎨 프론트엔드 (React 19 + Next.js 14)
-- **App Router**: 최신 Next.js App Router 사용
-- **React 19**: 최신 React 기능 활용
-- **Tailwind CSS**: 유틸리티 우선 CSS 프레임워크
-- **TypeScript**: 완전한 타입 안전성
-- **서비스별 라우팅**: 페이지 라우터 기반 서비스 분리
-
-### ⚡ 백엔드 (FastAPI)
-- **단일 서버**: 모든 서비스를 하나의 FastAPI 서버로 통합
-- **라우터 기반**: 서비스별로 분리된 API 라우터 구조
-- **자동 문서화**: OpenAPI/Swagger 자동 생성
-- **비동기 처리**: 고성능 비동기 API
-
-### 🌐 서비스 구조
-| 도메인 | 서비스 | 설명 |
-|--------|--------|------|
-| `heal7.com` | 메인 서비스 | 통합 플랫폼 메인 페이지 |
-| `saju.heal7.com` | 사주명리학 | 전통 사주 분석 서비스 |
-| `test.heal7.com` | 테스트 환경 | 시스템 테스트 및 모니터링 |
-| `admin.heal7.com` | 관리자 | 플랫폼 관리 도구 |
-
-## 🚀 빠른 시작
-
-### 1. 개발 환경 설정
-
+#### **1. 🔮 Saju Service** (포트 8012)
 ```bash
-# 1. 프로젝트 접근
-cd heal7-unified
-
-# 2. 프론트엔드 설정
-cd frontend
-npm install
-npm run dev  # 개발 서버 시작 (포트 3000)
-
-# 3. 백엔드 설정 (새 터미널)
-cd ../backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py  # FastAPI 서버 시작 (포트 8020)
+# 사주명리학 계산 및 해석
+cd backend/services/saju-service && python main.py
 ```
 
-### 2. 통합 배포
+#### **2. 🕷️ Crawling Service** (포트 8013)  
 ```bash
-# 통합 배포 스크립트 실행
-./shared/scripts/deploy.sh
+# 데이터 수집 및 크롤링
+cd backend/services/crawling-service && python main.py
 ```
 
-## 📚 문서
-
-모든 상세 문서는 [`docs/`](./docs/) 디렉터리에서 확인할 수 있습니다:
-
-- **[프로젝트 개요](./docs/architecture/project-overview.md)** - 전체 프로젝트 완료 보고서
-- **[디자인 시스템](./docs/architecture/design-system.md)** - 통합 디자인 시스템 가이드
-- **[배포 가이드](./docs/deployment/deployment-guide.md)** - 배포 및 운영 가이드
-- **[성능 최적화](./docs/development/performance-guide.md)** - Core Web Vitals 최적화
-- **[접근성 가이드](./docs/development/accessibility-guide.md)** - WCAG 2.1 AA 준수
-- **[Redis 스키마](./docs/database/redis-schema.md)** - 캐시 구조 및 전략
-
-## 📊 성능 최적화
-
-### 이전 구조의 문제점
-- **4개 분산 디렉터리**: 4.1GB 총 용량
-- **중복된 node_modules**: 메모리 낭비
-- **복잡한 관리**: 여러 프로젝트 관리 부담
-
-### 새로운 통합 구조의 장점
-- **단일 통합 플랫폼**: ~192KB 용량 (99.99% 절약)
-- **메모리 효율성**: 2GB 환경에 최적화
-- **관리 단순화**: 하나의 프로젝트로 통합
-- **코드 재사용**: 공통 컴포넌트 활용
-
-## 🛠️ 기술 스택
-
-- **Frontend**: React 19, Next.js 14, TypeScript, Tailwind CSS
-- **Backend**: FastAPI, Python 3.10+, Pydantic
-- **Database**: PostgreSQL, Redis
-- **Deployment**: Docker, Nginx, SystemD
-- **Monitoring**: GitHub Actions, PM2
-
-## 🔧 API 사용 예시
-
-```typescript
-// 프론트엔드에서 API 호출
-const response = await fetch('/api/saju/analyze', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    birth_year: 1990,
-    birth_month: 5,
-    birth_day: 15,
-    birth_hour: 14,
-    birth_minute: 30,
-    gender: 'male'
-  })
-})
-const result = await response.json()
+#### **3. 📄 Paperwork Service** (포트 8010)
+```bash
+# 서류 처리 및 AI 분석
+cd backend/services/paperwork-service && python main.py
 ```
 
-## 🚦 상태 모니터링
+#### **4. 🧪 AI Monitoring Service** (포트 8014)
+```bash
+# AI 성능 모니터링
+cd backend/services/ai-monitoring-service && python main.py
+```
 
-- **헬스체크**: `/health` 엔드포인트
-- **API 문서**: `/api/docs` (Swagger UI)
-- **테스트 환경**: `test.heal7.com`
-- **로그 파일**: `/tmp/heal7-unified.log`
+#### **5. 🎼 Dashboard Service** ⭐ (포트 8015)
+```bash
+# 오케스트레이션 허브 - 모든 서비스 중앙 관리
+cd backend/services/dashboard-service && python main.py
+```
 
-## 📈 프로젝트 성과
+## 🚀 **GitHub Actions 워크플로우**
 
-### 메모리 최적화
-- **이전**: 4.1GB (4개 분산 프로젝트)
-- **현재**: 192KB (통합 플랫폼)
-- **절약률**: 99.99%
+### **자동 빌드 워크플로우**
 
-### 성능 향상
-- **응답 속도**: 95% 향상 (Redis 캐싱)
-- **동시 처리**: 100배 증가 (100명 → 10,000명)
-- **개발 효율**: 300% 향상 (모듈별 독립)
+1. **🎨 Frontend Build** (`frontend-build-deploy.yml`)
+   - 트리거: `heal7-project/frontend/` 변경시
+   - Node.js 18, npm ci, Vite build
+   - 아티팩트: `frontend-dist`
 
-## 🎉 마이그레이션 완료!
+2. **🎼 Backend Services Build** (`backend-services-build.yml`)
+   - 트리거: `heal7-project/backend/` 변경시  
+   - Python 3.12, 5개 서비스 병렬 빌드
+   - 아티팩트: 서비스별 개별 빌드
 
-**이전**: 4개 분산 프로젝트 (4.1GB, 복잡한 관리)  
-**현재**: 1개 통합 플랫폼 (192KB, 단순한 관리)
+3. **🚀 Service Deployment** (`service-deployment.yml`)
+   - 트리거: 빌드 완료 후 자동 실행
+   - 워크플로우 체이닝으로 배포 오케스트레이션
 
-**결과**: 메모리 99.99% 절약, 관리 복잡성 대폭 감소, 현대적 기술 스택 도입 🚀
+### **수동 실행 워크플로우**
+
+4. **🎯 Service Selector** (`service-selector.yml`)
+   - 개별 서비스 선택 배포
+   - 빌드 모드 선택 (production/development/testing)
+   - 알림 수준 조절
+
+## 🛠️ **빠른 시작**
+
+### **GitHub Actions로 빌드하기**
+```bash
+# 헬퍼 스크립트 사용
+./scripts/github-actions-helper.sh frontend    # Frontend만 빌드
+./scripts/github-actions-helper.sh backend     # Backend 서비스들 빌드  
+./scripts/github-actions-helper.sh deploy      # 전체 배포
+./scripts/github-actions-helper.sh select saju-service-only  # 사주 서비스만
+
+# 또는 직접 GitHub CLI 사용
+gh workflow run frontend-build-deploy.yml
+gh workflow run backend-services-build.yml
+gh workflow run service-selector.yml --field target_service=all-services
+```
+
+### **로컬 개발 (권장하지 않음)**
+```bash
+# ⚠️ 로컬 빌드는 서버 부담을 줄 수 있습니다
+# GitHub Actions 사용을 권장합니다
+
+# Frontend 개발 서버 (메모리 사용 주의)
+cd frontend && npm run dev  # 권장하지 않음
+
+# 안전한 대안: Vite Preview 
+cd frontend && npm run build && npm run preview --port 4173
+```
+
+## 📊 **성과 지표**
+
+| 개선사항 | Before | After | 개선율 |
+|---------|--------|-------|--------|
+| 서버 빌드 부담 | 높음 | 제거됨 | **-100%** |
+| 빌드 환경 | 로컬 의존 | 클라우드 | **+∞** |
+| 서비스 관리 | 22개 큐브 | 6개 그룹 | **-73%** |
+| 워크플로우 수 | 1개 | 4개 (전문화) | **+300%** |
+| 배포 선택성 | 없음 | 서비스별 가능 | **+100%** |
+
+## 🌐 **서비스 접근**
+
+### **프론트엔드**
+- **메인**: https://saju.heal7.com (포트 4173)
+- **개발**: http://localhost:4173 (Vite Preview)
+
+### **백엔드 서비스**
+- **🎼 오케스트레이션 허브**: http://localhost:8015/dashboard
+- **🔮 사주 서비스**: http://localhost:8012
+- **🕷️ 크롤링 서비스**: http://localhost:8013  
+- **📄 서류 처리**: http://localhost:8010
+- **🧪 AI 모니터링**: http://localhost:8014
+
+## 🔧 **GitHub Actions 사용 가이드**
+
+### **워크플로우 상태 확인**
+```bash
+./scripts/github-actions-helper.sh status
+# 또는
+gh workflow list
+gh run list --limit 10
+```
+
+### **특정 서비스만 배포**
+```bash
+# 사주 서비스만
+./scripts/github-actions-helper.sh select saju-service-only
+
+# Frontend만  
+./scripts/github-actions-helper.sh select frontend-only
+
+# 전체 서비스
+./scripts/github-actions-helper.sh select all-services
+```
+
+### **실시간 로그 확인**
+```bash
+# 최신 실행 로그 보기
+gh run list --limit 1
+gh run view <RUN_ID> --log
+```
+
+## 📋 **개발 가이드라인**
+
+### **🚫 금지 사항 (서버 보호)**
+```bash
+npm run dev          # OOM Kill 위험
+next dev            # 메모리 부족
+vite dev --host     # 호스트 바인딩시 위험
+```
+
+### **✅ 권장 사항**
+```bash
+# 1. GitHub Actions 사용 (최우선)
+gh workflow run frontend-build-deploy.yml
+
+# 2. 로컬에서는 Preview만
+cd frontend && npm run build && npm run preview --port 4173
+
+# 3. 서비스별 개별 관리
+./scripts/github-actions-helper.sh select <service>
+```
+
+## 🎼 **아키텍처 다이어그램**
+
+```mermaid
+graph TB
+    A[GitHub Actions] -->|빌드| B[Frontend Service :4173]
+    A -->|빌드| C[Backend Services]
+    
+    C --> D[Dashboard Service :8015 ⭐]
+    C --> E[Saju Service :8012]
+    C --> F[Crawling Service :8013]
+    C --> G[Paperwork Service :8010]
+    C --> H[AI Monitoring :8014]
+    
+    D -->|오케스트레이션| E
+    D -->|오케스트레이션| F  
+    D -->|오케스트레이션| G
+    D -->|오케스트레이션| H
+    
+    B --> I[saju.heal7.com]
+    D --> J[localhost:8015/dashboard]
+```
+
+## 📋 **프로젝트 구조**
+
+```
+heal7-project/
+├── 🎨 frontend/                    ← Vite + React + TypeScript
+│   ├── src/components/             ← UI 컴포넌트
+│   ├── src/data/                  ← 데이터 모델
+│   ├── dist/                      ← 빌드 출력 (GitHub Actions)
+│   └── package.json               ← 의존성 관리
+├── 🎼 backend/                     ← Python 백엔드 서비스들
+│   ├── services/                  ← 6개 서비스 그룹
+│   │   ├── saju-service/          ← 🔮 사주명리학
+│   │   ├── crawling-service/      ← 🕷️ 데이터 수집
+│   │   ├── paperwork-service/     ← 📄 서류 처리
+│   │   ├── ai-monitoring-service/ ← 🧪 AI 모니터링
+│   │   └── dashboard-service/     ← 🎼 오케스트레이션
+│   └── shared/                    ← 공통 모듈
+├── 🚀 .github/workflows/          ← GitHub Actions 워크플로우
+│   ├── frontend-build-deploy.yml  ← 프론트엔드 빌드
+│   ├── backend-services-build.yml ← 백엔드 서비스들
+│   ├── service-deployment.yml     ← 배포 오케스트레이션
+│   └── service-selector.yml       ← 수동 서비스 선택
+├── 📜 scripts/                    ← 유틸리티 스크립트
+│   └── github-actions-helper.sh   ← GitHub Actions 도우미
+└── 📚 docs/                       ← 프로젝트 문서
+```
+
+## 📞 **지원 및 문의**
+
+- **📧 이메일**: arne40@heal7.com  
+- **📞 전화**: 050-7722-7328
+- **📍 주소**: 인천광역시 미추홀구 석정로 229, 5층
 
 ---
 
-**마지막 업데이트**: 2025-08-14  
-**버전**: 4.0.0  
-**상태**: ✅ 통합 완료
+**🎯 핵심**: GitHub Actions로 서버 부담 없이 안전하게 빌드하세요!  
+**⚡ 성능**: 로컬 서버 리소스 100% 절약  
+**🌐 확장성**: 서비스별 독립 배포 가능
+
+**마지막 업데이트**: 2025-08-30  
+**버전**: 5.0.0 (GitHub Actions 전환)  
+**상태**: ✅ 서비스별 그룹화 및 무서버 빌드 완료

@@ -204,7 +204,7 @@ export const LoveFortuneAnalysis: React.FC = () => {
               <div className="bg-white/10 backdrop-blur-md border border-purple-200/30 rounded-xl p-6">
                 <div className="mb-4">
                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Crown className="w-5 h-5 text-purple-400" />
+                    <Crown className="w-5 h-5 text-white" />
                     이상적인 파트너 유형
                   </h3>
                 </div>
@@ -315,7 +315,7 @@ export const LoveFortuneAnalysis: React.FC = () => {
                     <button className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300">
                       💕 1:1 커플 궁합 (₩15,000)
                     </button>
-                    <button className="border border-purple-400/50 text-purple-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
+                    <button className="border border-purple-400/50 text-white px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
                       💒 결혼운 분석 (₩12,000)
                     </button>
                     <button className="border border-pink-400/50 text-pink-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">

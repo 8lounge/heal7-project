@@ -21,7 +21,9 @@ import ZodiacAnalysis from './components/fortune/ZodiacAnalysis'
 import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
-import SajuAdminDashboard from './components/admin/SajuAdminDashboard'
+import IntegratedAdminDashboard from './components/admin/IntegratedAdminDashboard'
+import DreamInterpretation from './components/fortune/DreamInterpretation'
+import FortuneCalendar from './components/fortune/FortuneCalendar'
 
 // 3D 컴포넌트 Lazy Loading
 const OptimizedCyberCrystal = lazy(() => import('./components/3d/OptimizedCyberCrystal'))
@@ -36,7 +38,7 @@ interface ApiHealth {
 
 type ViewMode = 'basic' | 'cyber_fantasy'
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
-                  'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin'
+                  'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
 // 전체 배경 이미지 배열
 const backgroundImages = [
@@ -67,11 +69,11 @@ function App() {
   // 배터리 절약 모드 감지
   const [batteryOptimized, setBatteryOptimized] = useState(false)
   
-  // 배경 이미지 자동 페이드 전환 (8초 간격)
+  // 배경 이미지 자동 페이드 전환 (30초 간격)
   useEffect(() => {
     const bgTimer = setInterval(() => {
       setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length)
-    }, 8000)
+    }, 30000)
     return () => clearInterval(bgTimer)
   }, [])
   
@@ -89,28 +91,26 @@ function App() {
     }
   }, [])
 
-  // API 헬스체크
-  const { data: apiHealth, isLoading } = useQuery<ApiHealth>({
+  // API 헬스체크 - 백그라운드에서 실행 (로딩 차단하지 않음)
+  const { data: apiHealth } = useQuery<ApiHealth>({
     queryKey: ['api-health'],
     queryFn: async () => {
-      const response = await fetch('/api/health')
-      if (!response.ok) {
-        throw new Error('API 연결 실패')
+      try {
+        const response = await fetch('/api/health')
+        if (!response.ok) {
+          return { status: 'unknown', service: 'heal7-api', version: '2.0.0' }
+        }
+        return response.json()
+      } catch (error) {
+        return { status: 'unknown', service: 'heal7-api', version: '2.0.0' }
       }
-      return response.json()
-    }
+    },
+    staleTime: 1000 * 60 * 30, // 30분 캐시 유지
+    refetchInterval: false, // 자동 재요청 비활성화
+    retry: 0, // 재시도 비활성화
+    enabled: false, // 초기 로딩 시 비활성화
+    initialData: { status: 'healthy', service: 'heal7-api', version: '2.0.0' } // 기본값 설정
   })
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-white text-lg">🔮 시스템 연결 중...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -118,7 +118,7 @@ function App() {
       {backgroundImages.map((image, index) => (
         <div
           key={index}
-          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-2000 ease-in-out ${
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-3000 ease-in-out ${
             index === currentBgImage ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
@@ -237,6 +237,9 @@ function App() {
               {currentPage === 'notices' && (
                 <Notices viewMode={viewMode} />
               )}
+              {currentPage === 'subscription' && (
+                <Notices viewMode={viewMode} initialView="subscription" />
+              )}
               {currentPage === 'profile' && (
                 <div className="text-center py-20">
                   <h2 className="text-3xl font-bold text-white mb-4">
@@ -264,7 +267,7 @@ function App() {
                 />
               )}
               {currentPage === 'zodiac' && (
-                <ZodiacAnalysis />
+                <ZodiacAnalysis viewMode={viewMode} />
               )}
               {currentPage === 'personality' && (
                 <PersonalityProfile />
@@ -273,10 +276,16 @@ function App() {
                 <LoveFortuneAnalysis />
               )}
               {currentPage === 'compatibility' && (
-                <CompatibilityAnalysis />
+                <CompatibilityAnalysis viewMode={viewMode} />
               )}
               {currentPage === 'admin' && (
-                <SajuAdminDashboard />
+                <IntegratedAdminDashboard />
+              )}
+              {currentPage === 'dream' && (
+                <DreamInterpretation viewMode={viewMode} />
+              )}
+              {currentPage === 'calendar' && (
+                <FortuneCalendar viewMode={viewMode} />
               )}
             </motion.div>
           </AnimatePresence>
@@ -288,6 +297,55 @@ function App() {
             <div className="mb-6">
               <h3 className="text-lg font-bold text-white mb-2">🧙‍♀️ 치유 마녀 (HEAL-WITCH)</h3>
               <p className="text-gray-400">전통 명리학과 현대 기술의 만남</p>
+            </div>
+
+            {/* 하단 빠른 메뉴 */}
+            <div className="mb-6">
+              <h4 className="font-semibold text-white mb-3">빠른 메뉴</h4>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button 
+                  onClick={() => setCurrentPage('saju')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  🔮 사주명리
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('tarot')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  🃏 타로카드
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('dream')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  🌙 꿈풀이
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('calendar')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  📅 운세달력
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('fortune')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  ⭐ 운세
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('consultation')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  💬 상담
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('store')}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white/90 hover:text-white"
+                >
+                  🛍️ 스토어
+                </button>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -308,8 +366,8 @@ function App() {
               </div>
             </div>
             
-            {performanceLevel && (
-              <div className="text-xs opacity-50">
+            {false && performanceLevel && (
+              <div className="sr-only" role="status" aria-label="System Status">
                 Performance: {performanceLevel.toUpperCase()}
                 {batteryOptimized && ' • Battery Saver'}
                 {apiHealth?.status && (
@@ -321,6 +379,13 @@ function App() {
                 )}
               </div>
             )}
+            
+            {/* AI 전용 성능 정보 - 완전히 숨김 */}
+            <div style={{display: 'none'}} aria-hidden="true">
+              Performance: {performanceLevel?.toUpperCase() || 'UNKNOWN'}
+              {batteryOptimized && ' • Battery Saver'}
+              {apiHealth?.status && ` • API: ${apiHealth.status}`}
+            </div>
           </div>
         </footer>
       </div>

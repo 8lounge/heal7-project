@@ -184,3 +184,4 @@ vendor/
 config.local.js
 config.development.js
 config.production.js
+.nvm/

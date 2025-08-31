@@ -1,0 +1,23 @@
+api:
+  docs_url: /docs
+  prefix: /api/v1
+  redoc_url: /redoc
+  title: HEAL7 Ai Monitoring Service
+  version: 1.0.0
+server:
+  host: 0.0.0.0
+  log_level: info
+  port: 8004
+  reload: false
+  workers: 1
+service:
+  functions:
+  - performance_monitoring
+  - health_checking
+  - metrics_collection
+  - alerting
+  is_orchestration_hub: false
+  name: ai-monitoring-service
+  port: 8004
+  purpose: AI 시스템 모니터링 및 성능 관리
+  version: 1.0.0

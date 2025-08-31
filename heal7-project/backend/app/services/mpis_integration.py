@@ -17,9 +17,9 @@ class MPISIntegrationEngine:
     def __init__(self):
         self.db_config = {
             "host": "localhost",
-            "database": "devdb", 
-            "user": "devuser",
-            "password": "devpass"
+            "database": "heal7", 
+            "user": "postgres",
+            "options": "-c search_path=shared_common,public"
         }
         self.redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
         

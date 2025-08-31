@@ -1,313 +1,403 @@
-import React, { useState } from 'react';
-import { Calendar, Sparkles, Star, Zap, Gift } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, Sparkles, Star, Briefcase, Gem, ArrowRight, Users } from 'lucide-react';
+import { zodiacSigns, calculateZodiac, checkCompatibility, getMostRecentZodiacYear, calculateZodiacFromBirth, type ZodiacSign } from '../../data/zodiacData';
 
-interface ZodiacResult {
-  zodiac_animal: string;
-  animal_character: string;
-  basic_traits: string[];
-  hidden_potential: string[];
-  career_luck: string;
-  year_fortune: string;
-  lucky_colors: string[];
-  lucky_numbers: number[];
+type ViewMode = 'basic' | 'cyber_fantasy';
+
+interface ZodiacAnalysisProps {
+  viewMode?: ViewMode;
 }
 
-export const ZodiacAnalysis: React.FC = () => {
-  const [birthDate, setBirthDate] = useState('');
-  const [gender, setGender] = useState<'male' | 'female'>('male');
-  const [name, setName] = useState('');
-  const [result, setResult] = useState<ZodiacResult | null>(null);
-  const [loading, setLoading] = useState(false);
+export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basic' }) => {
+  const [birthYear, setBirthYear] = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthDay, setBirthDay] = useState('');
+  const [selectedZodiac, setSelectedZodiac] = useState<ZodiacSign | null>(null);
+  const [hoveredZodiac, setHoveredZodiac] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [, setPartnerZodiac] = useState<string | null>(null);
+  const [useDetailedBirth, setUseDetailedBirth] = useState(false);
 
-  const zodiacEmojis: Record<string, string> = {
-    '쥐': '🐭', '소': '🐂', '범': '🐅', '토끼': '🐰',
-    '용': '🐉', '뱀': '🐍', '말': '🐎', '양': '🐑',
-    '원숭이': '🐵', '닭': '🐓', '개': '🐕', '돼지': '🐷'
+  // 출생년도/생년월일 입력 시 자동으로 띠 계산
+  useEffect(() => {
+    if (birthYear && birthYear.length === 4) {
+      const year = parseInt(birthYear);
+      if (year >= 1900 && year <= 2030) {
+        let zodiacId: string;
+        
+        // 상세 생년월일 입력이 있으면 입춘 기준으로 계산
+        if (useDetailedBirth && birthMonth && birthDay) {
+          const month = parseInt(birthMonth);
+          const day = parseInt(birthDay);
+          zodiacId = calculateZodiacFromBirth(year, month, day);
+        } else {
+          zodiacId = calculateZodiac(year);
+        }
+        
+        const zodiac = zodiacSigns.find(sign => sign.id === zodiacId);
+        if (zodiac) {
+          setSelectedZodiac(zodiac);
+          setShowDetails(true);
+        }
+      }
+    }
+  }, [birthYear, birthMonth, birthDay, useDetailedBirth]);
+
+  const handleZodiacClick = (zodiac: ZodiacSign) => {
+    setSelectedZodiac(zodiac);
+    setShowDetails(true);
+    
+    // 해당 띠의 가장 최근 년도를 설정
+    const recentYear = getMostRecentZodiacYear(zodiac.id);
+    setBirthYear(recentYear.toString());
   };
 
-  const handleAnalyze = async () => {
-    if (!birthDate) {
-      alert('생년월일을 입력해주세요.');
-      return;
+  const getCompatibilityColor = (compatibility: string) => {
+    switch (compatibility) {
+      case '매우 좋음': return 'text-green-400';
+      case '좋음': return 'text-blue-400';
+      case '주의 필요': return 'text-yellow-400';
+      default: return 'text-gray-400';
     }
+  };
 
-    setLoading(true);
-    try {
-      const response = await fetch('/api/fortune/zodiac-analysis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          birth_date: birthDate,
-          birth_time: '12:00',
-          gender,
-          name,
-          lunar_calendar: false
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setResult(data);
-      } else {
-        alert('분석 중 오류가 발생했습니다.');
-      }
-    } catch (error) {
-      console.error('분석 오류:', error);
-      alert('분석 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
+  const getCompatibilityBg = (compatibility: string) => {
+    switch (compatibility) {
+      case '매우 좋음': return 'bg-green-500/10';
+      case '좋음': return 'bg-blue-500/10';
+      case '주의 필요': return 'bg-yellow-500/10';
+      default: return 'bg-gray-500/10';
     }
   };
 
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto">
+      {/* 헤더 */}
+      <div className="text-center mb-8">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Star className="w-8 h-8 text-white" />
+          <h1 className="text-4xl font-bold text-white">🐭 12띠 운세 센터</h1>
+          <Gem className="w-8 h-8 text-purple-300" />
+        </div>
+        <p className="text-white/80 text-lg mb-6">
+          나의 띠를 통해 알아보는 성향, 직업 적성, 2025년 운세
+        </p>
         
-        {/* 헤더 */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            🐉 십이지신 분석
-          </h1>
-          <p className="text-white/80 text-lg">
-            나의 띠를 통해 알아보는 기본 성향과 숨겨진 잠재력
-          </p>
+      </div>
+
+      {/* 출생년도/생년월일 입력 */}
+      <div className={`p-6 mb-8 rounded-xl ${
+        viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
+      }`}>
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <Calendar className="w-5 h-5 text-white" />
+          <span className="text-white font-medium">생년월일을 입력하거나 아래에서 띠를 선택하세요</span>
+        </div>
+        
+        {/* 입력 모드 토글 */}
+        <div className="flex justify-center mb-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setUseDetailedBirth(false)}
+              className={`px-3 py-1 text-sm rounded-lg transition-all ${
+                !useDetailedBirth 
+                  ? 'bg-purple-500/80 text-white' 
+                  : 'bg-white/10 text-white/60 hover:bg-white/20'
+              }`}
+            >
+              년도만
+            </button>
+            <button
+              onClick={() => setUseDetailedBirth(true)}
+              className={`px-3 py-1 text-sm rounded-lg transition-all ${
+                useDetailedBirth 
+                  ? 'bg-purple-500/80 text-white' 
+                  : 'bg-white/10 text-white/60 hover:bg-white/20'
+              }`}
+            >
+              정확한 생년월일
+            </button>
+          </div>
         </div>
 
-        {/* 입력 폼 */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 mb-8">
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              기본 정보 입력
-            </h3>
-          </div>
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white">생년월일</label>
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full p-2 bg-white/20 border border-white/30 rounded-md text-white"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2 text-white">성별</label>
-                <div className="flex gap-4">
-                  <label className="flex items-center text-white">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="male"
-                      checked={gender === 'male'}
-                      onChange={(e) => setGender(e.target.value as 'male')}
-                      className="mr-2"
-                    />
-                    남성
-                  </label>
-                  <label className="flex items-center text-white">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="female"
-                      checked={gender === 'female'}
-                      onChange={(e) => setGender(e.target.value as 'female')}
-                      className="mr-2"
-                    />
-                    여성
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2 text-white">이름 (선택)</label>
-              <input
-                type="text"
-                placeholder="이름을 입력하세요"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full p-2 bg-white/20 border border-white/30 rounded-md text-white placeholder-gray-400"
-              />
-            </div>
-            
-            <div className="text-center">
-              <button
-                onClick={handleAnalyze}
-                disabled={loading}
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-3 text-lg rounded-lg font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50"
+        <div className="flex justify-center gap-2">
+          <input
+            type="number"
+            placeholder="년도"
+            value={birthYear}
+            onChange={(e) => setBirthYear(e.target.value)}
+            min="1900"
+            max="2030"
+            className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 w-24 text-center"
+          />
+          {useDetailedBirth && (
+            <>
+              <select
+                value={birthMonth}
+                onChange={(e) => setBirthMonth(e.target.value)}
+                className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2 inline-block"></div>
-                    분석 중...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5 mr-2 inline" />
-                    십이지신 분석하기
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+                <option value="">월</option>
+                {Array.from({length: 12}, (_, i) => (
+                  <option key={i+1} value={i+1} className="bg-gray-800">
+                    {i+1}월
+                  </option>
+                ))}
+              </select>
+              <select
+                value={birthDay}
+                onChange={(e) => setBirthDay(e.target.value)}
+                className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">일</option>
+                {Array.from({length: 31}, (_, i) => (
+                  <option key={i+1} value={i+1} className="bg-gray-800">
+                    {i+1}일
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
 
-        {/* 결과 표시 */}
-        {result && (
-          <div className="space-y-6 animate-fade-in">
-            
-            {/* 띠 소개 카드 */}
-            <div className="border-2 border-orange-200/30 bg-white/10 backdrop-blur-md rounded-xl p-8 text-center">
-              <div className="text-8xl mb-4">
-                {zodiacEmojis[result.zodiac_animal] || '🐾'}
+        {useDetailedBirth && (
+          <div className="text-center mt-2 text-xs text-white/60">
+            💡 1~2월 초 출생은 입춘(2/4) 기준으로 정확한 띠를 계산합니다
+          </div>
+        )}
+
+        {birthYear && selectedZodiac && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mt-4"
+          >
+            <p className="text-white/80">
+              {useDetailedBirth && birthMonth && birthDay 
+                ? `${birthYear}년 ${birthMonth}월 ${birthDay}일생은`
+                : `${birthYear}년생은`
+              } <span className="text-purple-300 font-bold">{selectedZodiac.name}</span>입니다!
+            </p>
+          </motion.div>
+        )}
+      </div>
+
+      {/* 12지신 카드 그리드 */}
+      <div className="mb-8">
+        <h2 className="text-white text-xl font-bold mb-6 text-center">
+          🎯 12지신 선택하기
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {zodiacSigns.map((zodiac, index) => (
+            <motion.div
+              key={zodiac.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className={`
+                bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 cursor-pointer
+                transition-all duration-300 hover:scale-105 hover:bg-white/20
+                ${selectedZodiac?.id === zodiac.id ? 'ring-2 ring-purple-400 bg-purple-500/20' : ''}
+              `}
+              onClick={() => handleZodiacClick(zodiac)}
+              onMouseEnter={() => setHoveredZodiac(zodiac.id)}
+              onMouseLeave={() => setHoveredZodiac(null)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-2">{zodiac.emoji}</div>
+                <h3 className="text-white font-medium text-sm">{zodiac.name}</h3>
+                <p className="text-white/60 text-xs mt-1">{zodiac.chineseName}</p>
+                
+                {/* 호버 시 추가 정보 */}
+                <AnimatePresence>
+                  {hoveredZodiac === zodiac.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-2 text-xs text-white/80"
+                    >
+                      {zodiac.element} · {getMostRecentZodiacYear(zodiac.id)}년
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* 상세 정보 패널 */}
+      <AnimatePresence>
+        {showDetails && selectedZodiac && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="space-y-6"
+          >
+            {/* 기본 정보 카드 */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+              <div className="text-8xl mb-4">{selectedZodiac.emoji}</div>
               <h2 className="text-3xl font-bold text-white mb-2">
-                {name || '회원님'}은 <span className="text-orange-400">{result.zodiac_animal}띠</span>입니다!
+                {selectedZodiac.name} ({selectedZodiac.chineseName})
               </h2>
-              <p className="text-white/80 text-lg leading-relaxed">
-                {result.animal_character}
-              </p>
-            </div>
-
-            {/* 기본 성향 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white/10 backdrop-blur-md border border-blue-200/30 rounded-xl p-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Star className="w-5 h-5 text-blue-400" />
-                    기본 성향
-                  </h3>
-                </div>
-                <div>
-                  <div className="flex flex-wrap gap-2">
-                    {result.basic_traits.map((trait, index) => (
-                      <span key={index} className="inline-block border border-blue-400/50 text-blue-300 px-3 py-1 rounded-full text-sm bg-white/10 backdrop-blur-sm">
-                        {trait}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-md border border-purple-200/30 rounded-xl p-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-purple-400" />
-                    숨겨진 잠재력
-                  </h3>
-                </div>
-                <div>
-                  <div className="flex flex-wrap gap-2">
-                    {result.hidden_potential.map((potential, index) => (
-                      <span key={index} className="inline-block border border-purple-400/50 text-purple-300 px-3 py-1 rounded-full text-sm bg-white/10 backdrop-blur-sm">
-                        {potential}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+              <div className="flex justify-center items-center gap-4 mb-4">
+                <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm">
+                  오행: {selectedZodiac.element}
+                </span>
+                <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
+                  최근: {getMostRecentZodiacYear(selectedZodiac.id)}년
+                </span>
               </div>
             </div>
 
-            {/* 운세 정보 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white/10 backdrop-blur-md border border-green-200/30 rounded-xl p-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-green-400">🚀 직업운</h3>
-                </div>
-                <div>
-                  <p className="text-white leading-relaxed">
-                    {result.career_luck}
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur-md border border-orange-200/30 rounded-xl p-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold text-orange-400">✨ 2025년 총운</h3>
-                </div>
-                <div>
-                  <p className="text-white leading-relaxed">
-                    {result.year_fortune}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* 행운 정보 */}
-            <div className="bg-white/10 backdrop-blur-md border border-pink-200/30 rounded-xl p-6">
-              <div className="mb-4">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Gift className="w-5 h-5 text-pink-400" />
-                  행운의 요소들
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 성격 특성 */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+                  <Star className="w-5 h-5 text-yellow-400" />
+                  주요 성격
                 </h3>
+                <div className="space-y-2">
+                  {selectedZodiac.characteristics.map((trait, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="text-white/80 text-sm flex items-start gap-2"
+                    >
+                      <ArrowRight className="w-3 h-3 text-purple-400 mt-1 flex-shrink-0" />
+                      {trait}
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-              <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              {/* 직업 적성 */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+                  <Briefcase className="w-5 h-5 text-green-400" />
+                  적합한 직업
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedZodiac.suitableJobs.map((job, index) => (
+                    <motion.span
+                      key={index}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm"
+                    >
+                      {job}
+                    </motion.span>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2025년 운세 */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-orange-400" />
+                  2025년 운세
+                </h3>
+                <div className="space-y-3">
                   <div>
-                    <h3 className="font-semibold text-white mb-3">🎨 행운의 색깔</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {result.lucky_colors.map((color, index) => (
-                        <span key={index} className="inline-block bg-pink-500/20 text-pink-300 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                    <span className="text-orange-300 font-medium">종합운: </span>
+                    <span className="text-white/80 text-sm">{selectedZodiac.fortune2025.overall}</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-300 font-medium">직업운: </span>
+                    <span className="text-white/80 text-sm">{selectedZodiac.fortune2025.career}</span>
+                  </div>
+                  <div>
+                    <span className="text-pink-300 font-medium">연애운: </span>
+                    <span className="text-white/80 text-sm">{selectedZodiac.fortune2025.love}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 행운 요소 */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+                  <Gem className="w-5 h-5 text-purple-400" />
+                  행운 요소
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-purple-300 font-medium">행운의 숫자: </span>
+                    <div className="flex gap-2 mt-1">
+                      {selectedZodiac.luckyNumbers.map((num) => (
+                        <span
+                          key={num}
+                          className="bg-purple-500/20 text-purple-300 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                        >
+                          {num}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-cyan-300 font-medium">행운의 색깔: </span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedZodiac.luckyColors.map((color) => (
+                        <span
+                          key={color}
+                          className="bg-cyan-500/20 text-cyan-300 px-2 py-1 rounded-full text-xs"
+                        >
                           {color}
                         </span>
                       ))}
                     </div>
                   </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-white mb-3">🔢 행운의 숫자</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {result.lucky_numbers.map((number, index) => (
-                        <span key={index} className="inline-block bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                          {number}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
 
-            {/* 추가 서비스 안내 */}
-            <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-md border border-purple-200/30 rounded-xl p-6">
-              <div className="text-center">
-                <h3 className="text-xl font-bold text-white mb-3">
-                  🔮 더 자세한 분석이 궁금하시다면?
+            {/* 궁합 정보 */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-pink-400" />
+                  띠 궁합
                 </h3>
-                <p className="text-white/80 mb-4">
-                  프리미엄 서비스로 연애운, 결혼운, 상세 궁합까지 확인해보세요!
-                </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <button className="border border-purple-400/50 text-purple-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
-                    💕 연애운 분석
-                  </button>
-                  <button className="border border-pink-400/50 text-pink-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
-                    👫 궁합 분석
-                  </button>
-                  <button className="border border-blue-400/50 text-blue-300 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
-                    📊 종합 운세
-                  </button>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {zodiacSigns.map((otherZodiac) => {
+                    if (otherZodiac.id === selectedZodiac.id) return null;
+                    
+                    const compatibility = checkCompatibility(selectedZodiac.id, otherZodiac.id);
+                    
+                    return (
+                      <div
+                        key={otherZodiac.id}
+                        className={`p-3 rounded-lg border text-center cursor-pointer transition-all hover:scale-105 ${
+                          getCompatibilityBg(compatibility)
+                        } border-white/20`}
+                        onClick={() => setPartnerZodiac(otherZodiac.id)}
+                      >
+                        <div className="text-2xl mb-1">{otherZodiac.emoji}</div>
+                        <div className="text-white text-xs font-medium">{otherZodiac.name}</div>
+                        <div className={`text-xs mt-1 ${getCompatibilityColor(compatibility)}`}>
+                          {compatibility}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          </div>
+          </motion.div>
         )}
+      </AnimatePresence>
 
-        {/* 안내 정보 */}
-        {!result && (
-          <div className="text-center text-white/60 mt-8">
-            <p className="text-sm">
-              🔒 개인정보는 분석 목적으로만 사용되며 안전하게 보호됩니다.
-            </p>
-          </div>
-        )}
-
-      </div>
+      {/* 안내 메시지 */}
+      {!showDetails && (
+        <div className="text-center text-white/60 mt-8">
+          <p>출생년도를 입력하거나 위의 띠 카드를 선택해주세요</p>
+        </div>
+      )}
     </div>
   );
 };

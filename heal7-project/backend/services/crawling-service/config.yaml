@@ -1,0 +1,23 @@
+api:
+  docs_url: /docs
+  prefix: /api/v1
+  redoc_url: /redoc
+  title: Real Project Crawling Service
+  version: 0.1.0
+server:
+  host: 0.0.0.0
+  log_level: info
+  port: 8003
+  reload: false
+  workers: 1
+service:
+  functions:
+  - web_crawling
+  - data_collection
+  - data_storage
+  - data_protection
+  is_orchestration_hub: false
+  name: crawling-service
+  port: 8003
+  purpose: 데이터 수집 및 크롤링
+  version: 0.1.0

@@ -1,0 +1,90 @@
+{
+  "test_started": "2025-08-29T14:04:57.738824",
+  "total_sites": 3,
+  "successful_sites": 0,
+  "failed_sites": 3,
+  "api_key_status": {
+    "gemini_available": false,
+    "claude_available": false,
+    "any_api_available": false,
+    "fallback_mode": true,
+    "check_successful": false,
+    "error": "attempted relative import with no known parent package"
+  },
+  "detailed_results": [
+    {
+      "site_name": "기업마당 메인",
+      "site_url": "https://www.bizinfo.go.kr",
+      "site_type": "government_portal",
+      "expected_accessible": true,
+      "overall_success": false,
+      "steps_completed": [
+        "accessibility_check"
+      ],
+      "errors": [
+        "AI analysis failed: attempted relative import with no known parent package"
+      ],
+      "accessibility_test": {
+        "accessible": true,
+        "status_code": 200,
+        "content_length": 172656,
+        "content_type": "text/html;charset=UTF-8"
+      },
+      "ai_analysis": {
+        "success": false,
+        "error": "attempted relative import with no known parent package",
+        "model_used": "none"
+      }
+    },
+    {
+      "site_name": "K-Startup 메인",
+      "site_url": "https://www.k-startup.go.kr",
+      "site_type": "startup_support",
+      "expected_accessible": true,
+      "overall_success": false,
+      "steps_completed": [
+        "accessibility_check"
+      ],
+      "errors": [
+        "AI analysis failed: attempted relative import with no known parent package"
+      ],
+      "accessibility_test": {
+        "accessible": true,
+        "status_code": 200,
+        "content_length": 125492,
+        "content_type": "text/html;charset=UTF-8"
+      },
+      "ai_analysis": {
+        "success": false,
+        "error": "attempted relative import with no known parent package",
+        "model_used": "none"
+      }
+    },
+    {
+      "site_name": "정부24 메인",
+      "site_url": "https://www.gov.kr",
+      "site_type": "government_services",
+      "expected_accessible": true,
+      "overall_success": false,
+      "steps_completed": [
+        "accessibility_check"
+      ],
+      "errors": [
+        "AI analysis failed: attempted relative import with no known parent package"
+      ],
+      "accessibility_test": {
+        "accessible": true,
+        "status_code": 200,
+        "content_length": 238,
+        "content_type": "text/html;charset=UTF-8"
+      },
+      "ai_analysis": {
+        "success": false,
+        "error": "attempted relative import with no known parent package",
+        "model_used": "none"
+      }
+    }
+  ],
+  "test_completed": "2025-08-29T14:04:59.725947",
+  "success_rate": 0.0
+}

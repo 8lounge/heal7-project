@@ -1,0 +1,55 @@
+name: Frontend Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'heal7-project/frontend/**'
+      - '.github/workflows/frontend-build-deploy.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'heal7-project/frontend/**'
+  workflow_dispatch:
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: heal7-project/frontend/package-lock.json
+    
+    - name: Install frontend dependencies
+      run: |
+        cd heal7-project/frontend
+        npm ci
+    
+    - name: Build frontend
+      run: |
+        cd heal7-project/frontend
+        npm run build
+    
+    - name: Test frontend build
+      run: |
+        cd heal7-project/frontend
+        ls -la dist/
+        echo "✅ Frontend build completed successfully"
+    
+    - name: Upload frontend build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-dist
+        path: heal7-project/frontend/dist/
+        retention-days: 30
+    
+    - name: Frontend deployment notification
+      run: |
+        echo "🎨 Frontend 빌드 완료"
+        echo "📦 아티팩트: frontend-dist"
+        echo "🌐 배포 대상: saju.heal7.com (포트 4173)"

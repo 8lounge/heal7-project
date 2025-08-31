@@ -1,0 +1,24 @@
+cube:
+  color: brown
+  created: '2025-08-26T16:47:53.997182'
+  metaphor: 호흡계 - 외부 연결
+  name: external-apis-system
+  port: 8071
+  purpose: 외부 API 통합
+  type: integration-cube
+  version: 1.0.0
+dependencies:
+  external:
+  - fastapi
+  - uvicorn
+  - pydantic
+  internal: []
+interfaces:
+  health_check: /health
+  rest_api: /api/external-apis
+  websocket: /ws/external-apis
+performance_targets:
+  cpu_utilization_pct: 70
+  error_rate_pct: 0.1
+  memory_limit_mb: 512
+  response_time_ms: 100

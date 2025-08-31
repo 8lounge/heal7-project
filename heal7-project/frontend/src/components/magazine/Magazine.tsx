@@ -14,7 +14,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
 
   const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-purple-300'
+  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
   const filteredArticles = selectedCategory === 'all' 
     ? magazineArticles 
@@ -99,7 +99,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
             {article.tags.map((tag, index) => (
               <span 
                 key={index} 
-                className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300"
+                className="px-3 py-1 rounded-full text-sm bg-white/25 text-white"
               >
                 {tag}
               </span>
@@ -157,10 +157,8 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
-          viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic'
-        }`}>
-          📰 {viewMode === 'cyber_fantasy' ? '사이버 매거진' : 'HEAL7 매거진'}
+        <h1 className="text-4xl font-bold mb-6 text-white">
+          📰 {viewMode === 'cyber_fantasy' ? '사이버 매거진' : '치유마녀 매거진'}
         </h1>
         <p className="text-gray-300 text-lg">
           {viewMode === 'cyber_fantasy' 
@@ -182,7 +180,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
           {popularTags.slice(0, 10).map((tag, index) => (
             <motion.span
               key={index}
-              className="px-3 py-1 rounded-full text-sm bg-white/10 hover:bg-white/20 cursor-pointer text-gray-300 transition-colors"
+              className="px-3 py-1 rounded-full text-sm bg-white/25 hover:bg-white/35 cursor-pointer text-white transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -205,7 +203,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               selectedCategory === 'all'
                 ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                : 'bg-white/25 hover:bg-white/35 text-white'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -219,7 +217,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 selectedCategory === category.id
                   ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                  : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                  : 'bg-white/25 hover:bg-white/35 text-white'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -343,7 +341,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
                 {article.tags.slice(0, 3).map((tag, tagIndex) => (
                   <span 
                     key={tagIndex} 
-                    className="px-2 py-0.5 rounded text-xs bg-white/10 text-gray-400"
+                    className="px-2 py-0.5 rounded text-xs bg-white/25 text-white"
                   >
                     {tag}
                   </span>

@@ -1,0 +1,128 @@
+{
+  "test_started": "2025-08-29T14:05:32.524173",
+  "total_sites": 3,
+  "successful_sites": 3,
+  "failed_sites": 0,
+  "api_key_status": {
+    "gemini_available": false,
+    "claude_available": false,
+    "any_api_available": false,
+    "fallback_mode": true,
+    "check_successful": true
+  },
+  "detailed_results": [
+    {
+      "site_name": "기업마당 메인",
+      "site_url": "https://www.bizinfo.go.kr",
+      "site_type": "government_portal",
+      "expected_accessible": true,
+      "overall_success": true,
+      "steps_completed": [
+        "accessibility_check",
+        "ai_analysis"
+      ],
+      "errors": [
+        "Playwright failed: cannot import name 'ConfidenceLevel' from 'modules.ai_research_engine' (/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/ai_research_engine.py)"
+      ],
+      "accessibility_test": {
+        "accessible": true,
+        "status_code": 200,
+        "content_length": 172656,
+        "content_type": "text/html;charset=UTF-8"
+      },
+      "ai_analysis": {
+        "success": true,
+        "model_used": "primary",
+        "confidence_score": 1.0,
+        "strategy": {
+          "strategy_id": "strategy_169aeb9b_1756476336",
+          "selectors": {
+            "title": ".title a"
+          },
+          "confidence": "high"
+        }
+      },
+      "playwright_test": {
+        "success": false,
+        "error": "cannot import name 'ConfidenceLevel' from 'modules.ai_research_engine' (/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/ai_research_engine.py)",
+        "items_found": 0
+      }
+    },
+    {
+      "site_name": "K-Startup 메인",
+      "site_url": "https://www.k-startup.go.kr",
+      "site_type": "startup_support",
+      "expected_accessible": true,
+      "overall_success": true,
+      "steps_completed": [
+        "accessibility_check",
+        "ai_analysis"
+      ],
+      "errors": [
+        "Playwright failed: cannot import name 'ConfidenceLevel' from 'modules.ai_research_engine' (/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/ai_research_engine.py)"
+      ],
+      "accessibility_test": {
+        "accessible": true,
+        "status_code": 200,
+        "content_length": 125492,
+        "content_type": "text/html;charset=UTF-8"
+      },
+      "ai_analysis": {
+        "success": true,
+        "model_used": "primary",
+        "confidence_score": 0.6000000000000001,
+        "strategy": {
+          "strategy_id": "strategy_04075037_1756476337",
+          "selectors": {
+            "title": ".title a"
+          },
+          "confidence": "low"
+        }
+      },
+      "playwright_test": {
+        "success": false,
+        "error": "cannot import name 'ConfidenceLevel' from 'modules.ai_research_engine' (/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/ai_research_engine.py)",
+        "items_found": 0
+      }
+    },
+    {
+      "site_name": "정부24 메인",
+      "site_url": "https://www.gov.kr",
+      "site_type": "government_services",
+      "expected_accessible": true,
+      "overall_success": true,
+      "steps_completed": [
+        "accessibility_check",
+        "ai_analysis"
+      ],
+      "errors": [
+        "Playwright failed: cannot import name 'ConfidenceLevel' from 'modules.ai_research_engine' (/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/ai_research_engine.py)"
+      ],
+      "accessibility_test": {
+        "accessible": true,
+        "status_code": 200,
+        "content_length": 239,
+        "content_type": "text/html;charset=UTF-8"
+      },
+      "ai_analysis": {
+        "success": true,
+        "model_used": "primary",
+        "confidence_score": 0.3,
+        "strategy": {
+          "strategy_id": "strategy_96d04d86_1756476337",
+          "selectors": {
+            "title": ".title a"
+          },
+          "confidence": "uncertain"
+        }
+      },
+      "playwright_test": {
+        "success": false,
+        "error": "cannot import name 'ConfidenceLevel' from 'modules.ai_research_engine' (/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/ai_research_engine.py)",
+        "items_found": 0
+      }
+    }
+  ],
+  "test_completed": "2025-08-29T14:05:37.829820",
+  "success_rate": 1.0
+}

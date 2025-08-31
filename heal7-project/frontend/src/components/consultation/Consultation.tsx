@@ -15,7 +15,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
 
   const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-purple-300'
+  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
   const filteredConsultants = selectedCategory === 'all' 
     ? consultants 
@@ -87,7 +87,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
                 <h3 className={`font-bold ${textClass} mb-2`}>전문 분야</h3>
                 <div className="flex flex-wrap gap-2">
                   {consultant.specialties.map((specialty, index) => (
-                    <span key={index} className="px-3 py-1 rounded-full bg-purple-500/30 text-purple-200 text-sm">
+                    <span key={index} className="px-3 py-1 rounded-full bg-purple-500/30 text-white text-sm">
                       {specialty}
                     </span>
                   ))}
@@ -205,9 +205,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
-          viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic'
-        }`}>
+        <h1 className="text-4xl font-bold mb-6 text-white">
           💬 {viewMode === 'cyber_fantasy' ? '사이버 상담소' : '1:1 전문가 상담'}
         </h1>
         <p className="text-gray-300 text-lg">
@@ -329,7 +327,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
 
                       <div className="flex flex-wrap gap-1 justify-center mb-3">
                         {consultant.specialties.slice(0, 2).map((specialty, index) => (
-                          <span key={index} className="px-2 py-1 rounded-full bg-purple-500/30 text-purple-200 text-xs">
+                          <span key={index} className="px-2 py-1 rounded-full bg-purple-500/30 text-white text-xs">
                             {specialty}
                           </span>
                         ))}
@@ -430,7 +428,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
                   </div>
 
                   <div className="mb-4">
-                    <span className="px-3 py-1 rounded-full bg-purple-500/30 text-purple-200 text-sm">
+                    <span className="px-3 py-1 rounded-full bg-purple-500/30 text-white text-sm">
                       {review.category}
                     </span>
                     <span className="ml-2 px-3 py-1 rounded-full bg-blue-500/30 text-blue-200 text-sm">

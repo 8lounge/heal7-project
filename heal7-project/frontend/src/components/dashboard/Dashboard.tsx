@@ -134,7 +134,7 @@ const Dashboard: React.FC<DashboardProps> = ({ viewMode }) => {
                   {sajuData?.features.map((feature, index) => (
                     <motion.div
                       key={index}
-                      className="text-sm text-purple-300 bg-purple-500/20 rounded px-3 py-1"
+                      className="text-sm text-white bg-purple-500/20 rounded px-3 py-1"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 1 + index * 0.1 }}

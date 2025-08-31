@@ -1,0 +1,24 @@
+cube:
+  color: yellow
+  created: '2025-08-26T16:47:53.978026'
+  metaphor: 간 - 공통 기능 처리
+  name: shared-utilities-system
+  port: 8032
+  purpose: 공통 유틸리티 및 헬퍼
+  type: data-cube
+  version: 1.0.0
+dependencies:
+  external:
+  - fastapi
+  - uvicorn
+  - pydantic
+  internal: []
+interfaces:
+  health_check: /health
+  rest_api: /api/shared-utilities
+  websocket: /ws/shared-utilities
+performance_targets:
+  cpu_utilization_pct: 70
+  error_rate_pct: 0.1
+  memory_limit_mb: 512
+  response_time_ms: 100

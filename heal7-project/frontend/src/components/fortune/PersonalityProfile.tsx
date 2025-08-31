@@ -289,7 +289,7 @@ export const PersonalityProfile: React.FC = () => {
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
               <div className="mb-4">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Users className="w-5 h-5 text-purple-400" />
+                  <Users className="w-5 h-5 text-white" />
                   동일한 성격 유형의 유명인들
                 </h3>
               </div>
@@ -299,7 +299,7 @@ export const PersonalityProfile: React.FC = () => {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {result.famous_people.map((person, index) => (
-                    <span key={index} className="inline-block border border-purple-400/50 text-purple-300 px-3 py-1 rounded-full text-sm bg-white/10 backdrop-blur-sm">
+                    <span key={index} className="inline-block border border-purple-400/50 text-white px-3 py-1 rounded-full text-sm bg-white/10 backdrop-blur-sm">
                       ⭐ {person}
                     </span>
                   ))}

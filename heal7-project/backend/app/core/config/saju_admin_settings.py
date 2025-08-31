@@ -165,12 +165,12 @@ class SajuAdminSettings(BaseModel):
         
     def to_json(self) -> str:
         """JSON 문자열로 변환"""
-        return self.json(ensure_ascii=False, indent=2)
+        return self.model_dump_json(indent=2, by_alias=False)
     
     @classmethod
     def from_json(cls, json_str: str) -> 'SajuAdminSettings':
         """JSON 문자열에서 생성"""
-        return cls.parse_raw(json_str)
+        return cls.model_validate_json(json_str)
     
     def save_to_file(self, file_path: str):
         """파일로 저장"""

@@ -3,7 +3,8 @@ import {
   Heart, 
   Brain, 
   TrendingUp,
-  Sparkles
+  Sparkles,
+  Moon
 } from 'lucide-react';
 
 interface FortuneCategory {
@@ -43,6 +44,8 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
       'marriage': 'love', // 결혼운도 연애운 페이지로
       'family': 'compatibility',
       'workplace': 'compatibility',
+      'dream': 'dream', // 꿈풀이
+      'calendar': 'calendar', // 운세 캘린더
     };
     
     const route = routeMap[serviceId] || serviceId;
@@ -75,6 +78,22 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
       color: 'from-pink-500 to-red-600',
       features: ['연애&결혼운', '가족궁합', '동료궁합'],
       isPremium: true
+    },
+    {
+      id: 'spiritual',
+      title: '신비/영성 해석',
+      description: '꿈과 무의식의 메시지를 해석합니다',
+      icon: <Moon className="w-6 h-6" />,
+      color: 'from-purple-500 to-indigo-600',
+      features: ['AI 꿈해몽', '운세 캘린더', '영성 상담']
+    },
+    {
+      id: 'daily-tools',
+      title: '일상 운세 도구',
+      description: '매일 활용하는 실용적인 운세 도구',
+      icon: <Sparkles className="w-6 h-6" />,
+      color: 'from-yellow-500 to-orange-600',
+      features: ['오늘의 운세', '손없는날', '길일 확인']
     }
   ];
 
@@ -154,6 +173,47 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
         name: '🏢 직장 동료 궁합',
         description: '상사, 동료와의 협업 방법과 갈등 관리'
       }
+    ],
+    'spiritual': [
+      {
+        id: 'dream',
+        name: '🌙 AI 꿈해몽 센터',
+        description: '꿈의 의미를 AI와 전통 명리학으로 해석'
+      },
+      {
+        id: 'oracle',
+        name: '🔮 영성 상담',
+        description: '직감과 영적 메시지를 통한 인생 가이드',
+        price: '₩20,000',
+        isPremium: true
+      },
+      {
+        id: 'meditation',
+        name: '🧘‍♀️ 명상과 치유',
+        description: '내면의 평화와 에너지 균형 찾기'
+      }
+    ],
+    'daily-tools': [
+      {
+        id: 'calendar',
+        name: '📅 운세 캘린더',
+        description: '12지신, 60갑자, 손없는날 등 일일 운세 정보'
+      },
+      {
+        id: 'today-fortune',
+        name: '⭐ 오늘의 운세',
+        description: '매일 업데이트되는 개인별 맞춤 운세'
+      },
+      {
+        id: 'lucky-day',
+        name: '🍀 길일 찾기',
+        description: '중요한 일정을 위한 최적의 날짜 추천'
+      },
+      {
+        id: 'biorhythm',
+        name: '📊 바이오리듬',
+        description: '신체, 감정, 지성 리듬으로 컨디션 관리'
+      }
     ]
   };
 
@@ -163,8 +223,8 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
         
         {/* 헤더 섹션 */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            🔮 HEAL7 운세 서비스
+          <h1 className="text-4xl font-bold text-white mb-4">
+            🔮 치유마녀 운세 서비스
           </h1>
           <p className="text-xl text-white/90 mb-2">
             전통 명리학과 현대 기술의 만남
@@ -210,7 +270,7 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {category.features.map((feature, index) => (
-                    <div key={index} className="px-2 py-1 bg-purple-500/30 text-purple-200 text-xs rounded-full">
+                    <div key={index} className="px-2 py-1 bg-purple-500/30 text-white text-xs rounded-full">
                       {feature}
                     </div>
                   ))}
@@ -246,7 +306,7 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
                   </p>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-purple-300">
+                    <span className="text-lg font-bold text-white">
                       {service.price || 'FREE'}
                     </span>
                     <button 
@@ -288,7 +348,7 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
             🔒 개인정보 보호 • ⚡ 실시간 업데이트 • 🎯 AI 개인화
           </p>
           <p className="mt-2">
-            문의: help@heal7.com | 전화: 1588-7777
+            문의: help@치유마녀.com | 전화: 1588-7777
           </p>
         </div>
 

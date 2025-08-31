@@ -6,17 +6,18 @@ type ViewMode = 'basic' | 'cyber_fantasy'
 
 interface NoticesProps {
   viewMode: ViewMode
+  initialView?: 'notices' | 'subscription' | 'profile'
 }
 
-const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
+const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) => {
   const [selectedNotice, setSelectedNotice] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState<string>('all')
-  const [showSubscription, setShowSubscription] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
+  const [showSubscription, setShowSubscription] = useState(initialView === 'subscription')
+  const [showProfile, setShowProfile] = useState(initialView === 'profile')
 
   const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-purple-300'
+  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
   const filteredNotices = selectedType === 'all' 
     ? notices 
@@ -38,16 +39,6 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <motion.button
-          onClick={() => setShowSubscription(false)}
-          className={`mb-6 px-4 py-2 rounded-lg ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          ← 공지사항으로 돌아가기
-        </motion.button>
 
         <motion.div
           className="text-center mb-12"
@@ -55,9 +46,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h1 className={`text-4xl font-bold mb-6 ${
-            viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic'
-          }`}>
+          <h1 className="text-4xl font-bold mb-6 text-white">
             💎 구독 요금제
           </h1>
           <p className="text-gray-300 text-lg">
@@ -81,7 +70,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
               )}
 
               <div className="text-center mb-6">
-                <div className="text-6xl mb-4">{plan.icon}</div>
+                <div className={`text-6xl mb-4 ${plan.icon === '🆓' ? 'text-white' : ''}`}>{plan.icon}</div>
                 <h3 className={`text-2xl font-bold ${textClass} mb-2`}>
                   {plan.name}
                 </h3>
@@ -121,18 +110,20 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
                 </ul>
               </div>
 
-              <motion.button
-                className={`w-full py-4 rounded-lg font-bold text-lg ${
-                  plan.id === sampleUser.subscriptionType
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                    : viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                }`}
-                disabled={plan.id === sampleUser.subscriptionType}
-                whileHover={plan.id !== sampleUser.subscriptionType ? { scale: 1.05 } : {}}
-                whileTap={plan.id !== sampleUser.subscriptionType ? { scale: 0.95 } : {}}
-              >
-                {plan.id === sampleUser.subscriptionType ? '현재 플랜' : '선택하기'}
-              </motion.button>
+              <div className="h-16 flex items-end">
+                <motion.button
+                  className={`w-full py-4 rounded-lg font-bold text-lg ${
+                    plan.id === sampleUser.subscriptionType
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                  }`}
+                  disabled={plan.id === sampleUser.subscriptionType}
+                  whileHover={plan.id !== sampleUser.subscriptionType ? { scale: 1.05 } : {}}
+                  whileTap={plan.id !== sampleUser.subscriptionType ? { scale: 0.95 } : {}}
+                >
+                  {plan.id === sampleUser.subscriptionType ? '현재 플랜' : '선택하기'}
+                </motion.button>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -239,7 +230,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
               <h3 className={`text-xl font-bold ${textClass} mb-4`}>💫 관심 분야</h3>
               <div className="flex flex-wrap gap-2">
                 {sampleUser.profile.interests.map((interest, index) => (
-                  <span key={index} className="px-3 py-1 rounded-full bg-purple-500/30 text-purple-200 text-sm">
+                  <span key={index} className="px-3 py-1 rounded-full bg-purple-500/30 text-white text-sm">
                     {interest}
                   </span>
                 ))}
@@ -414,9 +405,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${
-          viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic'
-        }`}>
+        <h1 className="text-4xl font-bold mb-6 text-white">
           📢 {viewMode === 'cyber_fantasy' ? '사이버 공지소' : '공지사항'}
         </h1>
         <p className="text-gray-300 text-lg">
@@ -427,34 +416,6 @@ const Notices: React.FC<NoticesProps> = ({ viewMode }) => {
         </p>
       </motion.div>
 
-      {/* 퀵 액세스 버튼 */}
-      <motion.div
-        className="flex flex-wrap gap-4 justify-center mb-8"
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <motion.button
-          onClick={() => setShowProfile(true)}
-          className={`px-6 py-3 rounded-lg font-medium ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          👤 내 프로필
-        </motion.button>
-        <motion.button
-          onClick={() => setShowSubscription(true)}
-          className={`px-6 py-3 rounded-lg font-medium ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          💎 구독 플랜
-        </motion.button>
-      </motion.div>
 
       {/* 공지 타입 필터 */}
       <motion.div

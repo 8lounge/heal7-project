@@ -125,7 +125,7 @@ const TarotReader: React.FC<TarotReaderProps> = ({ viewMode }) => {
               <div className="text-white">
                 <h3 className="font-semibold text-lg">{option.name}</h3>
                 <p className="text-sm text-gray-400 mt-1">{option.description}</p>
-                <p className="text-xs text-purple-300 mt-2">{option.cards}장의 카드</p>
+                <p className="text-xs text-white mt-2">{option.cards}장의 카드</p>
               </div>
             </motion.button>
           ))}
@@ -269,7 +269,7 @@ const TarotReader: React.FC<TarotReaderProps> = ({ viewMode }) => {
               {tarotData ? (
                 <div className="space-y-4">
                   <div className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg">
-                    <p className="text-purple-300">{tarotData.message}</p>
+                    <p className="text-white">{tarotData.message}</p>
                   </div>
 
                   {tarotData.features && (
