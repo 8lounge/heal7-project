@@ -206,90 +206,94 @@ function App() {
           viewMode={viewMode}
         />
 
-        {/* 메인 콘텐츠 영역 */}
-        <main className="container mx-auto px-4 py-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPage}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {currentPage === 'dashboard' && (
-                <EnhancedDashboard viewMode={viewMode} />
-              )}
-              {currentPage === 'saju' && (
-                <SajuCalculator viewMode={viewMode} />
-              )}
-              {currentPage === 'tarot' && (
-                <InteractiveTarotReader viewMode={viewMode} />
-              )}
-              {currentPage === 'magazine' && (
-                <Magazine viewMode={viewMode} />
-              )}
-              {currentPage === 'consultation' && (
-                <Consultation viewMode={viewMode} />
-              )}
-              {currentPage === 'store' && (
-                <Store viewMode={viewMode} />
-              )}
-              {currentPage === 'notices' && (
-                <Notices viewMode={viewMode} />
-              )}
-              {currentPage === 'subscription' && (
-                <Notices viewMode={viewMode} initialView="subscription" />
-              )}
-              {currentPage === 'profile' && (
-                <div className="text-center py-20">
-                  <h2 className="text-3xl font-bold text-white mb-4">
-                    🎮 사용자 프로필
-                  </h2>
-                  <p className="text-gray-300">
-                    게이미피케이션 시스템 - 구현 예정 (공지사항에서 프로필 확인 가능)
-                  </p>
-                  <motion.button
-                    className={`mt-4 px-6 py-3 rounded-lg font-medium ${
-                      viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                    }`}
-                    onClick={() => setCurrentPage('notices')}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    📢 공지사항에서 프로필 보기
-                  </motion.button>
-                </div>
-              )}
-              {currentPage === 'fortune' && (
-                <FortuneCategories 
-                  viewMode={viewMode} 
-                  onCategorySelect={(category) => setCurrentPage(category as CurrentPage)}
-                />
-              )}
-              {currentPage === 'zodiac' && (
-                <ZodiacAnalysis viewMode={viewMode} />
-              )}
-              {currentPage === 'personality' && (
-                <PersonalityProfile />
-              )}
-              {currentPage === 'love' && (
-                <LoveFortuneAnalysis />
-              )}
-              {currentPage === 'compatibility' && (
-                <CompatibilityAnalysis viewMode={viewMode} />
-              )}
-              {currentPage === 'admin' && (
-                <IntegratedAdminDashboard />
-              )}
-              {currentPage === 'dream' && (
-                <DreamInterpretation viewMode={viewMode} />
-              )}
-              {currentPage === 'calendar' && (
-                <FortuneCalendar viewMode={viewMode} />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </main>
+        {/* 관리자 대시보드 - 전체 화면 레이아웃 */}
+        {currentPage === 'admin' && (
+          <IntegratedAdminDashboard />
+        )}
+
+        {/* 일반 메인 콘텐츠 영역 */}
+        {currentPage !== 'admin' && (
+          <main className="container mx-auto px-4 py-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {currentPage === 'dashboard' && (
+                  <EnhancedDashboard viewMode={viewMode} />
+                )}
+                {currentPage === 'saju' && (
+                  <SajuCalculator viewMode={viewMode} />
+                )}
+                {currentPage === 'tarot' && (
+                  <InteractiveTarotReader viewMode={viewMode} />
+                )}
+                {currentPage === 'magazine' && (
+                  <Magazine viewMode={viewMode} />
+                )}
+                {currentPage === 'consultation' && (
+                  <Consultation viewMode={viewMode} />
+                )}
+                {currentPage === 'store' && (
+                  <Store viewMode={viewMode} />
+                )}
+                {currentPage === 'notices' && (
+                  <Notices viewMode={viewMode} />
+                )}
+                {currentPage === 'subscription' && (
+                  <Notices viewMode={viewMode} initialView="subscription" />
+                )}
+                {currentPage === 'profile' && (
+                  <div className="text-center py-20">
+                    <h2 className="text-3xl font-bold text-white mb-4">
+                      🎮 사용자 프로필
+                    </h2>
+                    <p className="text-gray-300">
+                      게이미피케이션 시스템 - 구현 예정 (공지사항에서 프로필 확인 가능)
+                    </p>
+                    <motion.button
+                      className={`mt-4 px-6 py-3 rounded-lg font-medium ${
+                        viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                      }`}
+                      onClick={() => setCurrentPage('notices')}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      📢 공지사항에서 프로필 보기
+                    </motion.button>
+                  </div>
+                )}
+                {currentPage === 'fortune' && (
+                  <FortuneCategories 
+                    viewMode={viewMode} 
+                    onCategorySelect={(category) => setCurrentPage(category as CurrentPage)}
+                  />
+                )}
+                {currentPage === 'zodiac' && (
+                  <ZodiacAnalysis viewMode={viewMode} />
+                )}
+                {currentPage === 'personality' && (
+                  <PersonalityProfile />
+                )}
+                {currentPage === 'love' && (
+                  <LoveFortuneAnalysis />
+                )}
+                {currentPage === 'compatibility' && (
+                  <CompatibilityAnalysis viewMode={viewMode} />
+                )}
+                {currentPage === 'dream' && (
+                  <DreamInterpretation viewMode={viewMode} />
+                )}
+                {currentPage === 'calendar' && (
+                  <FortuneCalendar viewMode={viewMode} />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        )}
 
         {/* 푸터 */}
         <footer className="text-center py-8 text-gray-300 text-sm border-t border-gray-700/50 bg-black/30 backdrop-blur-sm">

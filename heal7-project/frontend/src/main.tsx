@@ -1,8 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import App from './App'
 import CrawlingApp from './CrawlingApp'
 import './index.css'
+
+// 환경변수 기반 앱 선택 (Phase 0: 긴급 안정화)
+const APP_TYPE = import.meta.env.VITE_APP_TYPE || 'saju'
+const AppComponent = APP_TYPE === 'crawling' ? CrawlingApp : App
+
+console.log(`🚀 Loading ${APP_TYPE} app...`)
 
 // React Query 설정 - 서버 로드 최적화
 const queryClient = new QueryClient({
@@ -22,7 +29,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <CrawlingApp />
+      <AppComponent />
     </QueryClientProvider>
   </React.StrictMode>,
 )

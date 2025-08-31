@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { crawlingAPI } from '../../api/CrawlingAPIClient';
 import { 
   Plus,
   Play,
@@ -43,62 +44,25 @@ interface NewJobForm {
 const CrawlingManagement: React.FC = () => {
   const [showNewJobModal, setShowNewJobModal] = useState(false);
   const [selectedTier, setSelectedTier] = useState<'all' | 'httpx' | 'playwright' | 'selenium'>('all');
-  // const [selectedJob, setSelectedJob] = useState<string | null>(null);
-  
-  const [jobs, setJobs] = useState<CrawlingJob[]>([
-    {
-      id: '1',
-      name: '정부포털 일반공고',
-      tier: 'httpx',
-      status: 'running',
-      url: 'https://www.gov.kr/portal/ntnadmNews',
-      schedule: 'daily',
-      progress: 75,
-      itemsCollected: 1420,
-      lastRun: '2025-08-30 14:30',
-      nextRun: '2025-08-31 14:30',
-      duration: '45분'
-    },
-    {
-      id: '2',
-      name: '꿈해몽 데이터베이스',
-      tier: 'playwright',
-      status: 'completed',
-      url: 'https://dream.co.kr/search',
-      schedule: 'weekly',
-      progress: 100,
-      itemsCollected: 890,
-      lastRun: '2025-08-30 12:00',
-      nextRun: '2025-09-06 12:00',
-      duration: '2시간 15분'
-    },
-    {
-      id: '3',
-      name: '사주명리 포털',
-      tier: 'selenium',
-      status: 'failed',
-      url: 'https://saju.example.com',
-      schedule: 'daily',
-      progress: 30,
-      itemsCollected: 245,
-      lastRun: '2025-08-30 08:00',
-      nextRun: '재시도 필요',
-      duration: '15분'
-    },
-    {
-      id: '4',
-      name: '운세 정보 수집',
-      tier: 'httpx',
-      status: 'queued',
-      url: 'https://fortune.kr/daily',
-      schedule: 'daily',
-      progress: 0,
-      itemsCollected: 0,
-      lastRun: '없음',
-      nextRun: '2025-08-30 18:00',
-      duration: '예상 30분'
+  const [jobs, setJobs] = useState<CrawlingJob[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 실제 API에서 작업 목록 로드
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
+  const loadJobs = async () => {
+    setLoading(true);
+    try {
+      const jobsData = await crawlingAPI.getJobs();
+      setJobs(jobsData);
+    } catch (error) {
+      console.error('작업 목록 로드 실패:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   const [newJob, setNewJob] = useState<NewJobForm>({
     name: '',

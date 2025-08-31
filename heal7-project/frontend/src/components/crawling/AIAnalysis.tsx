@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { crawlingAPI } from '../../api/CrawlingAPIClient';
 import { 
   Brain,
   Eye,
@@ -56,117 +57,37 @@ const AIAnalysis: React.FC = () => {
   const [selectedType, setSelectedType] = useState<'all' | 'document' | 'table' | 'image' | 'ocr'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showDetails, setShowDetails] = useState<string | null>(null);
+  const [aiModels, setAIModels] = useState<AIModel[]>([]);
+  const [processingJobs, setProcessingJobs] = useState<ProcessingJob[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [aiModels] = useState<AIModel[]>([
-    {
-      id: 'gemini',
-      name: 'gemini',
-      displayName: 'Gemini Flash',
-      color: 'blue',
-      icon: <Zap className="w-5 h-5" />,
-      stats: {
-        totalProcessed: 1247,
-        successRate: 96.8,
-        avgProcessingTime: 2.3,
-        costPerItem: 0.0008,
-        totalCost: 1.25
-      }
-    },
-    {
-      id: 'gpt4o',
-      name: 'gpt4o',
-      displayName: 'GPT-4o',
-      color: 'green',
-      icon: <Eye className="w-5 h-5" />,
-      stats: {
-        totalProcessed: 856,
-        successRate: 94.2,
-        avgProcessingTime: 4.1,
-        costPerItem: 0.005,
-        totalCost: 4.28
-      }
-    },
-    {
-      id: 'claude',
-      name: 'claude',
-      displayName: 'Claude Sonnet',
-      color: 'purple',
-      icon: <Brain className="w-5 h-5" />,
-      stats: {
-        totalProcessed: 523,
-        successRate: 97.1,
-        avgProcessingTime: 3.7,
-        costPerItem: 0.003,
-        totalCost: 1.57
-      }
-    }
-  ]);
+  // 실제 API에서 AI 통계 로드
+  useEffect(() => {
+    loadAIStats();
+  }, []);
 
-  const [processingJobs, setProcessingJobs] = useState<ProcessingJob[]>([
-    {
-      id: '1',
-      model: 'gemini',
-      type: 'document',
-      status: 'completed',
-      title: '정부포털 공고문 분석',
-      sourceUrl: 'https://gov.kr/notice/123',
-      processingTime: 2.1,
-      accuracy: 97.2,
-      createdAt: '2025-08-30 15:30',
-      result: {
-        extractedText: '정부기관 공고사항...',
-        confidence: 0.97
+  const loadAIStats = async () => {
+    setLoading(true);
+    try {
+      const data = await crawlingAPI.getAIStats();
+      if (data) {
+        // AI 모델 데이터 변환 (아이콘 추가)
+        const modelsWithIcons = data.models.map((model: any) => ({
+          ...model,
+          icon: model.color === 'blue' ? <Zap className="w-5 h-5" /> :
+                model.color === 'green' ? <Eye className="w-5 h-5" /> :
+                <Brain className="w-5 h-5" />
+        }));
+        setAIModels(modelsWithIcons);
+        setProcessingJobs(data.processing_jobs);
       }
-    },
-    {
-      id: '2',
-      model: 'gpt4o',
-      type: 'table',
-      status: 'processing',
-      title: '예산 테이블 추출',
-      sourceUrl: 'https://budget.gov.kr/table/456',
-      processingTime: 0,
-      accuracy: 0,
-      createdAt: '2025-08-30 15:45',
-    },
-    {
-      id: '3',
-      model: 'claude',
-      type: 'ocr',
-      status: 'completed',
-      title: '스캔 문서 텍스트 추출',
-      sourceUrl: 'https://docs.example.com/scan789',
-      processingTime: 3.8,
-      accuracy: 95.8,
-      createdAt: '2025-08-30 15:20',
-      result: {
-        extractedText: '스캔된 텍스트 내용...',
-        confidence: 0.96
-      }
-    },
-    {
-      id: '4',
-      model: 'gemini',
-      type: 'image',
-      status: 'failed',
-      title: '차트 이미지 분석',
-      sourceUrl: 'https://chart.example.com/img.png',
-      processingTime: 1.2,
-      accuracy: 0,
-      createdAt: '2025-08-30 15:10',
-    },
-    {
-      id: '5',
-      model: 'claude',
-      type: 'document',
-      status: 'queued',
-      title: '연구보고서 요약',
-      sourceUrl: 'https://research.example.com/report',
-      processingTime: 0,
-      accuracy: 0,
-      createdAt: '2025-08-30 15:50',
+    } catch (error) {
+      console.error('AI 통계 로드 실패:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
 
   // 실시간 업데이트 시뮬레이션
   useEffect(() => {

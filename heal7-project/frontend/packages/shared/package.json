@@ -1,0 +1,48 @@
+{
+  "name": "@heal7/shared",
+  "version": "1.0.0",
+  "description": "🔄 HEAL7 공통 모듈 - UI 컴포넌트, 3D 컴포넌트, 유틸리티",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./components/*": "./dist/components/*.js",
+    "./styles/*": "./dist/styles/*.css"
+  },
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "dev": "vite build --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@react-three/drei": "^9.96.0",
+    "@react-three/fiber": "^8.15.0",
+    "three": "^0.161.0",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.344.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.161.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3",
+    "rimraf": "^5.0.0"
+  }
+}

@@ -35,7 +35,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
       const searchDreamAPI = async () => {
         try {
           const query = searchQuery.toLowerCase().trim();
-          const response = await fetch('/api/saju/dream-interpretation/search', {
+          const response = await fetch('/api/dreams/search', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

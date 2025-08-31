@@ -1,0 +1,117 @@
+name: Saju App Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/saju-app/**'
+      - 'packages/shared/**'
+  pull_request:
+    paths:
+      - 'packages/saju-app/**'
+      - 'packages/shared/**'
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy to production?'
+        required: true
+        default: 'false'
+        type: boolean
+
+jobs:
+  build-saju:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || inputs.deploy }}
+      
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build shared module
+        run: pnpm --filter @heal7/shared build
+        
+      - name: Build saju app
+        run: pnpm --filter @heal7/saju-app build
+        env:
+          NODE_ENV: production
+          
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: saju-app-build
+          path: packages/saju-app/dist/
+          retention-days: 7
+
+  deploy-saju:
+    needs: build-saju
+    if: needs.build-saju.outputs.should-deploy == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: saju-app-build
+          path: ./dist
+          
+      - name: Deploy to saju.heal7.com
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            # 백업 생성
+            sudo cp -r /var/www/saju.heal7.com /var/www/saju.heal7.com.backup-$(date +%Y%m%d-%H%M%S)
+            
+            # 임시 디렉토리 생성
+            sudo rm -rf /var/www/saju.heal7.com.temp
+            sudo mkdir -p /var/www/saju.heal7.com.temp
+            
+      - name: Upload files via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "./dist/*"
+          target: "/var/www/saju.heal7.com.temp/"
+          strip_components: 1
+          
+      - name: Finalize deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            # zodiac-images 보존
+            if [ -d "/var/www/saju.heal7.com/zodiac-images" ]; then
+              sudo cp -r /var/www/saju.heal7.com/zodiac-images /var/www/saju.heal7.com.temp/
+            fi
+            
+            # 원자적 교체
+            sudo mv /var/www/saju.heal7.com /var/www/saju.heal7.com.old
+            sudo mv /var/www/saju.heal7.com.temp /var/www/saju.heal7.com
+            sudo chown -R www-data:www-data /var/www/saju.heal7.com
+            
+            # 이전 버전 정리
+            sudo rm -rf /var/www/saju.heal7.com.old
+            
+            # Nginx 설정 리로드
+            sudo systemctl reload nginx

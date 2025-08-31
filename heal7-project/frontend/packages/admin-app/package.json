@@ -1,0 +1,30 @@
+{
+  "name": "@heal7/admin-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "🛠️ HEAL7 관리자 대시보드 - 통합 관리 시스템",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5175",
+    "build": "tsc && vite build",
+    "preview": "vite preview --port 4175",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@heal7/shared": "workspace:*",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "framer-motion": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.0"
+  }
+}
