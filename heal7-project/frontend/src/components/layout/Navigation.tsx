@@ -119,61 +119,33 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
           )}
         </div>
 
-        {/* 모바일: 가로 스크롤 가능한 배치 */}
+        {/* 모바일: 고정 버튼 배치 (드래그 기능 없음) */}
         <div className="sm:hidden">
-          {/* 스크롤 컨테이너 */}
-          <div className="relative">
-            <div
-              className="flex items-center gap-2 pb-2 scrollbar-hide mobile-nav-scroll overflow-x-auto"
-              style={{
-                overflowX: 'auto',
-                overflowY: 'hidden',
-                WebkitOverflowScrolling: 'touch',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                touchAction: 'pan-x',
-                scrollBehavior: 'smooth',
-                willChange: 'scroll-position'
-              }}
-            >
-              {visibleItems.map((item) => (
-                <div key={item.id} className="flex-shrink-0">
-                  <CompactNavButton item={item} isPrimary={true} />
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {visibleItems.map((item) => (
+              <CompactNavButton key={item.id} item={item} isPrimary={true} />
+            ))}
+
+            {/* 더보기 버튼 (필요할 때만 표시) */}
+            {needsMoreButton && (
+              <motion.button
+                className={`
+                  px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white min-w-[70px]
+                  ${viewMode === 'cyber_fantasy'
+                    ? 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'
+                    : 'bg-white/10 hover:bg-white/20'
+                  }
+                `}
+                onClick={() => setShowMore(!showMore)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center justify-center space-x-1">
+                  <span className="text-base">⋯</span>
+                  <span className="text-xs font-semibold">더보기</span>
                 </div>
-              ))}
-
-              {/* 더보기 버튼 (필요할 때만 표시) */}
-              {needsMoreButton && (
-                <div className="flex-shrink-0">
-                  <motion.button
-                    className={`
-                      px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white min-w-[70px]
-                      ${viewMode === 'cyber_fantasy'
-                        ? 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'
-                        : 'bg-white/10 hover:bg-white/20'
-                      }
-                    `}
-                    onClick={() => setShowMore(!showMore)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center justify-center space-x-1">
-                      <span className="text-base">⋯</span>
-                      <span className="text-xs font-semibold">더보기</span>
-                    </div>
-                  </motion.button>
-                </div>
-              )}
-            </div>
-
-            {/* 좌우 그라데이션 힌트 (스크롤 가능함을 시각적으로 표시) */}
-            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-black/20 via-transparent to-transparent pointer-events-none" />
-          </div>
-
-          {/* 스크롤 힌트 텍스트 */}
-          <div className="flex justify-center mt-1">
-            <span className="text-xs text-white/60">← 손가락으로 밀어서 스크롤하세요 →</span>
+              </motion.button>
+            )}
           </div>
         </div>
       </div>
@@ -221,6 +193,11 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
                 {/* 더보기 메뉴 그라데이션 힌트 */}
                 <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-l from-black/20 via-transparent to-transparent pointer-events-none" />
+              </div>
+
+              {/* 하단 메뉴 스크롤 힌트 텍스트 */}
+              <div className="flex justify-center mt-1">
+                <span className="text-xs text-white/60">← 손가락으로 밀어서 스크롤하세요 →</span>
               </div>
             </div>
           </motion.div>
