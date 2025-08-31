@@ -187,10 +187,6 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
 
         {/* 모바일 메뉴 - 주요 메뉴 */}
         <div className="md:hidden mt-4">
-          {/* 드래그 안내 텍스트 */}
-          <div className="text-center mb-2">
-            <p className="text-white/70 text-xs">👈 좌우로 드래그 하세요 👉</p>
-          </div>
           
           {/* 드래그 가능한 메뉴 */}
           <div className="relative">
