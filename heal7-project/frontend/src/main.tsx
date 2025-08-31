@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import App from './App'
+import CrawlingApp from './CrawlingApp'
 import './index.css'
 
 // React Query 설정 - 서버 로드 최적화
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <CrawlingApp />
     </QueryClientProvider>
   </React.StrictMode>,
 )

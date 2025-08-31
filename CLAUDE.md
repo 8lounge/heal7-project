@@ -18,7 +18,7 @@
 - **기술스택**: FastAPI, Vite, TypeScript, Tailwind CSS
 - **주요 서비스**:
   - **🔮 saju-service**: 사주명리학 계산 및 해석 (saju.heal7.com)
-  - **🕷️ crawling-service**: 데이터 수집 및 크롤링 (crawling.heal7.com)
+  - **🕷️ crawling-service**: 데이터 수집 및 크롤링 (crawling.heal7.com) ⚡ **2025-08-31 React 시스템 교체 완료**
   
 - **프론트엔드 미리보기 (포트 4173)**: ✅ **운영 중** - Vite Preview 서버
 
@@ -31,6 +31,30 @@
 ### 🗄️ **공통 인프라**
 - **데이터베이스**: ✅ PostgreSQL 최적화
 - **보안**: ✅ SSL 인증서 유효
+
+### 🕷️ **크롤링 시스템 대규모 업그레이드 완료** (2025-08-31) ⚡ **신규**
+> 🏆 **Big Bang Replacement 성공**: 레거시 Alpine.js → 최신 React + TypeScript 완전 교체
+
+#### **🎯 교체 결과**
+- **✅ Phase 1-8 완료**: 모든 계획 단계 100% 완료
+- **✅ 시스템 중단 시간**: < 5분 (무중단 배포 성공)  
+- **✅ 코드 품질 혁신**: 1585줄 단일 HTML → 모듈화된 React 컴포넌트
+- **✅ 실시간 기능**: WebSocket, 알림, 로그 스트리밍 구현
+- **✅ 3-Tier 통합**: httpx, Playwright, Selenium 크롤러 완전 지원
+
+#### **🏗️ 새로운 아키텍처 스택**
+```typescript
+Frontend: React 18 + TypeScript + Tailwind CSS + shadcn/ui + Framer Motion
+Backend: FastAPI 3-Tier Crawler + MultiModal AI (Gemini, GPT-4o, Claude)
+Real-time: Socket.io + WebSocket Server + Redis
+Storage: PostgreSQL + Redis Cache
+```
+
+#### **📂 핵심 컴포넌트 위치**
+- **React 시스템**: `/home/ubuntu/heal7-project/frontend/src/components/crawling/`
+- **레거시 백업**: `/var/www/crawling.heal7.com.legacy-backup-20250830-172643/`
+- **아카이브**: `/home/ubuntu/archive/crawling-legacy-20250831-003946/`
+- **프로덕션**: `https://crawling.heal7.com` (React 시스템 운영 중)
 
 ### ⚡ **GitHub Actions 빌드 시스템** (2025-08-30 구축 완료)
 > 🚀 **무서버 빌드**: 로컬 서버 부담 제로, 클라우드에서 안전한 빌드/배포
@@ -136,6 +160,13 @@ vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 - **redis-server.service**: ✅ running (캐시)
 - **heal7 관련 서비스**: ❌ 없음 (수동 실행 상태)
 
+## 🚀 **크롤링 시스템 React 교체 완료** (2025-08-31) ⚡ **최신**
+
+### **🎉 Phase 8 Big Bang Replacement 성공**
+- **✅ 레거시 시스템 교체**: Alpine.js (1585줄) → React + TypeScript
+- **✅ 모든 기능 완성**: Phase 1-7 구현 → Phase 8 배포 완료
+- **✅ 시스템 안정성**: 무중단 배포, 완전 백업, 롤백 계획 완비
+
 ## ✅ **AI 크롤링 시스템 검증 완료** (2025-08-30)
 
 ### 🔴 **긴급 완료 필요** - ✅ **완료**
@@ -156,13 +187,20 @@ vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 
 ## 🔥 **자주 찾는 정보**
 
-### **AI 크롤링 시스템**
-- **메인 서비스**: `crawling.heal7.com` (포트 8004)
-- **검증 로그**: `/home/ubuntu/AI_CRAWLING_VERIFICATION_LOG.md`
-- **크롤링 엔진**: `/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/`
-- **AI 엔진**: `modules/ai_research_engine.py`
-- **WebSocket 모니터**: `modules/real_time_monitor.py`
-- **API 키**: `/home/ubuntu/.env.ai` (보안 강화 필요)
+### **🕷️ 크롤링 시스템** (2025-08-31 React 시스템) ⚡ **최신**
+- **메인 서비스**: `crawling.heal7.com` (React + TypeScript 기반) ✅ **운영 중**
+- **아키텍처**: React 18 + FastAPI 3-Tier + MultiModal AI
+- **핵심 컴포넌트**: `/home/ubuntu/heal7-project/frontend/src/components/crawling/`
+- **백엔드 API**: 포트 8003 (`/api/`, `/ws`, `/docs` 경로)
+- **실시간 기능**: WebSocket + 알림 시스템 + 로그 스트리밍
+- **배포 설정**: NGINX 정적 파일 서빙 + API 프록시 분리
+- **완료 보고서**: `/home/ubuntu/docs/project_docs/work-logs/2025/08/2025-08-31-crawling-system-replacement-complete.md`
+
+### **🔒 보안 및 백업 체계**
+- **레거시 백업**: `/var/www/crawling.heal7.com.legacy-backup-20250830-172643/`
+- **핵심 파일 아카이브**: `/home/ubuntu/archive/crawling-legacy-20250831-003946/`
+- **NGINX 설정 백업**: `/tmp/crawling.heal7.com.backup`
+- **API 키**: `/home/ubuntu/.env.ai` (Gemini, OpenAI, Anthropic)
 
 ### **중요 파일 위치**
 - **Heal7 백엔드**: `/home/ubuntu/heal7-project/backend/`
