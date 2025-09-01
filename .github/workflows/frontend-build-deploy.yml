@@ -112,4 +112,4 @@ EOF
         echo "🌐 배포 대상:"
         echo "   - saju.heal7.com (사주 서비스)"
         echo "   - crawling.heal7.com (크롤링 서비스)"
-        echo "⚠️  수동 배포 모드 - Claude CLI로 수동 배포 필요"# Test optimization trigger
+        echo "⚠️  수동 배포 모드 - Claude CLI로 수동 배포 필요"
