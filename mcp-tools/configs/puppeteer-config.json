@@ -1,0 +1,24 @@
+{
+  "name": "puppeteer",
+  "type": "sse",
+  "url": "https://mcp.apify.com/sse?actors=apify/puppeteer-scraper",
+  "description": "Puppeteer MCP Server - Node.js 기반 Chromium 브라우저 자동화",
+  "auth_required": false,
+  "priority": 2,
+  "capture_path": "/home/ubuntu/mcp-tools/shared-captures",
+  "features": [
+    "browser_automation",
+    "screenshot_capture",
+    "javascript_execution",
+    "chromium_based"
+  ],
+  "resource_usage": {
+    "memory": "medium",
+    "io": "medium",
+    "startup_time": "fast"
+  },
+  "integration": {
+    "crawling_service": true,
+    "claude_cli": true
+  }
+}
