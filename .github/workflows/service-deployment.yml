@@ -82,17 +82,34 @@ jobs:
         name: frontend-dist
         path: ./frontend-build/
     
-    - name: Deploy frontend simulation
+    - name: Deploy frontend to production
       run: |
-        echo "🎨 Frontend Deployment Simulation"
+        echo "🎨 Frontend Production Deployment"
         echo "================================"
         echo "📦 Artifact downloaded: frontend-dist"
-        echo "🌐 Target: saju.heal7.com (포트 4173)"
+        echo "🌐 Target: /var/www/saju.heal7.com"
         echo "📁 Files to deploy:"
         ls -la ./frontend-build/ || echo "No build files found"
-        echo ""
-        echo "🚀 Frontend deployment completed!"
-        echo "✅ Vite preview server ready at https://saju.heal7.com"
+        
+        # 실제 배포 실행
+        if [ -d "./frontend-build" ]; then
+          echo "🔄 Backing up current deployment..."
+          sudo cp -r /var/www/saju.heal7.com /backup/saju-$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+          
+          echo "📂 Deploying new files..."
+          sudo rm -rf /var/www/saju.heal7.com/*
+          sudo cp -r ./frontend-build/* /var/www/saju.heal7.com/
+          sudo chown -R www-data:www-data /var/www/saju.heal7.com
+          sudo chmod -R 755 /var/www/saju.heal7.com
+          
+          echo "♻️ Reloading nginx..."
+          sudo systemctl reload nginx
+          
+          echo "✅ Frontend deployment completed successfully!"
+        else
+          echo "❌ No build files found - deployment failed"
+          exit 1
+        fi
 
   deploy-backend-services:
     needs: prepare-deployment

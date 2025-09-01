@@ -25,27 +25,35 @@ jobs:
         cache: 'npm'
         cache-dependency-path: heal7-project/frontend/package-lock.json
     
+    - name: Install pnpm
+      run: npm install -g pnpm
+      
     - name: Install frontend dependencies
       run: |
         cd heal7-project/frontend
-        npm ci
+        pnpm install
     
-    - name: Build frontend
+    - name: Build shared package
       run: |
         cd heal7-project/frontend
-        npm run build
+        pnpm --filter @heal7/shared build
+        
+    - name: Build saju-app
+      run: |
+        cd heal7-project/frontend
+        pnpm --filter @heal7/saju-app exec vite build --mode production
     
     - name: Test frontend build
       run: |
         cd heal7-project/frontend
-        ls -la dist/
-        echo "✅ Frontend build completed successfully"
+        ls -la packages/saju-app/dist/
+        echo "✅ Saju-app build completed successfully"
     
     - name: Upload frontend build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: frontend-dist
-        path: heal7-project/frontend/dist/
+        path: heal7-project/frontend/packages/saju-app/dist/
         retention-days: 30
     
     - name: Frontend deployment notification
