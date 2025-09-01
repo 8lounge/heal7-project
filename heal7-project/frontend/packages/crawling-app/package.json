@@ -1,7 +1,7 @@
 {
   "name": "@heal7/crawling-app",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "🕷️ HEAL7 크롤링 시스템 - 실시간 3-Tier 크롤링 & 멀티모달 AI",
   "type": "module",
   "scripts": {
