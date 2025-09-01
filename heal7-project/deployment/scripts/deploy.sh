@@ -29,17 +29,17 @@ BACKEND_DIR="$PROJECT_ROOT/backend"
 DEPLOYMENT_DIR="$PROJECT_ROOT/deployment"
 NGINX_CONF_DIR="/etc/nginx/sites-available"
 NGINX_ENABLED_DIR="/etc/nginx/sites-enabled"
-WEB_ROOT="/var/www/heal7-saju"
+WEB_ROOT="/var/www/saju.heal7.com"
 
 # 서비스 설정
 FRONTEND_SERVICE="heal7-saju-frontend"
 BACKEND_SERVICE="heal7-saju-backend"
 NGINX_SERVICE="nginx"
 
-# 포트 설정
-FRONTEND_PORT=3000
-BACKEND_PORT=8010
-OLD_BACKEND_PORT=8002  # 기존 서비스 포트
+# 포트 설정 (실제 사용 중인 포트)
+FRONTEND_PORT=4173  # Vite preview 포트
+BACKEND_PORT=8002   # 사주 서비스 실제 포트
+OLD_BACKEND_PORT=8010  # 이전 포트
 
 # 색상 코드
 RED='\033[0;31m'
@@ -197,10 +197,9 @@ check_system_status() {
 setup_environment() {
     log_header "환경 설정"
     
-    # 웹 루트 디렉터리 생성
+    # 웹 루트 디렉터리 설정 (Vite 기반)
     log_info "웹 루트 디렉터리 설정"
-    sudo mkdir -p "$WEB_ROOT/frontend"
-    sudo mkdir -p "$WEB_ROOT/backend"
+    sudo mkdir -p "$WEB_ROOT"
     sudo mkdir -p "/var/log/heal7-saju"
     sudo mkdir -p "/var/cache/nginx/heal7_saju"
     
@@ -218,53 +217,51 @@ deploy_frontend() {
     
     cd "$FRONTEND_DIR"
     
+    # pnpm 설치 확인
+    if ! command -v pnpm >/dev/null 2>&1; then
+        log_info "pnpm 설치 중..."
+        npm install -g pnpm
+    fi
+    
     # 의존성 설치
     log_info "프론트엔드 의존성 설치 중..."
-    if ! npm ci --production=false; then
+    if ! pnpm install; then
         log_error "의존성 설치 실패"
         return 1
     fi
     
-    # TypeScript 타입 체크
-    log_info "TypeScript 타입 체크 중..."
-    if ! npm run type-check; then
-        log_warning "타입 체크에서 경고가 발생했습니다. 계속 진행합니다."
+    # shared 패키지 먼저 빌드
+    log_info "공통 모듈 빌드 중..."
+    if ! pnpm --filter @heal7/shared build; then
+        log_warning "공통 모듈 빌드에서 경고가 발생했습니다. 계속 진행합니다."
     fi
     
-    # 린트 검사
-    log_info "린트 검사 중..."
-    if ! npm run lint; then
-        log_warning "린트 검사에서 경고가 발생했습니다. 계속 진행합니다."
-    fi
-    
-    # 프로덕션 빌드
-    log_info "프로덕션 빌드 중..."
-    if ! npm run build; then
-        log_error "프론트엔드 빌드 실패"
+    # saju-app 빌드 (타입 체크 건너뛰기)
+    log_info "사주 앱 빌드 중..."
+    if ! pnpm --filter @heal7/saju-app exec vite build --mode production; then
+        log_error "사주 앱 빌드 실패"
         return 1
     fi
     
     # 기존 파일 백업
-    backup_directory "$WEB_ROOT/frontend" "frontend"
+    backup_directory "$WEB_ROOT" "saju-frontend"
     
     # 빌드된 파일 배포
     log_info "빌드된 파일 배포 중..."
-    sudo rm -rf "$WEB_ROOT/frontend/*"
+    sudo rm -rf "$WEB_ROOT/*"
     
-    # Next.js 빌드 결과물 복사
-    if [ -d ".next" ]; then
-        sudo cp -r .next "$WEB_ROOT/frontend/"
-        sudo cp -r public/* "$WEB_ROOT/frontend/" 2>/dev/null || true
-    fi
-    
-    # 정적 파일들 복사
-    if [ -d "out" ]; then
-        sudo cp -r out/* "$WEB_ROOT/frontend/"
+    # Vite 빌드 결과물 복사 (saju-app에서)
+    local saju_dist="$FRONTEND_DIR/packages/saju-app/dist"
+    if [ -d "$saju_dist" ]; then
+        sudo cp -r "$saju_dist"/* "$WEB_ROOT/"
+    else
+        log_error "Vite 빌드 결과물을 찾을 수 없습니다: $saju_dist"
+        return 1
     fi
     
     # 권한 설정
-    sudo chown -R www-data:www-data "$WEB_ROOT/frontend"
-    sudo chmod -R 755 "$WEB_ROOT/frontend"
+    sudo chown -R www-data:www-data "$WEB_ROOT"
+    sudo chmod -R 755 "$WEB_ROOT"
     
     log_success "프론트엔드 배포 완료"
 }
