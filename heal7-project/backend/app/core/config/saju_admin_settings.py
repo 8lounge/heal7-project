@@ -186,7 +186,7 @@ class SajuAdminSettings(BaseModel):
 # --- 기본 데이터 초기화 함수들 ---
 
 def initialize_default_cheongan() -> Dict[str, CheonganInterpretation]:
-    """천간 기본 해석 데이터 초기화"""
+    """천간 기본 해석 데이터 초기화 - 10개 천간 완전 구현"""
     return {
         "갑": CheonganInterpretation(
             korean_name="갑",
@@ -206,11 +206,82 @@ def initialize_default_cheongan() -> Dict[str, CheonganInterpretation]:
             description="작은 나무나 꽃과 같은 성질로 유연하고 적응력이 뛰어남",
             personality_traits=["유연성", "협조성", "예술성", "감성적"]
         ),
-        # ... 나머지 천간들
+        "병": CheonganInterpretation(
+            korean_name="병",
+            chinese_char="丙",
+            element="화",
+            yin_yang="양",
+            keywords=["열정", "창조력", "밝음"],
+            description="태양의 성질로 밝고 열정적이며 창조적인 에너지가 강함",
+            personality_traits=["활발함", "적극성", "창의성", "직선적"]
+        ),
+        "정": CheonganInterpretation(
+            korean_name="정",
+            chinese_char="丁",
+            element="화",
+            yin_yang="음",
+            keywords=["따뜻함", "배려", "세심함"],
+            description="촛불의 성질로 따뜻하고 섬세하며 배려심이 깊음",
+            personality_traits=["온화함", "세심함", "인내심", "봉사정신"]
+        ),
+        "무": CheonganInterpretation(
+            korean_name="무",
+            chinese_char="戊",
+            element="토",
+            yin_yang="양",
+            keywords=["포용력", "신뢰성", "안정감"],
+            description="산의 성질로 포용력이 크고 신뢰할 수 있으며 안정적임",
+            personality_traits=["포용력", "신중함", "책임감", "보수적"]
+        ),
+        "기": CheonganInterpretation(
+            korean_name="기",
+            chinese_char="己",
+            element="토",
+            yin_yang="음",
+            keywords=["겸손", "실용성", "섬세함"],
+            description="밭의 성질로 겸손하고 실용적이며 세심한 배려를 함",
+            personality_traits=["겸손함", "꼼꼼함", "현실적", "친화력"]
+        ),
+        "경": CheonganInterpretation(
+            korean_name="경",
+            chinese_char="庚",
+            element="금",
+            yin_yang="양",
+            keywords=["강인함", "정의감", "원칙주의"],
+            description="칼의 성질로 강인하고 정의로우며 원칙을 중시함",
+            personality_traits=["의지력", "결단력", "공정함", "엄격함"]
+        ),
+        "신": CheonganInterpretation(
+            korean_name="신",
+            chinese_char="辛",
+            element="금",
+            yin_yang="음",
+            keywords=["세련됨", "정교함", "미적감각"],
+            description="보석의 성질로 세련되고 정교하며 미적 감각이 뛰어남",
+            personality_traits=["섬세함", "완벽주의", "예술성", "신경질적"]
+        ),
+        "임": CheonganInterpretation(
+            korean_name="임",
+            chinese_char="壬",
+            element="수",
+            yin_yang="양",
+            keywords=["지혜", "유연함", "포용력"],
+            description="바다의 성질로 지혜롭고 유연하며 모든 것을 포용함",
+            personality_traits=["지혜로움", "적응력", "포용력", "변화무쌍"]
+        ),
+        "계": CheonganInterpretation(
+            korean_name="계",
+            chinese_char="癸",
+            element="수",
+            yin_yang="음",
+            keywords=["순수함", "직관력", "신비로움"],
+            description="이슬의 성질로 순수하고 직관력이 뛰어나며 신비로운 면이 있음",
+            personality_traits=["순수함", "직관력", "상상력", "내성적"]
+        )
     }
 
 def initialize_default_jiji() -> Dict[str, JijiInterpretation]:
-    """지지 기본 해석 데이터 초기화"""
+    """지지 기본 해석 데이터 초기화 - 12개 지지 완전 구현"""
     return {
         "자": JijiInterpretation(
             korean_name="자",
@@ -222,7 +293,116 @@ def initialize_default_jiji() -> Dict[str, JijiInterpretation]:
             description="쥐의 성질로 영리하고 적응력이 뛰어나며 기회를 잘 포착함",
             personality_traits=["영리함", "기민함", "사교성", "현실적"]
         ),
-        # ... 나머지 지지들
+        "축": JijiInterpretation(
+            korean_name="축",
+            chinese_char="丑",
+            zodiac_animal="소",
+            element="토",
+            season="겨울",
+            keywords=["근면", "성실", "인내력"],
+            description="소의 성질로 근면하고 성실하며 강한 인내력을 가짐",
+            personality_traits=["성실함", "끈기", "책임감", "보수적"]
+        ),
+        "인": JijiInterpretation(
+            korean_name="인",
+            chinese_char="寅",
+            zodiac_animal="호랑이",
+            element="목",
+            season="봄",
+            keywords=["용맹", "도전정신", "카리스마"],
+            description="호랑이의 성질로 용맹하고 도전정신이 강하며 카리스마가 있음",
+            personality_traits=["용감함", "독립적", "진취적", "자존심"]
+        ),
+        "묘": JijiInterpretation(
+            korean_name="묘",
+            chinese_char="卯",
+            zodiac_animal="토끼",
+            element="목",
+            season="봄",
+            keywords=["온순함", "조심스러움", "예의"],
+            description="토끼의 성질로 온순하고 조심스러우며 예의를 중시함",
+            personality_traits=["온화함", "신중함", "예의바름", "평화주의"]
+        ),
+        "진": JijiInterpretation(
+            korean_name="진",
+            chinese_char="辰",
+            zodiac_animal="용",
+            element="토",
+            season="봄",
+            keywords=["웅대함", "권위", "변화"],
+            description="용의 성질로 웅대하고 권위적이며 변화를 주도함",
+            personality_traits=["웅장함", "권위적", "변화무쌍", "야심적"]
+        ),
+        "사": JijiInterpretation(
+            korean_name="사",
+            chinese_char="巳",
+            zodiac_animal="뱀",
+            element="화",
+            season="여름",
+            keywords=["지혜", "신비로움", "직관력"],
+            description="뱀의 성질로 지혜롭고 신비로우며 뛰어난 직관력을 가짐",
+            personality_traits=["지혜로움", "신비로움", "직관적", "집중력"]
+        ),
+        "오": JijiInterpretation(
+            korean_name="오",
+            chinese_char="午",
+            zodiac_animal="말",
+            element="화",
+            season="여름",
+            keywords=["활동력", "열정", "자유로움"],
+            description="말의 성질로 활동력이 넘치고 열정적이며 자유를 추구함",
+            personality_traits=["활발함", "열정적", "자유분방", "직진적"]
+        ),
+        "미": JijiInterpretation(
+            korean_name="미",
+            chinese_char="未",
+            zodiac_animal="양",
+            element="토",
+            season="여름",
+            keywords=["온화함", "예술성", "감성"],
+            description="양의 성질로 온화하고 예술적 감각이 뛰어나며 감성적임",
+            personality_traits=["온순함", "예술적", "감성적", "배려심"]
+        ),
+        "신": JijiInterpretation(
+            korean_name="신",
+            chinese_char="申",
+            zodiac_animal="원숭이",
+            element="금",
+            season="가을",
+            keywords=["재치", "유머", "창의성"],
+            description="원숭이의 성질로 재치가 있고 유머러스하며 창의적임",
+            personality_traits=["재치있음", "유머러스", "창의적", "활발함"]
+        ),
+        "유": JijiInterpretation(
+            korean_name="유",
+            chinese_char="酉",
+            zodiac_animal="닭",
+            element="금",
+            season="가을",
+            keywords=["정확성", "성실", "책임감"],
+            description="닭의 성질로 정확하고 성실하며 강한 책임감을 가짐",
+            personality_traits=["정확함", "성실함", "꼼꼼함", "시간관념"]
+        ),
+        "술": JijiInterpretation(
+            korean_name="술",
+            chinese_char="戌",
+            zodiac_animal="개",
+            element="토",
+            season="가을",
+            keywords=["충성심", "정의감", "보호본능"],
+            description="개의 성질로 충성스럽고 정의로우며 보호 본능이 강함",
+            personality_traits=["충성심", "정의감", "보호본능", "솔직함"]
+        ),
+        "해": JijiInterpretation(
+            korean_name="해",
+            chinese_char="亥",
+            zodiac_animal="돼지",
+            element="수",
+            season="겨울",
+            keywords=["순수함", "관대함", "풍요"],
+            description="돼지의 성질로 순수하고 관대하며 풍요로움을 상징함",
+            personality_traits=["순수함", "관대함", "후덕함", "단순함"]
+        )
     }
 
 # --- 싱글톤 관리 ---

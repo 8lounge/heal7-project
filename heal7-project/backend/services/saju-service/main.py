@@ -69,18 +69,21 @@ sys.path.append(str(Path(__file__).parent.parent / "app"))
 try:
     from services_new.saju_service import SajuService, BirthInfo, SajuResult as SajuServiceResult, Gender
 except ImportError:
-    # 임시 더미 클래스들 (실제 import 실패 시 사용)
+    # Fallback 클래스들 (실제 import 실패 시 사용)
+    print("⚠️ WARNING: Using fallback classes - main saju engine not available")
     class SajuService:
-        async def initialize(self): pass
+        async def initialize(self): 
+            print("⚠️ Fallback SajuService initialized")
         async def calculate_saju(self, birth_info): 
-            return type('MockResult', (), {
+            print(f"⚠️ Using fallback calculation for {birth_info}")
+            return type('FallbackResult', (), {
                 'birth_info': birth_info,
                 'year_pillar': '갑자', 'month_pillar': '을축', 
                 'day_pillar': '병인', 'time_pillar': '정묘',
                 'day_master': '병', 'element_balance': {},
                 'sipsin_analysis': {}, 'sinsal': [],
-                'palcha': '테스트팔자', 'is_strong_day_master': True,
-                'created_at': datetime.now(), 'calculation_method': 'test'
+                'palcha': 'Fallback 계산 결과', 'is_strong_day_master': True,
+                'created_at': datetime.now(), 'calculation_method': 'fallback'
             })()
     
     class BirthInfo:
@@ -136,7 +139,7 @@ class FortuneResult(BaseModel):
 # 사주 분석 엔드포인트 추가
 from fastapi import HTTPException, Depends
 
-@app.post("/api/saju/calculate", response_model=SajuResult)
+@app.post("/api/saju/analyze", response_model=SajuResult)
 async def calculate_saju(request: SajuRequest, saju_service: SajuService = Depends(get_saju_service)):
     """사주 분석 - 실제 계산 엔진 사용"""
     try:
@@ -147,7 +150,7 @@ async def calculate_saju(request: SajuRequest, saju_service: SajuService = Depen
             day=request.birth_day,
             hour=request.birth_hour,
             minute=request.birth_minute,
-            gender=Gender.MALE if request.lower() == "male" else Gender.FEMALE,
+            gender=Gender.MALE if request.gender.lower() == "male" else Gender.FEMALE,
             name=request.name,
             is_lunar=request.is_lunar
         )
@@ -1352,6 +1355,43 @@ async def get_interpretation_stats():
         "recent_updates": 12,
         "completion_rate": 97.2
     }
+
+# 꿈풀이 라우터 추가 - 실제 DB 연동 버전 사용
+try:
+    import sys
+    from pathlib import Path
+    
+    # 메인 백엔드의 실제 꿈풀이 라우터 사용
+    main_backend_path = str(Path(__file__).parent.parent.parent / "app" / "routers")
+    sys.path.append(main_backend_path)
+    
+    from dream_interpretation import router as dream_router
+    app.include_router(dream_router)
+    print("✅ Dream interpretation router (main backend) loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Main backend dream router not available: {e}")
+    
+    # dream-interpretation-cube 모듈 시도
+    try:
+        dream_cube_path = str(Path(__file__).parent / "dream-interpretation-cube")
+        sys.path.append(dream_cube_path)
+        
+        from modules.dream_interpretation import router as dream_cube_router
+        app.include_router(dream_cube_router)
+        print("✅ Dream interpretation cube router loaded successfully")
+    except ImportError as e2:
+        print(f"⚠️ Dream cube router not available: {e2}")
+        
+        # 대체 라우터 생성
+        from fastapi import APIRouter
+        dream_fallback_router = APIRouter(prefix="/api/dream-interpretation", tags=["dream-interpretation"])
+        
+        @dream_fallback_router.get("/health")
+        async def dream_health():
+            return {"status": "fallback", "message": "Dream interpretation module not fully loaded"}
+        
+        app.include_router(dream_fallback_router)
+        print("⚠️ Dream interpretation fallback router loaded")
 
 @app.get("/api/health")
 async def health_endpoint():

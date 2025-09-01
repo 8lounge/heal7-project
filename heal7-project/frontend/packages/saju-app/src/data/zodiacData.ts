@@ -18,7 +18,7 @@ export interface ZodiacSign {
     good: string[];
     challenging: string[];
   };
-  fortune2025: {
+  currentFortune: {
     overall: string;
     career: string;
     love: string;
@@ -133,7 +133,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['ox', 'rabbit'],
       challenging: ['horse', 'rooster']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '새로운 기회가 많이 찾아오는 해입니다. 적극적인 도전 정신으로 성공을 거둘 수 있습니다.',
       career: '직장에서의 승진이나 새로운 프로젝트 기회가 있을 것입니다.',
       love: '새로운 만남이나 기존 관계의 발전이 기대됩니다.',
@@ -173,7 +173,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['rabbit', 'tiger'],
       challenging: ['sheep', 'horse', 'dog']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '꾸준한 노력이 결실을 맺는 해입니다. 인내심을 갖고 차근차근 진행하세요.',
       career: '성실함이 인정받아 안정적인 성과를 거둘 것입니다.',
       love: '진실한 마음으로 다가가면 좋은 결과가 있을 것입니다.',
@@ -212,7 +212,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['dragon', 'pig'],
       challenging: ['monkey', 'snake']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '도전적인 기회들이 많이 생기는 해입니다. 용기를 갖고 추진하세요.',
       career: '리더십을 발휘할 수 있는 중요한 역할이 주어질 것입니다.',
       love: '적극적인 어프로치로 좋은 결과를 얻을 수 있습니다.',
@@ -252,7 +252,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['dog', 'ox'],
       challenging: ['rooster', 'dragon']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '평온하고 안정적인 한 해가 될 것입니다. 꾸준함이 힘이 됩니다.',
       career: '차근차근한 노력으로 인정받는 성과를 거둘 것입니다.',
       love: '따뜻한 마음과 배려로 관계가 깊어질 것입니다.',
@@ -292,7 +292,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['tiger', 'snake'],
       challenging: ['dog', 'rabbit']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '큰 성과를 이룰 수 있는 해입니다. 자신감을 갖고 도전하세요.',
       career: '리더십과 창의성이 빛을 발하는 시기입니다.',
       love: '화려하고 로맨틱한 만남이 기대됩니다.',
@@ -333,7 +333,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['dragon', 'dog'],
       challenging: ['tiger', 'pig']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '지혜와 통찰력이 빛나는 해입니다. 신중한 판단으로 성공하세요.',
       career: '전문성이 인정받아 중요한 역할을 맡게 될 것입니다.',
       love: '깊이 있는 관계를 추구하게 될 것입니다.',
@@ -373,7 +373,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['rabbit', 'dragon'],
       challenging: ['rat', 'ox']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '활발한 활동과 새로운 경험이 가득한 해가 될 것입니다.',
       career: '적극성과 추진력으로 좋은 성과를 거둘 것입니다.',
       love: '자유로운 연애나 새로운 만남이 기대됩니다.',
@@ -413,7 +413,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['monkey', 'rooster'],
       challenging: ['ox', 'dog']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '온화하고 평화로운 한 해가 될 것입니다. 협력이 중요합니다.',
       career: '팀워크를 통해 좋은 성과를 거둘 것입니다.',
       love: '따뜻하고 안정적인 관계가 발전할 것입니다.',
@@ -453,7 +453,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['sheep', 'dog'],
       challenging: ['tiger', 'pig']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '영리함과 재치로 많은 기회를 만들어내는 해입니다.',
       career: '창의적 아이디어로 주목받는 성과를 거둘 것입니다.',
       love: '유머와 매력으로 좋은 인연을 만날 것입니다.',
@@ -493,7 +493,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['tiger', 'horse'],
       challenging: ['rabbit', 'dog']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '계획적인 접근으로 확실한 성과를 거두는 해입니다.',
       career: '전문성과 책임감으로 인정받는 위치에 오를 것입니다.',
       love: '진실된 마음으로 안정적인 관계를 만들어갈 것입니다.',
@@ -533,7 +533,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['snake', 'monkey'],
       challenging: ['dragon', 'sheep', 'rooster']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '성실함과 의리가 인정받는 의미 있는 해가 될 것입니다.',
       career: '신뢰를 바탕으로 중요한 역할을 맡게 될 것입니다.',
       love: '진실한 마음으로 깊은 관계를 만들어갈 것입니다.',
@@ -573,7 +573,7 @@ export const zodiacSigns: ZodiacSign[] = [
       good: ['rat', 'ox'],
       challenging: ['snake', 'monkey']
     },
-    fortune2025: {
+    currentFortune: {
       overall: '풍요롭고 즐거운 한 해가 될 것입니다. 관계에 집중하세요.',
       career: '협력과 화합으로 큰 성과를 거둘 것입니다.',
       love: '따뜻한 마음으로 행복한 관계를 만들어갈 것입니다.',
@@ -583,7 +583,7 @@ export const zodiacSigns: ZodiacSign[] = [
   }
 ];
 
-// 띠별 월별 운세 (2025년 기준)
+// 띠별 월별 운세
 export const monthlyFortunes: { [key: string]: { [key: number]: string } } = {
   rat: {
     1: '새해 새로운 시작에 좋은 기운이 감돕니다.',
@@ -611,7 +611,7 @@ export const checkCompatibility = (zodiac1: string, zodiac2: string): string => 
 // 현재 연도 기준 운세 가져오기
 export const getCurrentYearFortune = (zodiacId: string) => {
   const zodiac = zodiacSigns.find(sign => sign.id === zodiacId);
-  return zodiac ? zodiac.fortune2025 : null;
+  return zodiac ? zodiac.currentFortune : null;
 };
 
 export default {

@@ -2,7 +2,7 @@ cube:
   name: "paperwork-system"
   version: "1.0.0"
   service: "paperwork.heal7.com"
-  port: 8002
+  port: 8001
   
 server:
   host: "0.0.0.0"

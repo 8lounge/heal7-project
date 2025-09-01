@@ -15,6 +15,7 @@ import CrawlingLayout from './CrawlingLayout';
 import CrawlingManagement from './CrawlingManagement';
 import AIAnalysis from './AIAnalysis';
 import DataManagement from './DataManagement';
+import SettingsPage from './SettingsPage';
 import { 
   Activity, 
   Clock, 
@@ -664,7 +665,7 @@ const CrawlingDashboardReal: React.FC = () => {
       case 'data-management':
         return <DataManagement />;
       case 'settings':
-        return <div className="text-center py-20 text-slate-400">설정 페이지 (개발 중)</div>;
+        return <SettingsPage />;
       default:
         return renderDashboardContent();
     }

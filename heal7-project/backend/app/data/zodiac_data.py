@@ -55,7 +55,7 @@ def get_zodiac_chinese_name(zodiac_id: str) -> str:
     return chinese_names.get(zodiac_id, '')
 
 def get_zodiac_emoji(zodiac_id: str) -> str:
-    """영문 띠 ID를 이모지로 변환"""
+    """영문 띠 ID를 이모지로 변환 (레거시 호환성)"""
     emojis = {
         'rat': '🐭',
         'ox': '🐂',
@@ -72,12 +72,17 @@ def get_zodiac_emoji(zodiac_id: str) -> str:
     }
     return emojis.get(zodiac_id, '🐾')
 
+def get_zodiac_image(zodiac_id: str) -> str:
+    """영문 띠 ID를 PNG 이미지 경로로 변환"""
+    return f'/zodiac-images/{zodiac_id}.png'
+
 # 12지신 상세 데이터
 ZODIAC_DATA = {
     'rat': {
         'name': '쥐띠',
         'chinese_name': '자(子)',
         'emoji': '🐭',
+        'image': '/zodiac-images/rat.png',
         'element': '물',
         'characteristics': [
             '재치 있고 상황 파악 및 변화에 빠릅니다',
@@ -115,6 +120,7 @@ ZODIAC_DATA = {
         'name': '소띠',
         'chinese_name': '축(丑)',
         'emoji': '🐂',
+        'image': '/zodiac-images/ox.png',
         'element': '흙',
         'characteristics': [
             '우직하고 책임감 있으며 끈기와 인내심이 강합니다',
@@ -152,6 +158,7 @@ ZODIAC_DATA = {
         'name': '호랑이띠',
         'chinese_name': '인(寅)',
         'emoji': '🐅',
+        'image': '/zodiac-images/tiger.png',
         'element': '나무',
         'characteristics': [
             '장남·장녀 운을 타고났습니다',
@@ -188,6 +195,7 @@ ZODIAC_DATA = {
         'name': '토끼띠',
         'chinese_name': '묘(卯)',
         'emoji': '🐰',
+        'image': '/zodiac-images/rabbit.png',
         'element': '나무',
         'characteristics': [
             '친절하고 온순한 성격을 지녔습니다',
@@ -225,6 +233,7 @@ ZODIAC_DATA = {
         'name': '용띠',
         'chinese_name': '진(辰)',
         'emoji': '🐲',
+        'image': '/zodiac-images/dragon.png',
         'element': '흙',
         'characteristics': [
             '강력한 카리스마와 자신감을 지녔습니다',
@@ -262,6 +271,7 @@ ZODIAC_DATA = {
         'name': '뱀띠',
         'chinese_name': '사(巳)',
         'emoji': '🐍',
+        'image': '/zodiac-images/snake.png',
         'element': '불',
         'characteristics': [
             '총명하고 통찰력이 있어 문제 해결 능력이 우수합니다',
@@ -300,6 +310,7 @@ ZODIAC_DATA = {
         'name': '말띠',
         'chinese_name': '오(午)',
         'emoji': '🐎',
+        'image': '/zodiac-images/horse.png',
         'element': '불',
         'characteristics': [
             '활동적이고 활발한 성격으로 다양한 활동을 즐깁니다',
@@ -337,6 +348,7 @@ ZODIAC_DATA = {
         'name': '양띠',
         'chinese_name': '미(未)',
         'emoji': '🐑',
+        'image': '/zodiac-images/sheep.png',
         'element': '흙',
         'characteristics': [
             '따뜻하고 다정다감한 성격으로 주변 사람들을 편안하게 해줍니다',
@@ -374,6 +386,7 @@ ZODIAC_DATA = {
         'name': '원숭이띠',
         'chinese_name': '신(申)',
         'emoji': '🐵',
+        'image': '/zodiac-images/monkey.png',
         'element': '금',
         'characteristics': [
             '영리하고 재치 있는 성격으로 주변 사람들에게 웃음을 선사합니다',
@@ -411,6 +424,7 @@ ZODIAC_DATA = {
         'name': '닭띠',
         'chinese_name': '유(酉)',
         'emoji': '🐓',
+        'image': '/zodiac-images/rooster.png',
         'element': '금',
         'characteristics': [
             '명랑한 성격으로 주변 사람들과 잘 어울립니다',
@@ -448,6 +462,7 @@ ZODIAC_DATA = {
         'name': '개띠',
         'chinese_name': '술(戌)',
         'emoji': '🐕',
+        'image': '/zodiac-images/dog.png',
         'element': '흙',
         'characteristics': [
             '의리 있는 성격으로 주변 사람들을 위해 헌신합니다',
@@ -485,6 +500,7 @@ ZODIAC_DATA = {
         'name': '돼지띠',
         'chinese_name': '해(亥)',
         'emoji': '🐷',
+        'image': '/zodiac-images/pig.png',
         'element': '물',
         'characteristics': [
             '온순하고 친절한 성격으로 주변 사람들을 배려하고 도와줍니다',

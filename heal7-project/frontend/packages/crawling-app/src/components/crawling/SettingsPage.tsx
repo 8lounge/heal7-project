@@ -381,10 +381,13 @@ const SettingsPage: React.FC = () => {
                       min="1"
                       max="10"
                       value={settings.maxRetries}
-                      onChange={(e) => setCrawlerSettings(prev => ({
-                        ...prev,
-                        [tier]: { ...prev[tier as keyof CrawlerSettings], maxRetries: parseInt(e.target.value) }
-                      }))}
+                      onChange={(e) => setCrawlerSettings(prev => {
+                        const tierKey = tier as keyof CrawlerSettings;
+                        return {
+                          ...prev,
+                          [tierKey]: { ...prev[tierKey], maxRetries: parseInt(e.target.value) }
+                        };
+                      })}
                       className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-slate-200 focus:outline-none focus:border-blue-500"
                     />
                   </div>

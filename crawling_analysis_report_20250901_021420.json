@@ -1,0 +1,328 @@
+{
+  "timestamp": "2025-09-01T02:14:05.075840",
+  "url": "https://crawling.heal7.com/",
+  "page_load": {
+    "success": true,
+    "status_code": 200,
+    "load_time_seconds": 1.185813,
+    "url": "https://crawling.heal7.com/",
+    "headers": {
+      "cache-control": "max-age=31536000\npublic, no-transform",
+      "content-encoding": "gzip",
+      "content-type": "text/html",
+      "date": "Mon, 01 Sep 2025 02:14:14 GMT",
+      "etag": "W/\"68b50003-751\"",
+      "expires": "Tue, 01 Sep 2026 02:14:14 GMT",
+      "last-modified": "Mon, 01 Sep 2025 02:08:03 GMT",
+      "server": "nginx/1.28.0",
+      "vary": "Accept-Encoding"
+    },
+    "content_length": 33000,
+    "has_content": true
+  },
+  "css_analysis": {
+    "error": "Page.evaluate: SecurityError: Failed to read the 'cssRules' property from 'CSSStyleSheet': Cannot access rules\n    at eval (eval at evaluate (:291:30), <anonymous>:3:41)\n    at Array.map (<anonymous>)\n    at eval (eval at evaluate (:291:30), <anonymous>:1:34)\n    at eval (<anonymous>)\n    at UtilityScript.evaluate (<anonymous>:291:30)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+    "css_applied": false
+  },
+  "js_analysis": {
+    "react_app_loaded": true,
+    "react_root_exists": true,
+    "components_found": {
+      "div[class*=\"App\"]": false,
+      "div[class*=\"container\"]": false,
+      "div[class*=\"main\"]": false,
+      "nav": true,
+      "header": true,
+      "main": true,
+      "button": true,
+      "input": false
+    },
+    "total_dom_nodes": 335
+  },
+  "network_analysis": {
+    "total_requests": 9,
+    "failed_requests": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Gmarket+Sans:wght@300;500;700&display=swap",
+        "failure_text": "net::ERR_BLOCKED_BY_ORB",
+        "method": "GET"
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://crawling.heal7.com/",
+        "method": "GET",
+        "headers": {
+          "upgrade-insecure-requests": "1",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"Windows\""
+        },
+        "resource_type": "document",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "cache-control": "max-age=31536000\npublic, no-transform",
+          "content-encoding": "gzip",
+          "content-type": "text/html",
+          "date": "Mon, 01 Sep 2025 02:14:14 GMT",
+          "etag": "W/\"68b50003-751\"",
+          "expires": "Tue, 01 Sep 2026 02:14:14 GMT",
+          "last-modified": "Mon, 01 Sep 2025 02:08:03 GMT",
+          "server": "nginx/1.28.0",
+          "vary": "Accept-Encoding"
+        }
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&family=Gmarket+Sans:wght@300;500;700&display=swap",
+        "method": "GET",
+        "headers": {
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "stylesheet"
+      },
+      {
+        "url": "https://crawling.heal7.com/assets/index-DOy4AE-M.js",
+        "method": "GET",
+        "headers": {
+          "origin": "https://crawling.heal7.com",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "script",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "cache-control": "max-age=31536000, public, no-transform",
+          "content-encoding": "gzip",
+          "etag": "W/\"68b50003-26409\"",
+          "expires": "Tue, 01 Sep 2026 02:14:14 GMT",
+          "date": "Mon, 01 Sep 2025 02:14:14 GMT",
+          "content-type": "application/javascript",
+          "last-modified": "Mon, 01 Sep 2025 02:08:03 GMT",
+          "server": "nginx/1.28.0",
+          "vary": "Accept-Encoding"
+        }
+      },
+      {
+        "url": "https://crawling.heal7.com/assets/vendor-D3F3s8fL.js",
+        "method": "GET",
+        "headers": {
+          "origin": "https://crawling.heal7.com",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "script",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "cache-control": "max-age=31536000, public, no-transform",
+          "content-encoding": "gzip",
+          "etag": "W/\"68b50003-2299b\"",
+          "expires": "Tue, 01 Sep 2026 02:14:14 GMT",
+          "date": "Mon, 01 Sep 2025 02:14:14 GMT",
+          "content-type": "application/javascript",
+          "last-modified": "Mon, 01 Sep 2025 02:08:03 GMT",
+          "server": "nginx/1.28.0",
+          "vary": "Accept-Encoding"
+        }
+      },
+      {
+        "url": "https://crawling.heal7.com/assets/motion-EZIxkioR.js",
+        "method": "GET",
+        "headers": {
+          "origin": "https://crawling.heal7.com",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "script",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "cache-control": "max-age=31536000, public, no-transform",
+          "content-encoding": "gzip",
+          "etag": "W/\"68b50003-1c21d\"",
+          "expires": "Tue, 01 Sep 2026 02:14:14 GMT",
+          "date": "Mon, 01 Sep 2025 02:14:14 GMT",
+          "content-type": "application/javascript",
+          "last-modified": "Mon, 01 Sep 2025 02:08:03 GMT",
+          "server": "nginx/1.28.0",
+          "vary": "Accept-Encoding"
+        }
+      },
+      {
+        "url": "https://crawling.heal7.com/assets/index-CqmrIuOE.css",
+        "method": "GET",
+        "headers": {
+          "origin": "https://crawling.heal7.com",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "stylesheet",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "cache-control": "max-age=31536000, public, no-transform",
+          "content-encoding": "gzip",
+          "etag": "W/\"68b50003-2274\"",
+          "expires": "Tue, 01 Sep 2026 02:14:14 GMT",
+          "date": "Mon, 01 Sep 2025 02:14:14 GMT",
+          "content-type": "text/css",
+          "last-modified": "Mon, 01 Sep 2025 02:08:03 GMT",
+          "server": "nginx/1.28.0",
+          "vary": "Accept-Encoding"
+        }
+      },
+      {
+        "url": "https://crawling.heal7.com/api/health",
+        "method": "GET",
+        "headers": {
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "fetch",
+        "status": 404,
+        "status_text": "",
+        "response_headers": {
+          "content-length": "22",
+          "date": "Mon, 01 Sep 2025 02:14:17 GMT",
+          "content-type": "application/json",
+          "server": "nginx/1.28.0"
+        }
+      },
+      {
+        "url": "https://crawling.heal7.com/api/services",
+        "method": "GET",
+        "headers": {
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "fetch",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "content-encoding": "gzip",
+          "date": "Mon, 01 Sep 2025 02:14:17 GMT",
+          "content-type": "application/json",
+          "vary": "Accept-Encoding",
+          "server": "nginx/1.28.0"
+        }
+      },
+      {
+        "url": "https://crawling.heal7.com/api/stats",
+        "method": "GET",
+        "headers": {
+          "sec-ch-ua-platform": "\"Windows\"",
+          "referer": "https://crawling.heal7.com/",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"HeadlessChrome\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0"
+        },
+        "resource_type": "fetch",
+        "status": 200,
+        "status_text": "",
+        "response_headers": {
+          "content-length": "302",
+          "date": "Mon, 01 Sep 2025 02:14:18 GMT",
+          "content-type": "application/json",
+          "server": "nginx/1.28.0"
+        }
+      }
+    ]
+  },
+  "console_logs": [
+    {
+      "type": "log",
+      "text": "🔌 WebSocket 연결 시뮬레이션 시작",
+      "location": {
+        "url": "https://crawling.heal7.com/assets/index-DOy4AE-M.js",
+        "lineNumber": 269,
+        "columnNumber": 18229
+      }
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://crawling.heal7.com/api/health",
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "error",
+      "text": "WebSocket connection to 'wss://crawling.heal7.com/ws' failed: Error during WebSocket handshake: Unexpected response code: 403",
+      "location": {
+        "url": "https://crawling.heal7.com/assets/index-DOy4AE-M.js",
+        "lineNumber": 4,
+        "columnNumber": 0
+      }
+    },
+    {
+      "type": "error",
+      "text": "❌ WebSocket error: Event",
+      "location": {
+        "url": "https://crawling.heal7.com/assets/index-DOy4AE-M.js",
+        "lineNumber": 4,
+        "columnNumber": 42424
+      }
+    },
+    {
+      "type": "error",
+      "text": "❌ WebSocket 오류: Event",
+      "location": {
+        "url": "https://crawling.heal7.com/assets/index-DOy4AE-M.js",
+        "lineNumber": 4,
+        "columnNumber": 45255
+      }
+    },
+    {
+      "type": "log",
+      "text": "🔌 WebSocket disconnected",
+      "location": {
+        "url": "https://crawling.heal7.com/assets/index-DOy4AE-M.js",
+        "lineNumber": 4,
+        "columnNumber": 42496
+      }
+    }
+  ],
+  "performance": {
+    "loadEventEnd": 1756692854883,
+    "navigationStart": 1756692854084,
+    "domContentLoadedEventEnd": 1756692854883,
+    "loadTime": 799,
+    "domReadyTime": 799
+  },
+  "visual_analysis": {
+    "screenshot_captured": true,
+    "screenshot_path": "/home/ubuntu/crawling_site_screenshot_20250901_021419.png",
+    "viewport_size": {
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "errors": []
+}

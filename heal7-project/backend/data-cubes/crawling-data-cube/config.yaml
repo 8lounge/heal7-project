@@ -47,7 +47,7 @@ database:
 interfaces:
   rest_api:
     enabled: true
-    port: 8002
+    port: 8003
     prefix: "/api/v1/crawling"
     endpoints:
       - "/scraping-sessions"       # 스크래핑 세션 관리

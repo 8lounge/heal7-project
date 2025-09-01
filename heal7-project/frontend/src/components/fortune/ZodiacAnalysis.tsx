@@ -16,8 +16,12 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
   const [selectedZodiac, setSelectedZodiac] = useState<ZodiacSign | null>(null);
   const [hoveredZodiac, setHoveredZodiac] = useState<string | null>(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [, setPartnerZodiac] = useState<string | null>(null);
+  const [partnerZodiac, setPartnerZodiac] = useState<string | null>(null);
+  const [showCompatibility, setShowCompatibility] = useState(false);
   const [useDetailedBirth, setUseDetailedBirth] = useState(false);
+  
+  // 현재 연도 계산
+  const currentYear = new Date().getFullYear();
 
   // 출생년도/생년월일 입력 시 자동으로 띠 계산
   useEffect(() => {
@@ -81,7 +85,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
           <Gem className="w-8 h-8 text-purple-300" />
         </div>
         <p className="text-white/80 text-lg mb-6">
-          나의 띠를 통해 알아보는 성향, 직업 적성, 2025년 운세
+          나의 띠를 통해 알아보는 성향, 직업 적성, {currentYear}년 운세
         </p>
         
       </div>
@@ -324,24 +328,24 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                   </div>
                 </div>
 
-                {/* 2025년 운세 */}
+                {/* 현재 연도 운세 */}
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
                   <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-orange-400" />
-                    2025년 운세
+                    {currentYear}년 운세
                   </h3>
                   <div className="space-y-3">
                     <div>
                       <span className="text-orange-300 font-medium">종합운: </span>
-                      <span className="text-white/80 text-sm">{selectedZodiac.fortune2025.overall}</span>
+                      <span className="text-white/80 text-sm">{selectedZodiac.currentFortune?.overall || '운세 정보를 불러오는 중입니다.'}</span>
                     </div>
                     <div>
                       <span className="text-blue-300 font-medium">직업운: </span>
-                      <span className="text-white/80 text-sm">{selectedZodiac.fortune2025.career}</span>
+                      <span className="text-white/80 text-sm">{selectedZodiac.currentFortune?.career || '운세 정보를 불러오는 중입니다.'}</span>
                     </div>
                     <div>
                       <span className="text-pink-300 font-medium">연애운: </span>
-                      <span className="text-white/80 text-sm">{selectedZodiac.fortune2025.love}</span>
+                      <span className="text-white/80 text-sm">{selectedZodiac.currentFortune?.love || '운세 정보를 불러오는 중입니다.'}</span>
                     </div>
                   </div>
                 </div>
@@ -402,7 +406,10 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                         className={`p-3 rounded-lg border text-center cursor-pointer transition-all hover:scale-105 ${
                           getCompatibilityBg(compatibility)
                         } border-white/20`}
-                        onClick={() => setPartnerZodiac(otherZodiac.id)}
+                        onClick={() => {
+                          setPartnerZodiac(otherZodiac.id);
+                          setShowCompatibility(true);
+                        }}
                       >
                         <div className="mb-1">
                           <div className="text-2xl">
@@ -418,6 +425,93 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                   })}
                 </div>
               </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 띠별 궁합 상세 결과 */}
+      <AnimatePresence>
+        {showCompatibility && selectedZodiac && partnerZodiac && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-white/20 backdrop-blur-sm"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                띠별 궁합 상세
+              </h3>
+              <button
+                onClick={() => setShowCompatibility(false)}
+                className="text-white/60 hover:text-white transition-colors text-sm"
+              >
+                닫기
+              </button>
+            </div>
+            
+            {(() => {
+              const partnerSign = zodiacSigns.find(sign => sign.id === partnerZodiac);
+              const compatibility = checkCompatibility(selectedZodiac.id, partnerZodiac);
+              const compatibilityColor = getCompatibilityColor(compatibility);
+              
+              return (
+                <div className="space-y-4">
+                  {/* 궁합 대상 */}
+                  <div className="flex items-center justify-center gap-8 mb-6">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">{selectedZodiac.emoji}</div>
+                      <div className="text-white font-medium">{selectedZodiac.name}</div>
+                    </div>
+                    <div className="text-2xl text-white/60">×</div>
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">{partnerSign?.emoji}</div>
+                      <div className="text-white font-medium">{partnerSign?.name}</div>
+                    </div>
+                  </div>
+                  
+                  {/* 궁합 결과 */}
+                  <div className="text-center mb-4">
+                    <div className={`text-2xl font-bold ${compatibilityColor} mb-2`}>
+                      {compatibility}
+                    </div>
+                  </div>
+                  
+                  {/* 궁합 설명 */}
+                  <div className="bg-white/10 rounded-lg p-4">
+                    <div className="text-white text-sm leading-relaxed">
+                      {compatibility === '매우 좋음' && (
+                        <p><strong>{selectedZodiac.name}</strong>와 <strong>{partnerSign?.name}</strong>은 천생연분의 궁합입니다. 서로의 장점을 부각시키고 부족한 부분을 보완해주는 관계로, 함께할 때 더욱 성장할 수 있습니다.</p>
+                      )}
+                      {compatibility === '좋음' && (
+                        <p><strong>{selectedZodiac.name}</strong>와 <strong>{partnerSign?.name}</strong>은 좋은 궁합을 가지고 있습니다. 서로를 이해하고 배려하면 안정적이고 조화로운 관계를 유지할 수 있습니다.</p>
+                      )}
+                      {compatibility === '주의 필요' && (
+                        <p><strong>{selectedZodiac.name}</strong>와 <strong>{partnerSign?.name}</strong>은 주의가 필요한 궁합입니다. 서로 다른 성향으로 인해 오해가 생길 수 있지만, 충분한 소통과 이해를 통해 좋은 관계를 만들어갈 수 있습니다.</p>
+                      )}
+                      {compatibility === '보통' && (
+                        <p><strong>{selectedZodiac.name}</strong>와 <strong>{partnerSign?.name}</strong>은 평범한 궁합입니다. 특별한 갈등은 없지만 서로에 대한 깊은 이해와 노력이 필요한 관계입니다.</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* 다른 궁합 확인 버튼 */}
+                  <div className="text-center pt-4">
+                    <button
+                      onClick={() => {
+                        setShowCompatibility(false);
+                        setPartnerZodiac(null);
+                      }}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
+                    >
+                      다른 띠와 궁합 보기
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </motion.div>
         )}
       </AnimatePresence>

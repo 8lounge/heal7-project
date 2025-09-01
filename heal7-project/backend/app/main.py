@@ -651,8 +651,8 @@ except ImportError as e:
     logger.warning(f"⚠️ Dream Interpretation 라우터 임포트 실패: {e}")
 
 if __name__ == "__main__":
-    # 환경별 설정 (레거시 호환용 - 실제 사용 안 함)
-    port = int(os.getenv("PORT", 8007))
+    # 환경별 설정 (큐브모듈러 대시보드 - 포트 8000)
+    port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
     workers = int(os.getenv("WORKERS", 1))
     

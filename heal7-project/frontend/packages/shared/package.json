@@ -6,7 +6,10 @@
   "main": "./dist/shared.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/shared.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/shared.js"
+    },
     "./components/*": "./dist/components/*.js",
     "./styles/*": "./dist/styles/*.css"
   },
