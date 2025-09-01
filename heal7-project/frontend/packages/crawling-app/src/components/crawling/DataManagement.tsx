@@ -86,12 +86,8 @@ const DataManagement: React.FC = () => {
     }
   };
 
-  // 임시 목업 데이터 (API 실패시 사용)
-  const mockDataItems = [
-  ];
-
-  // 실제 데이터가 없으면 목업 사용
-  const displayItems = dataItems.length > 0 ? dataItems : mockDataItems;
+  // 실제 데이터만 사용
+  const displayItems = dataItems;
 
   const dataStats: DataStats = useMemo(() => {
     const stats: DataStats = {
