@@ -8,6 +8,7 @@ import CrawlingLayout from './CrawlingLayout';
 import CrawlingManagement from './CrawlingManagement';
 import AIAnalysis from './AIAnalysis';
 import DataManagement from './DataManagement';
+import CrawlerToolSelector from './CrawlerToolSelector';
 import { safeAPICall, useErrorHandler, ErrorContext } from '../../utils/ErrorHandler';
 import { 
   Activity, 
@@ -74,7 +75,7 @@ interface SystemSettings {
   timeout: number;
 }
 
-type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'settings';
+type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'tool-selector' | 'settings';
 
 interface DashboardWidget {
   id: string;
@@ -955,6 +956,8 @@ const CrawlingDashboard: React.FC = () => {
         return <AIAnalysis />;
       case 'data-management':
         return <DataManagement />;
+      case 'tool-selector':
+        return <CrawlerToolSelector />;
       case 'settings':
         return <div className="text-center py-20 text-slate-400">설정 페이지 (개발 중)</div>;
       default:

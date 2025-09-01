@@ -9,7 +9,7 @@ Port: 8070
 """
 
 from fastapi import FastAPI, HTTPException
-from fastapi.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import yaml
 from pathlib import Path
@@ -60,12 +60,15 @@ async def get_status():
     }
 
 # 큐브별 특화 라우터 추가 지점
-# TODO: 마이그레이션된 모듈들의 라우터를 여기에 포함
+from routers.dashboard_router import router as dashboard_router
+from routers.crawler_tools_router import router as crawler_tools_router
+app.include_router(dashboard_router)
+app.include_router(crawler_tools_router)
 
 if __name__ == "__main__":
     uvicorn.run(
-        app,
-        host="0.0.0",
+        "main:app",
+        host="0.0.0.0",
         port=cube_config["cube"]["port"],
         reload=True
     )

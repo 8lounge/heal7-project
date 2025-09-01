@@ -43,21 +43,41 @@ jobs:
         cd heal7-project/frontend
         pnpm --filter @heal7/saju-app exec vite build --mode production
     
-    - name: Test frontend build
+    - name: Build crawling-app
       run: |
         cd heal7-project/frontend
+        pnpm --filter @heal7/crawling-app exec vite build --mode production
+    
+    - name: Test frontend builds
+      run: |
+        cd heal7-project/frontend
+        echo "=== Saju-app build ==="
         ls -la packages/saju-app/dist/
         echo "✅ Saju-app build completed successfully"
+        echo ""
+        echo "=== Crawling-app build ==="
+        ls -la packages/crawling-app/dist/
+        echo "✅ Crawling-app build completed successfully"
     
-    - name: Upload frontend build artifacts
+    - name: Upload saju-app build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: frontend-dist
+        name: saju-app-dist
         path: heal7-project/frontend/packages/saju-app/dist/
+        retention-days: 30
+    
+    - name: Upload crawling-app build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: crawling-app-dist
+        path: heal7-project/frontend/packages/crawling-app/dist/
         retention-days: 30
     
     - name: Frontend deployment notification
       run: |
         echo "🎨 Frontend 빌드 완료"
-        echo "📦 아티팩트: frontend-dist"
-        echo "🌐 배포 대상: saju.heal7.com (포트 4173)"
+        echo "📦 아티팩트: saju-app-dist, crawling-app-dist"
+        echo "🌐 배포 대상:"
+        echo "   - saju.heal7.com (사주 서비스)"
+        echo "   - crawling.heal7.com (크롤링 서비스)"
+        echo "⚠️  수동 배포 모드 - Claude CLI로 수동 배포 필요"

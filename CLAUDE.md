@@ -56,8 +56,8 @@ Storage: PostgreSQL + Redis Cache
 - **아카이브**: `/home/ubuntu/archive/crawling-legacy-20250831-003946/`
 - **프로덕션**: `https://crawling.heal7.com` (React 시스템 운영 중)
 
-### ⚡ **GitHub Actions 빌드 시스템** (2025-08-30 구축 완료)
-> 🚀 **무서버 빌드**: 로컬 서버 부담 제로, 클라우드에서 안전한 빌드/배포
+### ⚡ **GitHub Actions 빌드 + 수동 배포 시스템** (2025-09-01 정책 변경) ⚡ **최신**
+> 🚀 **하이브리드 모드**: 원격 빌드 + 수동 배포로 안정성 극대화
 
 #### 🎼 **서비스별 그룹 분류 완료** ✅
 - **🎨 frontend-build-deploy.yml**: 프론트엔드 전용 (Node.js 18, Vite)
@@ -71,15 +71,21 @@ Storage: PostgreSQL + Redis Cache
 - **🚀 service-deployment.yml**: 배포 오케스트레이션 자동화
 - **🎯 service-selector.yml**: 수동 서비스 선택 빌드 (관리자용)
 
-#### 🔥 **빌드 규칙 & 주요 공지**
+#### 🔥 **빌드 & 배포 규칙** ⚡ **2025-09-01 수동 배포 모드**
 ```bash
-# ✅ 권장 사용법
-gh workflow run service-selector.yml -f target_service=saju-service-only -f build_mode=production
-gh workflow run backend-services-build.yml    # 모든 백엔드 서비스 빌드
-gh workflow run frontend-build-deploy.yml      # 프론트엔드만 빌드
+# ✅ 1단계: 원격 빌드 (GitHub Actions)
+gh workflow run frontend-build-deploy.yml      # 사주앱 + 크롤링앱 빌드
+gh workflow run backend-services-build.yml     # 백엔드 서비스 빌드
+gh workflow run service-selector.yml -f target_service=crawling-service    # 특정 서비스
 
-# ⚠️ 레거시 (사용 금지)
-gh workflow run build-and-deploy.yml          # DEPRECATED - 사용 불가
+# ✅ 2단계: 수동 배포 (Claude CLI 필수)
+# 빌드 완료 후 아티팩트 다운로드하여 수동 배포
+# 자동 배포는 비활성화됨 (안정성 향상)
+
+# ⚠️ 금지 사항
+pnpm build                                      # 로컬 빌드 금지
+vite build                                      # 로컬 빌드 금지
+npm run build                                   # 로컬 빌드 금지
 ```
 
 #### 📋 **배포 자동화 트리거**
@@ -116,16 +122,21 @@ rm -rf dist         # Vite 빌드 결과물 삭제 위험
 kill -9 $(pgrep nginx)  # 전체 웹서비스 중단
 ```
 
-### ✅ **안전한 대안 명령어**
+### ✅ **안전한 배포 프로세스** ⚡ **2025-09-01 수동 배포 모드 도입**
 ```bash
-# 🎯 서비스별 빌드/배포 (권장)
-gh workflow run service-selector.yml -f target_service=saju-service-only    # 사주서비스만
-gh workflow run service-selector.yml -f target_service=all-services         # 전체 서비스
-gh workflow run frontend-build-deploy.yml                                   # 프론트엔드만
-gh workflow run backend-services-build.yml                                  # 백엔드만
+# 🎯 1단계: GitHub Actions 원격 빌드 (권장)
+gh workflow run frontend-build-deploy.yml                                   # 프론트엔드 빌드
+gh workflow run backend-services-build.yml                                  # 백엔드 빌드
+gh workflow run service-selector.yml -f target_service=saju-service-only    # 특정 서비스만
 
-# 🏗️ 로컬 테스트용
-vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
+# 🎯 2단계: Claude CLI와 함께 수동 배포
+# GitHub Actions 아티팩트를 다운로드 후:
+sudo cp -r ./saju-app-dist/* /var/www/saju.heal7.com/                      # 사주 서비스 배포
+sudo cp -r ./crawling-app-dist/* /var/www/crawling.heal7.com/              # 크롤링 서비스 배포
+sudo chown -R www-data:www-data /var/www/[service].heal7.com               # 권한 설정
+sudo systemctl reload nginx                                                  # 서버 리로드
+
+# ⚠️ 로컬 빌드 금지 - GitHub Actions 원격 빌드만 사용
 ```
 
 ### 🧹 **엔트로피 지양 핵심 규칙**
@@ -188,13 +199,14 @@ vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 
 ## 🔥 **자주 찾는 정보**
 
-### **🕷️ 크롤링 시스템** (2025-08-31 React 시스템) ⚡ **최신**
+### **🕷️ 크롤링 시스템** (2025-09-01 수동 배포 모드) ⚡ **최신**
 - **메인 서비스**: `crawling.heal7.com` (React + TypeScript 기반) ✅ **운영 중**
 - **아키텍처**: React 18 + FastAPI 3-Tier + MultiModal AI
-- **핵심 컴포넌트**: `/home/ubuntu/heal7-project/frontend/src/components/crawling/`
+- **핵심 컴포넌트**: `/home/ubuntu/heal7-project/frontend/packages/crawling-app/`
 - **백엔드 API**: 포트 8003 (`/api/`, `/ws`, `/docs` 경로)
 - **실시간 기능**: WebSocket + 알림 시스템 + 로그 스트리밍
-- **배포 설정**: NGINX 정적 파일 서빙 + API 프록시 분리
+- **배포 모드**: ✅ **수동 배포** (GitHub 원격 빌드 + Claude CLI 배포)
+- **빌드 아티팩트**: `crawling-app-dist` (GitHub Actions에서 생성)
 - **완료 보고서**: `/home/ubuntu/docs/project_docs/work-logs/2025/08/2025-08-31-crawling-system-replacement-complete.md`
 
 ### **🔒 보안 및 백업 체계**
@@ -202,6 +214,40 @@ vite build && vite preview --port 4173  # 안전한 Vite 빌드 & 미리보기
 - **핵심 파일 아카이브**: `/home/ubuntu/archive/crawling-legacy-20250831-003946/`
 - **NGINX 설정 백업**: `/tmp/crawling.heal7.com.backup`
 - **API 키**: `/home/ubuntu/.env.ai` (Gemini, OpenAI, Anthropic)
+
+### **🚀 수동 배포 프로세스** (2025-09-01 신규 정책) ⚡ **필수 숙지**
+
+#### **1단계: GitHub Actions 원격 빌드**
+```bash
+# 프론트엔드 빌드 (사주앱 + 크롤링앱)
+gh workflow run frontend-build-deploy.yml
+
+# 백엔드 서비스 빌드
+gh workflow run backend-services-build.yml
+
+# 특정 서비스만 빌드
+gh workflow run service-selector.yml -f target_service=crawling-service
+```
+
+#### **2단계: Claude CLI 수동 배포**
+```bash
+# GitHub Actions에서 아티팩트 다운로드 후:
+
+# 크롤링 시스템 배포
+sudo cp -r ./crawling-app-dist/* /var/www/crawling.heal7.com/
+sudo chown -R www-data:www-data /var/www/crawling.heal7.com/
+sudo systemctl reload nginx
+
+# 사주 시스템 배포  
+sudo cp -r ./saju-app-dist/* /var/www/saju.heal7.com/
+sudo chown -R www-data:www-data /var/www/saju.heal7.com/
+sudo systemctl reload nginx
+```
+
+#### **🔧 자동 배포 비활성화 상태**
+- ✅ **service-deployment.yml**: 수동 모드로 변경 완료
+- ✅ **frontend/scripts/deploy.sh**: 자동 복사 비활성화 완료
+- ✅ **안정성 향상**: 예상치 못한 배포 중단 방지
 
 ### **중요 파일 위치**
 - **Heal7 백엔드**: `/home/ubuntu/heal7-project/backend/`

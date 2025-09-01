@@ -7,7 +7,7 @@ import SystemAlerts from './SystemAlerts';
 import { useRealTime } from '../../hooks/useRealTime';
 import { Terminal, Bell } from 'lucide-react';
 
-type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'settings';
+type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'tool-selector' | 'settings';
 
 interface SystemMetrics {
   crawlerStatus: 'active' | 'idle' | 'error';
@@ -93,6 +93,10 @@ const CrawlingLayout: React.FC<CrawlingLayoutProps> = ({
             onPageChange('data-management');
             break;
           case '5':
+            e.preventDefault();
+            onPageChange('tool-selector');
+            break;
+          case '6':
             e.preventDefault();
             onPageChange('settings');
             break;

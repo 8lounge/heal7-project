@@ -3,7 +3,7 @@ cube:
   created: '2025-08-26T16:47:53.990582'
   metaphor: 소화계 - 외부 정보 흡수
   name: crawling-system
-  port: 8070
+  port: 8003
   purpose: 외부 데이터 수집
   type: integration-cube
   version: 1.0.0

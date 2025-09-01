@@ -10,10 +10,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Activity,
-  Layers
+  Layers,
+  Wrench
 } from 'lucide-react';
 
-type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'settings';
+type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'tool-selector' | 'settings';
 
 interface CrawlingSidebarProps {
   currentPage: CrawlingPage;
@@ -52,6 +53,12 @@ const CrawlingSidebar: React.FC<CrawlingSidebarProps> = ({
       label: '데이터 관리',
       icon: Database,
       description: '수집 데이터 관리'
+    },
+    {
+      id: 'tool-selector' as CrawlingPage,
+      label: '도구 선택',
+      icon: Wrench,
+      description: '크롤링 도구 및 추천'
     },
     {
       id: 'settings' as CrawlingPage,

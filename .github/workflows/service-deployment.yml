@@ -82,34 +82,24 @@ jobs:
         name: frontend-dist
         path: ./frontend-build/
     
-    - name: Deploy frontend to production
+    - name: Deploy frontend to production (MANUAL MODE)
       run: |
-        echo "🎨 Frontend Production Deployment"
-        echo "================================"
+        echo "🎨 Frontend Production Deployment - MANUAL MODE"
+        echo "=============================================="
         echo "📦 Artifact downloaded: frontend-dist"
-        echo "🌐 Target: /var/www/saju.heal7.com"
-        echo "📁 Files to deploy:"
+        echo "📁 Files ready for manual deployment:"
         ls -la ./frontend-build/ || echo "No build files found"
         
-        # 실제 배포 실행
-        if [ -d "./frontend-build" ]; then
-          echo "🔄 Backing up current deployment..."
-          sudo cp -r /var/www/saju.heal7.com /backup/saju-$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
-          
-          echo "📂 Deploying new files..."
-          sudo rm -rf /var/www/saju.heal7.com/*
-          sudo cp -r ./frontend-build/* /var/www/saju.heal7.com/
-          sudo chown -R www-data:www-data /var/www/saju.heal7.com
-          sudo chmod -R 755 /var/www/saju.heal7.com
-          
-          echo "♻️ Reloading nginx..."
-          sudo systemctl reload nginx
-          
-          echo "✅ Frontend deployment completed successfully!"
-        else
-          echo "❌ No build files found - deployment failed"
-          exit 1
-        fi
+        echo ""
+        echo "🔧 MANUAL DEPLOYMENT REQUIRED:"
+        echo "1. Download artifacts from GitHub Actions"
+        echo "2. Use Claude CLI for manual deployment:"
+        echo "   - sudo cp -r ./frontend-build/* /var/www/saju.heal7.com/"
+        echo "   - sudo chown -R www-data:www-data /var/www/saju.heal7.com"
+        echo "   - sudo chmod -R 755 /var/www/saju.heal7.com"
+        echo "   - sudo systemctl reload nginx"
+        echo ""
+        echo "✅ Build artifacts ready - Manual deployment needed"
 
   deploy-backend-services:
     needs: prepare-deployment
