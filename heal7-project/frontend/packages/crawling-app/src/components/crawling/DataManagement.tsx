@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { crawlingAPI } from '../../api/CrawlingAPIClient';
 import { motion } from 'framer-motion';
 import { 
   Database,
@@ -63,97 +64,34 @@ const DataManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  const [dataItems] = useState<DataItem[]>([
-    {
-      id: '1',
-      title: '정부포털 일반공고 - 공공기관 채용정보',
-      content: '2025년 상반기 공공기관 채용계획 발표... 총 1,250명 신규 채용 예정...',
-      sourceUrl: 'https://www.gov.kr/portal/ntnadmNews/1234',
-      crawlerTier: 'httpx',
-      dataType: 'text',
-      quality: 'high',
-      collectedAt: '2025-08-30 15:30:25',
-      size: 15420,
-      processingStatus: 'processed',
-      aiAnalyzed: true,
-      tags: ['정부', '채용', '공고'],
-      metadata: {
-        wordCount: 2340,
-        confidence: 0.96
+  const [dataItems, setDataItems] = useState<DataItem[]>([]); 
+  const [loading, setLoading] = useState(true);
+
+  // 실제 API에서 데이터 로드
+  useEffect(() => {
+    loadDataItems();
+  }, []);
+
+  const loadDataItems = async () => {
+    setLoading(true);
+    try {
+      const data = await crawlingAPI.getDataItems();
+      if (data && data.items) {
+        setDataItems(data.items);
       }
-    },
-    {
-      id: '2',
-      title: '예산 현황 테이블',
-      content: '2025년도 국가예산 배정 현황표',
-      sourceUrl: 'https://budget.gov.kr/table/2025/allocation',
-      crawlerTier: 'playwright',
-      dataType: 'table',
-      quality: 'high',
-      collectedAt: '2025-08-30 14:45:12',
-      size: 8920,
-      processingStatus: 'processed',
-      aiAnalyzed: true,
-      tags: ['예산', '테이블', '정부'],
-      metadata: {
-        tableRows: 156,
-        confidence: 0.94
-      }
-    },
-    {
-      id: '3',
-      title: '꿈풀이 사전 - 물고기 꿈',
-      content: '물고기가 나오는 꿈의 의미와 해석... 물고기는 일반적으로 재물과 행운을...',
-      sourceUrl: 'https://dream.co.kr/search/fish',
-      crawlerTier: 'playwright',
-      dataType: 'text',
-      quality: 'medium',
-      collectedAt: '2025-08-30 13:20:45',
-      size: 6750,
-      processingStatus: 'processed',
-      aiAnalyzed: false,
-      tags: ['꿈풀이', '물고기', '해석'],
-      metadata: {
-        wordCount: 1250,
-        confidence: 0.88
-      }
-    },
-    {
-      id: '4',
-      title: '사주 차트 이미지',
-      content: '생년월일시 기반 사주 차트 다이어그램',
-      sourceUrl: 'https://saju.example.com/chart/19900315.png',
-      crawlerTier: 'selenium',
-      dataType: 'image',
-      quality: 'medium',
-      collectedAt: '2025-08-30 12:15:30',
-      size: 124800,
-      processingStatus: 'failed',
-      aiAnalyzed: false,
-      tags: ['사주', '차트', '이미지'],
-      metadata: {
-        imageCount: 1
-      }
-    },
-    {
-      id: '5',
-      title: '운세 종합 분석 보고서',
-      content: '2025년 하반기 12간지별 종합 운세 분석 및 전망 자료...',
-      sourceUrl: 'https://fortune.kr/report/2025h2',
-      crawlerTier: 'httpx',
-      dataType: 'document',
-      quality: 'high',
-      collectedAt: '2025-08-30 11:30:15',
-      size: 45600,
-      processingStatus: 'pending',
-      aiAnalyzed: false,
-      tags: ['운세', '분석', '보고서'],
-      metadata: {
-        wordCount: 5420,
-        imageCount: 12
-      }
+    } catch (error) {
+      console.error('데이터 목록 로드 실패:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  // 임시 목업 데이터 (API 실패시 사용)
+  const mockDataItems = [
+  ];
+
+  // 실제 데이터가 없으면 목업 사용
+  const displayItems = dataItems.length > 0 ? dataItems : mockDataItems;
 
   const dataStats: DataStats = useMemo(() => {
     const stats: DataStats = {
