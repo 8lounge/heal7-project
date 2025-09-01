@@ -21,7 +21,16 @@
     "@react-three/fiber": "^8.15.0",
     "@react-three/drei": "^9.96.0",
     "three": "^0.161.0",
-    "lucide-react": "^0.344.0"
+    "lucide-react": "^0.344.0",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.5",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.0",

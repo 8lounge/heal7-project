@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus,
@@ -43,9 +43,10 @@ interface NewJobForm {
 const CrawlingManagement: React.FC = () => {
   const [showNewJobModal, setShowNewJobModal] = useState(false);
   const [selectedTier, setSelectedTier] = useState<'all' | 'httpx' | 'playwright' | 'selenium'>('all');
-  // const [selectedJob, setSelectedJob] = useState<string | null>(null);
   
   const [jobs, setJobs] = useState<CrawlingJob[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const [newJob, setNewJob] = useState<NewJobForm>({
     name: '',
@@ -55,6 +56,39 @@ const CrawlingManagement: React.FC = () => {
     selectors: '',
     maxPages: 10
   });
+
+  // 실제 API에서 크롤링 작업 로드
+  useEffect(() => {
+    loadCrawlingJobs();
+  }, []);
+
+  const loadCrawlingJobs = async () => {
+    setLoading(true);
+    setApiError(null);
+    
+    try {
+      console.log('[DEV] 크롤링 작업 목록 API 호출 시작...');
+      const response = await fetch('/api/crawling/jobs');
+      
+      if (!response.ok) {
+        throw new Error(`크롤링 작업 API 오류 - Status: ${response.status}, StatusText: ${response.statusText}, URL: ${response.url}`);
+      }
+      
+      const data = await response.json();
+      console.log('[DEV] 크롤링 작업 데이터:', data);
+      
+      if (data.jobs) {
+        setJobs(data.jobs);
+      }
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+      console.error('[DEV] 크롤링 작업 로드 실패:', errorMessage);
+      setApiError(`크롤링 작업 로드 실패: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusColor = (status: CrawlingJob['status']) => {
     switch (status) {
@@ -114,49 +148,93 @@ const CrawlingManagement: React.FC = () => {
 
   const filteredJobs = selectedTier === 'all' ? jobs : jobs.filter(job => job.tier === selectedTier);
 
-  const handleJobAction = (jobId: string, action: 'start' | 'pause' | 'stop' | 'delete') => {
-    setJobs(prev => prev.map(job => {
-      if (job.id === jobId) {
-        switch (action) {
-          case 'start':
-            return { ...job, status: 'running' as const };
-          case 'pause':
-            return { ...job, status: 'paused' as const };
-          case 'stop':
-            return { ...job, status: 'queued' as const, progress: 0 };
-          default:
-            return job;
-        }
+  const handleJobAction = async (jobId: string, action: 'start' | 'pause' | 'stop' | 'delete') => {
+    try {
+      console.log(`[DEV] 크롤링 작업 ${action} API 호출 - JobID: ${jobId}`);
+      const response = await fetch(`/api/crawling/jobs/${jobId}/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`작업 ${action} API 오류 - Status: ${response.status}, StatusText: ${response.statusText}`);
       }
-      return job;
-    }).filter(job => !(action === 'delete' && job.id === jobId)));
+      
+      const result = await response.json();
+      console.log(`[DEV] 작업 ${action} 결과:`, result);
+      
+      // API 호출 성공 후 로컬 상태 업데이트
+      setJobs(prev => prev.map(job => {
+        if (job.id === jobId) {
+          switch (action) {
+            case 'start':
+              return { ...job, status: 'running' as const };
+            case 'pause':
+              return { ...job, status: 'paused' as const };
+            case 'stop':
+              return { ...job, status: 'queued' as const, progress: 0 };
+            default:
+              return job;
+          }
+        }
+        return job;
+      }).filter(job => !(action === 'delete' && job.id === jobId)));
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+      console.error(`[DEV] 작업 ${action} 실패:`, errorMessage);
+      setApiError(`작업 ${action} 실패: ${errorMessage}`);
+    }
   };
 
-  const handleCreateJob = () => {
-    const newJobData: CrawlingJob = {
-      id: Date.now().toString(),
-      name: newJob.name,
-      tier: newJob.tier,
-      status: 'queued',
-      url: newJob.url,
-      schedule: newJob.schedule,
-      progress: 0,
-      itemsCollected: 0,
-      lastRun: '없음',
-      nextRun: '대기 중',
-      duration: '예상 시간 계산 중'
-    };
+  const handleCreateJob = async () => {
+    try {
+      console.log('[DEV] 새 크롤링 작업 생성 API 호출...');
+      const response = await fetch('/api/crawling/jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newJob.name,
+          tier: newJob.tier,
+          url: newJob.url,
+          schedule: newJob.schedule,
+          selectors: newJob.selectors,
+          maxPages: newJob.maxPages
+        })
+      });
 
-    setJobs(prev => [...prev, newJobData]);
-    setNewJob({
-      name: '',
-      tier: 'httpx',
-      url: '',
-      schedule: 'daily',
-      selectors: '',
-      maxPages: 10
-    });
-    setShowNewJobModal(false);
+      if (!response.ok) {
+        throw new Error(`작업 생성 API 오류 - Status: ${response.status}, StatusText: ${response.statusText}`);
+      }
+
+      const createdJob = await response.json();
+      console.log('[DEV] 새 작업 생성 결과:', createdJob);
+
+      // API 성공 후 로컬 상태 업데이트
+      if (createdJob.job) {
+        setJobs(prev => [...prev, createdJob.job]);
+      }
+
+      // 폼 초기화 및 모달 닫기
+      setNewJob({
+        name: '',
+        tier: 'httpx',
+        url: '',
+        schedule: 'daily',
+        selectors: '',
+        maxPages: 10
+      });
+      setShowNewJobModal(false);
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+      console.error('[DEV] 작업 생성 실패:', errorMessage);
+      setApiError(`작업 생성 실패: ${errorMessage}`);
+    }
   };
 
   return (

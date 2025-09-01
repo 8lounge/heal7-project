@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { crawlingAPI } from '../../api/CrawlingAPIClient';
+import { safeAPICall, APIError } from '../../utils/ErrorHandler';
 import { motion } from 'framer-motion';
 import { 
   Database,
@@ -66,6 +67,7 @@ const DataManagement: React.FC = () => {
 
   const [dataItems, setDataItems] = useState<DataItem[]>([]); 
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<APIError | null>(null);
 
   // 실제 API에서 데이터 로드
   useEffect(() => {
@@ -74,16 +76,29 @@ const DataManagement: React.FC = () => {
 
   const loadDataItems = async () => {
     setLoading(true);
-    try {
-      const data = await crawlingAPI.getDataItems();
-      if (data && data.items) {
-        setDataItems(data.items);
-      }
-    } catch (error) {
-      console.error('데이터 목록 로드 실패:', error);
-    } finally {
-      setLoading(false);
+    setApiError(null);
+    console.log('[DEV] 데이터 목록 API 호출 시작...');
+    
+    const { data, error } = await safeAPICall<{ items: DataItem[] }>(
+      '/api/data/items',
+      { method: 'GET' },
+      { component: 'DataManagement', action: 'loadDataItems' }
+    );
+
+    if (error) {
+      console.error(`[DEV] 데이터 목록 API 오류 - ${error.code}: ${error.message}`);
+      setApiError(error);
+      setDataItems([]);
+    } else if (data && data.items) {
+      console.log(`[DEV] 데이터 목록 로드 완료 - ${data.items.length}개 항목`);
+      setDataItems(data.items);
+      setApiError(null);
+    } else {
+      console.warn('[DEV] 데이터 목록 API 응답이 비어있음');
+      setDataItems([]);
     }
+    
+    setLoading(false);
   };
 
   // 실제 데이터만 사용
@@ -211,14 +226,55 @@ const DataManagement: React.FC = () => {
     }
   };
 
-  const handleExport = (format: 'csv' | 'json' | 'excel') => {
-    console.log(`Exporting ${selectedItems.length || filteredAndSortedItems.length} items as ${format}`);
-    // Export logic would go here
+  const handleExport = async (format: 'csv' | 'json' | 'excel') => {
+    const itemIds = selectedItems.length > 0 ? selectedItems : filteredAndSortedItems.map(item => item.id);
+    console.log(`[DEV] ${format.toUpperCase()} 내보내기 API 호출 - ${itemIds.length}개 항목`);
+    
+    const { data, error } = await safeAPICall<{ downloadUrl: string }>(
+      '/api/data/export',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds, format })
+      },
+      { component: 'DataManagement', action: 'exportData' }
+    );
+
+    if (error) {
+      console.error(`[DEV] ${format.toUpperCase()} 내보내기 API 오류 - ${error.code}: ${error.message}`);
+      setApiError(error);
+    } else if (data && data.downloadUrl) {
+      console.log(`[DEV] ${format.toUpperCase()} 내보내기 성공 - 다운로드 URL: ${data.downloadUrl}`);
+      window.open(data.downloadUrl, '_blank');
+    }
   };
 
-  const handleBulkAction = (action: 'delete' | 'reprocess' | 'analyze') => {
-    console.log(`Bulk action: ${action} on ${selectedItems.length} items`);
-    // Bulk action logic would go here
+  const handleBulkAction = async (action: 'delete' | 'reprocess' | 'analyze') => {
+    if (selectedItems.length === 0) {
+      console.warn('[DEV] 일괄 작업을 위해 항목을 선택해주세요');
+      return;
+    }
+
+    console.log(`[DEV] 일괄 ${action} API 호출 - ${selectedItems.length}개 항목`);
+    
+    const { data, error } = await safeAPICall<{ success: boolean; affected: number }>(
+      `/api/data/bulk/${action}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds: selectedItems })
+      },
+      { component: 'DataManagement', action: `bulk${action.charAt(0).toUpperCase() + action.slice(1)}` }
+    );
+
+    if (error) {
+      console.error(`[DEV] 일괄 ${action} API 오류 - ${error.code}: ${error.message}`);
+      setApiError(error);
+    } else if (data && data.success) {
+      console.log(`[DEV] 일괄 ${action} 성공 - ${data.affected}개 항목 처리됨`);
+      setSelectedItems([]);
+      await loadDataItems(); // 데이터 새로고침
+    }
   };
 
   return (
@@ -250,6 +306,40 @@ const DataManagement: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* API 에러 표시 */}
+      {apiError && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-red-500/10 to-pink-500/10 border border-red-500/30 rounded-xl p-4"
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex items-start space-x-3">
+              <XCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="text-red-300 font-medium">데이터 API 오류</h3>
+                <p className="text-red-200/80 text-sm mt-1">{apiError.message}</p>
+                <div className="text-xs text-red-300/60 mt-2">
+                  <span className="font-mono bg-red-500/20 px-2 py-1 rounded">
+                    {apiError.code} | {apiError.timestamp}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setApiError(null);
+                loadDataItems();
+              }}
+              className="text-red-300 hover:text-red-100 transition-colors p-1 hover:bg-red-500/20 rounded"
+              title="다시 시도"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

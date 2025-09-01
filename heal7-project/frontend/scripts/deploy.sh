@@ -15,32 +15,38 @@ deploy_service() {
     exit 1
   fi
   
-  # 배포
+  # 배포 (MANUAL MODE - AUTO DEPLOYMENT DISABLED)
   case $service in
     "saju")
-      echo "📦 Deploying to saju.heal7.com..."
-      sudo cp -r packages/saju-app/dist/* /var/www/saju.heal7.com/
-      # zodiac-images 보존
-      if [ -d "/var/www/saju.heal7.com.backup/zodiac-images" ]; then
-        sudo cp -r /var/www/saju.heal7.com.backup/zodiac-images /var/www/saju.heal7.com/
-      fi
+      echo "📦 Build ready for manual deployment to saju.heal7.com..."
+      echo "🔧 Manual deployment commands:"
+      echo "   sudo cp -r packages/saju-app/dist/* /var/www/saju.heal7.com/"
+      # zodiac-images 보존 참고사항
+      echo "📝 Note: Preserve zodiac-images from backup if needed"
+      echo "   sudo cp -r /var/www/saju.heal7.com.backup/zodiac-images /var/www/saju.heal7.com/"
       ;;
     "crawling")
-      echo "📦 Deploying to crawling.heal7.com..."
-      sudo cp -r packages/crawling-app/dist/* /var/www/crawling.heal7.com/
+      echo "📦 Build ready for manual deployment to crawling.heal7.com..."
+      echo "🔧 Manual deployment commands:"
+      echo "   sudo cp -r packages/crawling-app/dist/* /var/www/crawling.heal7.com/"
       ;;
     "admin")
-      echo "📦 Deploying to admin.heal7.com..."
-      sudo cp -r packages/admin-app/dist/* /var/www/admin.heal7.com/
+      echo "📦 Build ready for manual deployment to admin.heal7.com..."
+      echo "🔧 Manual deployment commands:"
+      echo "   sudo cp -r packages/admin-app/dist/* /var/www/admin.heal7.com/"
       ;;
     "cube")
-      echo "📦 Deploying to cube module service..."
-      # Cube module deployment logic here
+      echo "📦 Build ready for manual deployment to cube module service..."
+      echo "🔧 Manual deployment will be configured separately"
       ;;
   esac
   
-  # 권한 설정
-  sudo chown -R www-data:www-data /var/www/$service.heal7.com/ 2>/dev/null || echo "권한 설정 완료"
+  echo ""
+  echo "⚠️  AUTO DEPLOYMENT DISABLED - USE MANUAL DEPLOYMENT"
+  echo "🔧 After manual file copy, run:"
+  echo "   sudo chown -R www-data:www-data /var/www/$service.heal7.com/"
+  echo "   sudo chmod -R 755 /var/www/$service.heal7.com/"
+  echo "   sudo systemctl reload nginx"
   echo "✅ $service deployment completed"
 }
 

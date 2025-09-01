@@ -57,7 +57,7 @@ const AIAnalysis: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDetails, setShowDetails] = useState<string | null>(null);
 
-  const [aiModels] = useState<AIModel[]>([
+  const [aiModels, setAiModels] = useState<AIModel[]>([
     {
       id: 'gemini',
       name: 'gemini',
@@ -65,11 +65,11 @@ const AIAnalysis: React.FC = () => {
       color: 'blue',
       icon: <Zap className="w-5 h-5" />,
       stats: {
-        totalProcessed: 1247,
-        successRate: 96.8,
-        avgProcessingTime: 2.3,
-        costPerItem: 0.0008,
-        totalCost: 1.25
+        totalProcessed: 0,
+        successRate: 0,
+        avgProcessingTime: 0,
+        costPerItem: 0,
+        totalCost: 0
       }
     },
     {
@@ -79,11 +79,11 @@ const AIAnalysis: React.FC = () => {
       color: 'green',
       icon: <Eye className="w-5 h-5" />,
       stats: {
-        totalProcessed: 856,
-        successRate: 94.2,
-        avgProcessingTime: 4.1,
-        costPerItem: 0.005,
-        totalCost: 4.28
+        totalProcessed: 0,
+        successRate: 0,
+        avgProcessingTime: 0,
+        costPerItem: 0,
+        totalCost: 0
       }
     },
     {
@@ -93,106 +93,72 @@ const AIAnalysis: React.FC = () => {
       color: 'purple',
       icon: <Brain className="w-5 h-5" />,
       stats: {
-        totalProcessed: 523,
-        successRate: 97.1,
-        avgProcessingTime: 3.7,
-        costPerItem: 0.003,
-        totalCost: 1.57
+        totalProcessed: 0,
+        successRate: 0,
+        avgProcessingTime: 0,
+        costPerItem: 0,
+        totalCost: 0
       }
     }
   ]);
 
-  const [processingJobs, setProcessingJobs] = useState<ProcessingJob[]>([
-    {
-      id: '1',
-      model: 'gemini',
-      type: 'document',
-      status: 'completed',
-      title: '정부포털 공고문 분석',
-      sourceUrl: 'https://gov.kr/notice/123',
-      processingTime: 2.1,
-      accuracy: 97.2,
-      createdAt: '2025-08-30 15:30',
-      result: {
-        extractedText: '정부기관 공고사항...',
-        confidence: 0.97
-      }
-    },
-    {
-      id: '2',
-      model: 'gpt4o',
-      type: 'table',
-      status: 'processing',
-      title: '예산 테이블 추출',
-      sourceUrl: 'https://budget.gov.kr/table/456',
-      processingTime: 0,
-      accuracy: 0,
-      createdAt: '2025-08-30 15:45',
-    },
-    {
-      id: '3',
-      model: 'claude',
-      type: 'ocr',
-      status: 'completed',
-      title: '스캔 문서 텍스트 추출',
-      sourceUrl: 'https://docs.example.com/scan789',
-      processingTime: 3.8,
-      accuracy: 95.8,
-      createdAt: '2025-08-30 15:20',
-      result: {
-        extractedText: '스캔된 텍스트 내용...',
-        confidence: 0.96
-      }
-    },
-    {
-      id: '4',
-      model: 'gemini',
-      type: 'image',
-      status: 'failed',
-      title: '차트 이미지 분석',
-      sourceUrl: 'https://chart.example.com/img.png',
-      processingTime: 1.2,
-      accuracy: 0,
-      createdAt: '2025-08-30 15:10',
-    },
-    {
-      id: '5',
-      model: 'claude',
-      type: 'document',
-      status: 'queued',
-      title: '연구보고서 요약',
-      sourceUrl: 'https://research.example.com/report',
-      processingTime: 0,
-      accuracy: 0,
-      createdAt: '2025-08-30 15:50',
-    }
-  ]);
+  const [processingJobs, setProcessingJobs] = useState<ProcessingJob[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // 실시간 업데이트 시뮬레이션
+  // 실제 API 데이터 로드
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProcessingJobs(prev => prev.map(job => {
-        if (job.status === 'processing') {
-          // 50% 확률로 완료 처리
-          if (Math.random() > 0.5) {
-            return {
-              ...job,
-              status: 'completed',
-              processingTime: Math.random() * 5 + 1,
-              accuracy: Math.random() * 10 + 90,
-              result: {
-                extractedText: '처리 완료된 결과...',
-                confidence: Math.random() * 0.1 + 0.9
-              }
-            };
-          }
-        }
-        return job;
-      }));
-    }, 5000);
-
-    return () => clearInterval(interval);
+    loadAIData();
   }, []);
+
+  const loadAIData = async () => {
+    setLoading(true);
+    setApiError(null);
+    
+    try {
+      // AI 모델 통계 로드
+      console.log('[DEV] AI 모델 통계 API 호출 시작...');
+      const aiStatsResponse = await fetch('/api/ai/models/stats');
+      
+      if (!aiStatsResponse.ok) {
+        throw new Error(`AI 모델 통계 API 오류 - Status: ${aiStatsResponse.status}, StatusText: ${aiStatsResponse.statusText}, URL: ${aiStatsResponse.url}`);
+      }
+      
+      const aiStatsData = await aiStatsResponse.json();
+      console.log('[DEV] AI 모델 통계 데이터:', aiStatsData);
+      
+      if (aiStatsData.models) {
+        setAiModels(prevModels => 
+          prevModels.map(model => {
+            const apiStats = aiStatsData.models[model.id];
+            return apiStats ? { ...model, stats: apiStats } : model;
+          })
+        );
+      }
+
+      // AI 처리 작업 로드
+      console.log('[DEV] AI 처리 작업 API 호출 시작...');
+      const jobsResponse = await fetch('/api/ai/jobs');
+      
+      if (!jobsResponse.ok) {
+        throw new Error(`AI 처리 작업 API 오류 - Status: ${jobsResponse.status}, StatusText: ${jobsResponse.statusText}, URL: ${jobsResponse.url}`);
+      }
+      
+      const jobsData = await jobsResponse.json();
+      console.log('[DEV] AI 처리 작업 데이터:', jobsData);
+      
+      if (jobsData.jobs) {
+        setProcessingJobs(jobsData.jobs);
+      }
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류';
+      console.error('[DEV] AI 데이터 로드 실패:', errorMessage);
+      setApiError(`AI 데이터 로드 실패: ${errorMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getModelColor = (modelId: string, opacity = '400') => {
     const model = aiModels.find(m => m.id === modelId);
@@ -272,14 +238,59 @@ const AIAnalysis: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-3">
-          <button className="p-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg text-slate-300 transition-colors">
+          <button 
+            className="p-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg text-slate-300 transition-colors"
+            onClick={() => window.open('/api/ai/reports/download', '_blank')}
+          >
             <Download className="w-4 h-4" />
           </button>
-          <button className="p-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg text-slate-300 transition-colors">
+          <button 
+            className="p-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg text-slate-300 transition-colors"
+            onClick={loadAIData}
+          >
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>
+
+      {/* 개발 모드 에러 및 로딩 상태 */}
+      {apiError && (
+        <motion.div
+          className="p-4 bg-red-900/50 border border-red-500/50 rounded-lg"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex items-start space-x-3">
+            <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-red-300 font-semibold">API 연동 오류 (개발 디버그)</h3>
+              <p className="text-red-200 text-sm mt-1 font-mono whitespace-pre-wrap">{apiError}</p>
+              <button 
+                className="mt-2 px-3 py-1 bg-red-800/50 hover:bg-red-700/50 rounded text-red-200 text-xs transition-colors"
+                onClick={loadAIData}
+              >
+                다시 시도
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {loading && (
+        <motion.div
+          className="p-4 bg-blue-900/50 border border-blue-500/50 rounded-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="flex items-center space-x-3">
+            <RefreshCw className="w-5 h-5 text-blue-400 animate-spin" />
+            <div>
+              <span className="text-blue-200">AI 모델 통계 및 작업 데이터 로딩 중...</span>
+              <div className="text-xs text-blue-300 mt-1">API 엔드포인트: /api/ai/models/stats, /api/ai/jobs</div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* 전체 통계 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

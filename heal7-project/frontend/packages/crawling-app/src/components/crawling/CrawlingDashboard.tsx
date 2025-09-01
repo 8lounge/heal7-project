@@ -8,6 +8,7 @@ import CrawlingLayout from './CrawlingLayout';
 import CrawlingManagement from './CrawlingManagement';
 import AIAnalysis from './AIAnalysis';
 import DataManagement from './DataManagement';
+import { safeAPICall, useErrorHandler, ErrorContext } from '../../utils/ErrorHandler';
 import { 
   Activity, 
   Clock, 
@@ -309,14 +310,7 @@ const CrawlingDashboard: React.FC = () => {
     timeout: 30000
   });
 
-  const [monitoringData, setMonitoringData] = useState<MonitoringData[]>([
-    { timestamp: '10:00', cpu: 45, memory: 67, network: 23, requests: 120, errors: 2 },
-    { timestamp: '10:01', cpu: 52, memory: 71, network: 31, requests: 145, errors: 1 },
-    { timestamp: '10:02', cpu: 48, memory: 69, network: 28, requests: 135, errors: 0 },
-    { timestamp: '10:03', cpu: 61, memory: 73, network: 35, requests: 167, errors: 3 },
-    { timestamp: '10:04', cpu: 55, memory: 70, network: 32, requests: 152, errors: 1 },
-    { timestamp: '10:05', cpu: 47, memory: 68, network: 26, requests: 128, errors: 0 },
-  ]);
+  const [monitoringData, setMonitoringData] = useState<MonitoringData[]>([]);
   
   const themes: DynamicTheme[] = [
     {
@@ -364,95 +358,83 @@ const CrawlingDashboard: React.FC = () => {
     })
   );
   
-  const [crawlers, setCrawlers] = useState<CrawlerStatus[]>([
-    {
-      id: '1',
-      name: '정부포털 수집기',
-      type: 'httpx',
-      status: 'running',
-      progress: 75,
-      itemsCollected: 1420,
-      speed: 45,
-      lastUpdate: '2분 전'
-    },
-    {
-      id: '2', 
-      name: '꿈풀이 데이터',
-      type: 'playwright',
-      status: 'running',
-      progress: 60,
-      itemsCollected: 890,
-      speed: 32,
-      lastUpdate: '1분 전'
-    },
-    {
-      id: '3',
-      name: '복잡 사이트',
-      type: 'selenium',
-      status: 'paused',
-      progress: 30,
-      itemsCollected: 245,
-      speed: 0,
-      lastUpdate: '5분 전'
-    }
-  ]);
+  const [crawlers, setCrawlers] = useState<CrawlerStatus[]>([]);
 
   const [aiStats, setAiStats] = useState<AIStats>({
-    totalProcessed: 2555,
-    geminiFlash: 1200,
-    gpt4o: 850,
-    claudeSonnet: 505,
-    successRate: 94.2
+    totalProcessed: 0,
+    geminiFlash: 0,
+    gpt4o: 0,
+    claudeSonnet: 0,
+    successRate: 0
   });
 
-  // 실시간 업데이트 시뮬레이션
+  const { handleError, safeAPICall: safeFetch } = useErrorHandler();
+
+  // API 기반 데이터 로딩 (에러 처리 포함)
   useEffect(() => {
-    if (!settings.realTimeUpdates) return;
+    const loadInitialData = async () => {
+      const context: ErrorContext = {
+        component: 'CrawlingDashboard',
+        action: 'loadInitialData'
+      };
 
-    const interval = setInterval(() => {
-      // 크롤러 데이터 업데이트
-      setCrawlers(prev => prev.map(crawler => {
-        if (crawler.status === 'running') {
-          const progressIncrement = Math.random() * 2;
-          const itemIncrement = Math.floor(Math.random() * 5) + 1;
-          
-          return {
-            ...crawler,
-            progress: Math.min(100, crawler.progress + progressIncrement),
-            itemsCollected: crawler.itemsCollected + itemIncrement,
-            speed: Math.floor(Math.random() * 20) + 30,
-            lastUpdate: '방금 전'
-          };
-        }
-        return crawler;
-      }));
+      // 크롤러 상태 로드
+      const { data: crawlersData, error: crawlersError } = await safeFetch(
+        '/api/crawlers/status', 
+        {}, 
+        { ...context, action: 'loadCrawlers' }
+      );
+      
+      if (crawlersData) {
+        setCrawlers(Array.isArray(crawlersData) ? crawlersData : []);
+      } else if (crawlersError) {
+        console.error('크롤러 상태 로드 실패:', crawlersError.message);
+      }
 
-      // AI 통계 업데이트
-      setAiStats(prev => ({
-        ...prev,
-        totalProcessed: prev.totalProcessed + Math.floor(Math.random() * 3) + 1,
-        geminiFlash: prev.geminiFlash + Math.floor(Math.random() * 2),
-        gpt4o: prev.gpt4o + Math.floor(Math.random() * 2),
-        claudeSonnet: prev.claudeSonnet + Math.floor(Math.random() * 2),
-        successRate: 90 + Math.random() * 8
-      }));
+      // AI 통계 로드
+      const { data: aiStatsData, error: aiStatsError } = await safeFetch(
+        '/api/ai/stats', 
+        {}, 
+        { ...context, action: 'loadAIStats' }
+      );
+      
+      if (aiStatsData && typeof aiStatsData === 'object') {
+        setAiStats({
+          totalProcessed: aiStatsData.totalProcessed || 0,
+          geminiFlash: aiStatsData.geminiFlash || 0,
+          gpt4o: aiStatsData.gpt4o || 0,
+          claudeSonnet: aiStatsData.claudeSonnet || 0,
+          successRate: aiStatsData.successRate || 0
+        });
+      } else if (aiStatsError) {
+        console.error('AI 통계 로드 실패:', aiStatsError.message);
+      }
 
-      // 모니터링 데이터 업데이트
-      setMonitoringData(prev => {
-        const newData = [...prev.slice(1), {
-          timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
-          cpu: Math.floor(Math.random() * 40) + 40,
-          memory: Math.floor(Math.random() * 30) + 60,
-          network: Math.floor(Math.random() * 40) + 20,
-          requests: Math.floor(Math.random() * 50) + 100,
-          errors: Math.floor(Math.random() * 5)
-        }];
-        return newData;
-      });
-    }, settings.refreshInterval);
+      // 모니터링 데이터 로드
+      const { data: monitoringData, error: monitoringError } = await safeFetch(
+        '/api/system/monitoring?limit=12', 
+        {}, 
+        { ...context, action: 'loadMonitoring' }
+      );
+      
+      if (monitoringData) {
+        setMonitoringData(Array.isArray(monitoringData) ? monitoringData : []);
+      } else if (monitoringError) {
+        console.error('모니터링 데이터 로드 실패:', monitoringError.message);
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, [settings.realTimeUpdates, settings.refreshInterval]);
+    loadInitialData();
+
+    // 정기적인 데이터 업데이트 (WebSocket 폴백)
+    if (settings.realTimeUpdates) {
+      const interval = setInterval(() => {
+        loadInitialData();
+      }, settings.refreshInterval * 2);
+
+      return () => clearInterval(interval);
+    }
+  }, [settings.realTimeUpdates, settings.refreshInterval, safeFetch]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;

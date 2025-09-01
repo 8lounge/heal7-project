@@ -74,20 +74,61 @@ export const useRealTime = (options: UseRealTimeOptions = {}) => {
   const logIdCounter = useRef(0);
   const alertIdCounter = useRef(0);
 
-  // WebSocket 연결 시뮬레이션
+  // 실제 WebSocket 연결
   const connect = useCallback(() => {
-    console.log('🔌 WebSocket 연결 시뮬레이션 시작');
+    console.log('🔌 실제 WebSocket 연결 시작');
     
-    setConnectionStatus(prev => ({
-      ...prev,
-      isConnected: true,
-      reconnectAttempts: 0,
-      lastHeartbeat: new Date().toISOString()
-    }));
+    try {
+      const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
+      const socket = new WebSocket(wsUrl);
+      
+      socket.onopen = () => {
+        setConnectionStatus(prev => ({
+          ...prev,
+          isConnected: true,
+          reconnectAttempts: 0,
+          lastHeartbeat: new Date().toISOString()
+        }));
 
-    // 연결 성공 알림
-    if (enableAlerts) {
-      addAlert('success', '실시간 연결', 'WebSocket 연결이 성공적으로 설정되었습니다.');
+        if (enableAlerts) {
+          addAlert('success', '실시간 연결', 'WebSocket 연결이 성공적으로 설정되었습니다.');
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket 연결 오류:', error);
+        setConnectionStatus(prev => ({
+          ...prev,
+          isConnected: false,
+          reconnectAttempts: prev.reconnectAttempts + 1
+        }));
+
+        if (enableAlerts) {
+          addAlert('error', '연결 오류', 'WebSocket 연결에 실패했습니다. 서버 상태를 확인하세요.');
+        }
+      };
+
+      socket.onclose = () => {
+        setConnectionStatus(prev => ({
+          ...prev,
+          isConnected: false
+        }));
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleRealTimeMessage(data);
+        } catch (error) {
+          console.error('WebSocket 메시지 파싱 오류:', error);
+        }
+      };
+      
+    } catch (error) {
+      console.error('WebSocket 연결 실패:', error);
+      if (enableAlerts) {
+        addAlert('error', '연결 실패', `WebSocket 연결 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      }
     }
   }, [enableAlerts]);
 
@@ -166,80 +207,75 @@ export const useRealTime = (options: UseRealTimeOptions = {}) => {
     );
   }, []);
 
-  // 시스템 메트릭 업데이트 시뮬레이션
-  const updateMetrics = useCallback(() => {
+  // 실제 시스템 메트릭 업데이트 (API 호출)
+  const updateMetrics = useCallback(async () => {
     if (!enableMetrics) return;
 
-    setSystemMetrics(prevMetrics => {
-      const cpu = Math.max(0, Math.min(100, prevMetrics.cpu + (Math.random() - 0.5) * 20));
-      const memory = Math.max(0, Math.min(100, prevMetrics.memory + (Math.random() - 0.5) * 10));
-      const network = Math.random() * 100;
-      const activeCrawlers = Math.max(0, prevMetrics.activeCrawlers + Math.floor((Math.random() - 0.5) * 3));
-      const queueSize = Math.max(0, prevMetrics.queueSize + Math.floor((Math.random() - 0.5) * 10));
-      const errorRate = Math.max(0, Math.min(10, prevMetrics.errorRate + (Math.random() - 0.5) * 2));
+    try {
+      const response = await fetch('/api/system/metrics');
+      if (response.ok) {
+        const metrics = await response.json();
+        setSystemMetrics(metrics);
 
-      const newMetrics = {
-        cpu,
-        memory,
-        network,
-        activeCrawlers,
-        queueSize,
-        errorRate
-      };
-
-      // 임계값 알림
-      if (cpu > 90 && prevMetrics.cpu <= 90) {
-        addAlert('error', '높은 CPU 사용률', `CPU 사용률이 ${cpu.toFixed(1)}%에 도달했습니다.`);
+        // 임계값 알림 (실제 데이터 기반)
+        if (metrics.cpu > 90) {
+          addAlert('error', '높은 CPU 사용률', `CPU 사용률이 ${metrics.cpu.toFixed(1)}%에 도달했습니다.`);
+        }
+        if (metrics.memory > 85) {
+          addAlert('warning', '메모리 부족', `메모리 사용률이 ${metrics.memory.toFixed(1)}%입니다.`);
+        }
+        if (metrics.errorRate > 5) {
+          addAlert('warning', '높은 오류율', `오류율이 ${metrics.errorRate.toFixed(1)}%로 증가했습니다.`);
+        }
+      } else {
+        throw new Error(`API 응답 오류: ${response.status}`);
       }
-      if (memory > 85 && prevMetrics.memory <= 85) {
-        addAlert('warning', '메모리 부족', `메모리 사용률이 ${memory.toFixed(1)}%입니다.`);
-      }
-      if (errorRate > 5 && prevMetrics.errorRate <= 5) {
-        addAlert('warning', '높은 오류율', `오류율이 ${errorRate.toFixed(1)}%로 증가했습니다.`);
-      }
-
-      return newMetrics;
-    });
+    } catch (error) {
+      console.error('메트릭 업데이트 오류:', error);
+      addAlert('error', '메트릭 오류', `시스템 메트릭 업데이트 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    }
 
     // 하트비트 업데이트
     setConnectionStatus(prev => ({
       ...prev,
-      lastHeartbeat: new Date().toISOString(),
-      latency: Math.random() * 100 + 10
+      lastHeartbeat: new Date().toISOString()
     }));
   }, [enableMetrics, addAlert]);
 
-  // 랜덤 로그 생성 시뮬레이션
-  const generateRandomLogs = useCallback(() => {
-    const sources = ['httpx-crawler', 'playwright-engine', 'selenium-driver', 'ai-processor', 'data-manager'];
-    const messages = [
-      'HTTP 요청 성공적으로 처리됨',
-      '새로운 데이터 항목 발견',
-      '페이지 로딩 완료',
-      'AI 분석 작업 시작',
-      '데이터베이스 저장 완료',
-      '크롤링 세션 시작',
-      'JavaScript 실행 완료',
-      '이미지 다운로드 완료',
-      '테이블 데이터 추출',
-      'OCR 처리 완료'
-    ];
-
-    if (Math.random() > 0.7) { // 30% 확률로 로그 생성
-      const level = Math.random() > 0.9 ? 'error' : Math.random() > 0.7 ? 'warn' : 'info';
-      const source = sources[Math.floor(Math.random() * sources.length)];
-      const message = messages[Math.floor(Math.random() * messages.length)];
-      
-      addLog(level, message, source);
+  // 실제 WebSocket 메시지 처리
+  const handleRealTimeMessage = useCallback((data: any) => {
+    try {
+      switch (data.type) {
+        case 'log':
+          addLog(data.level || 'info', data.message, data.source || 'system', data.details);
+          break;
+        case 'metrics':
+          setSystemMetrics(data.metrics);
+          break;
+        case 'alert':
+          addAlert(data.alertType || 'info', data.title || '시스템 알림', data.message);
+          break;
+        case 'heartbeat':
+          setConnectionStatus(prev => ({
+            ...prev,
+            lastHeartbeat: new Date().toISOString(),
+            latency: data.latency || 0
+          }));
+          break;
+        default:
+          console.log('알 수 없는 WebSocket 메시지:', data);
+      }
+    } catch (error) {
+      console.error('실시간 메시지 처리 오류:', error);
     }
-  }, [addLog]);
+  }, [addLog, addAlert]);
 
-  // 실시간 업데이트 시작
+  // 실시간 업데이트 시작 (폴백용 정기 업데이트)
   useEffect(() => {
     if (connectionStatus.isConnected) {
+      // WebSocket이 연결된 상태에서도 정기적으로 메트릭 업데이트 (폴백)
       intervalRef.current = setInterval(() => {
         updateMetrics();
-        generateRandomLogs();
       }, updateInterval);
 
       return () => {
@@ -247,8 +283,20 @@ export const useRealTime = (options: UseRealTimeOptions = {}) => {
           clearInterval(intervalRef.current);
         }
       };
+    } else {
+      // 연결이 끊어진 경우 재연결 시도
+      const reconnectTimer = setTimeout(() => {
+        if (connectionStatus.reconnectAttempts < 5) {
+          console.log(`재연결 시도 ${connectionStatus.reconnectAttempts + 1}/5`);
+          connect();
+        } else {
+          addAlert('error', '연결 실패', '최대 재연결 횟수를 초과했습니다. 페이지를 새로고침해주세요.');
+        }
+      }, Math.min(1000 * Math.pow(2, connectionStatus.reconnectAttempts), 30000)); // 지수 백오프
+
+      return () => clearTimeout(reconnectTimer);
     }
-  }, [connectionStatus.isConnected, updateMetrics, generateRandomLogs, updateInterval]);
+  }, [connectionStatus.isConnected, connectionStatus.reconnectAttempts, updateMetrics, updateInterval, connect, addAlert]);
 
   // 컴포넌트 마운트 시 자동 연결
   useEffect(() => {
