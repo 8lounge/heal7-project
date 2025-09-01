@@ -1,0 +1,28 @@
+{
+  "id": "bd15b0ca-650f-4e75-b79d-4f79a81b24e5",
+  "title": "크롤링 데이터 - https://httpbin.org/json",
+  "content": "{\n  \"slideshow\": {\n    \"author\": \"Yours Truly\",\n    \"date\": \"date of publication\",\n    \"slides\": [\n      {\n        \"title\": \"Wake up to WonderWidgets!\",\n        \"type\": \"all\"\n      },\n      {\n        \"items\": [\n          \"Why <em>WonderWidgets</em> are great\",\n          \"Who <em>buys</em> WonderWidgets\"\n        ],\n        \"title\": \"Overview\",\n        \"type\": \"all\"\n      }\n    ],\n    \"title\": \"Sample Slide Show\"\n  }\n}",
+  "url": "https://httpbin.org/json",
+  "source_type": "api_test",
+  "metadata": {
+    "crawler_used": "httpx",
+    "response_time": 2.5419180393218994,
+    "status_code": 200,
+    "html_size": 420,
+    "headers": {},
+    "crawl_timestamp": "2025-08-31T10:20:46.829606"
+  },
+  "ai_processed_data": {
+    "processed": false,
+    "extraction_ready": true,
+    "quality_indicators": {
+      "has_content": true,
+      "response_success": true,
+      "crawler_tier": "httpx"
+    }
+  },
+  "hash_key": "a8e9e792567edc21ba50a1a454ced493",
+  "quality_score": 75.0,
+  "processing_status": "completed",
+  "collected_at": "2025-08-31 10:20:46.830287"
+}

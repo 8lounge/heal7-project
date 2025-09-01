@@ -1,0 +1,13 @@
+{
+  "total_crawled": 3,
+  "by_source": {
+    "api_test": 1,
+    "html_test": 1,
+    "government": 1
+  },
+  "by_crawler": {
+    "httpx": 2,
+    "selenium": 1
+  },
+  "last_updated": "2025-08-31T10:20:56.640460"
+}

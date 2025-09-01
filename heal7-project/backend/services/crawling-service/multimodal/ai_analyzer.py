@@ -89,7 +89,7 @@ class MultimodalAnalyzer:
     def _load_api_keys(self):
         """환경변수에서 API 키 로드"""
         self.api_keys = {
-            'gemini': os.getenv('GEMINI_API_KEY'),
+            'gemini': os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY'),
             'openai': os.getenv('OPENAI_API_KEY'),
             'anthropic': os.getenv('ANTHROPIC_API_KEY')
         }

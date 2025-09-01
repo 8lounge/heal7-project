@@ -117,7 +117,7 @@ export const useRealTimeCrawling = (options: UseRealTimeCrawlingOptions = {}) =>
       if (servicesData.length > 0) {
         setServices(prevServices => {
           // 새로운 서비스가 추가되었거나 상태가 변경된 경우 알림
-          servicesData.forEach(newService => {
+          servicesData.forEach((newService: CrawlingService) => {
             const oldService = prevServices.find(s => s.service_id === newService.service_id);
             
             if (!oldService) {
@@ -132,7 +132,7 @@ export const useRealTimeCrawling = (options: UseRealTimeCrawlingOptions = {}) =>
               addAlert(
                 newService.status === 'error' ? 'error' : 'info',
                 '상태 변경',
-                `${newService.service_name}: ${statusMap[oldService.status]} → ${statusMap[newService.status]}`
+                `${newService.service_name}: ${statusMap[oldService.status as keyof typeof statusMap]} → ${statusMap[newService.status as keyof typeof statusMap]}`
               );
             }
           });
@@ -174,7 +174,7 @@ export const useRealTimeCrawling = (options: UseRealTimeCrawlingOptions = {}) =>
   const connectWebSocket = useCallback(() => {
     crawlingAPI.connectWebSocket(
       // onMessage
-      (message) => {
+      (message: any) => {
         console.log('📡 WebSocket 메시지:', message);
         
         switch (message.type) {
@@ -208,7 +208,7 @@ export const useRealTimeCrawling = (options: UseRealTimeCrawlingOptions = {}) =>
         setConnectionStatus(prev => ({ ...prev, isConnected: false }));
       },
       // onError
-      (error) => {
+      (error: any) => {
         console.error('❌ WebSocket 오류:', error);
         addAlert('error', 'WebSocket 오류', '실시간 연결에 문제가 발생했습니다.');
       }
