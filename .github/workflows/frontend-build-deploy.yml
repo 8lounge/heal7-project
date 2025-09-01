@@ -33,17 +33,12 @@ jobs:
         cd heal7-project/frontend
         pnpm install
     
-    - name: Build shared package
-      run: |
-        cd heal7-project/frontend
-        pnpm --filter @heal7/shared build
-        
-    - name: Build saju-app
+    - name: Build saju-app (skip shared dependency)
       run: |
         cd heal7-project/frontend
         pnpm --filter @heal7/saju-app exec vite build --mode production
     
-    - name: Build crawling-app
+    - name: Build crawling-app (skip shared dependency)
       run: |
         cd heal7-project/frontend
         pnpm --filter @heal7/crawling-app exec vite build --mode production
