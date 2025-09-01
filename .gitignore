@@ -76,6 +76,7 @@ logs/
 # 아카이브 및 백업
 archive/
 backups/
+.backup/
 *.tar.gz
 *.zip
 *.bak
