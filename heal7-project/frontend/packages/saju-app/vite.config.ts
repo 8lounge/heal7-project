@@ -27,6 +27,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
+      '/api/auth': 'http://127.0.0.1:8002',
       '/api/saju': 'http://127.0.0.1:8002',
       '/api': 'http://127.0.0.1:8005'
     }

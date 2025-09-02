@@ -66,6 +66,15 @@ from datetime import datetime, timedelta
 # 메인 백엔드의 사주 서비스 로직 추가
 sys.path.append(str(Path(__file__).parent.parent / "app"))
 
+# 인증 라우터 추가
+try:
+    from auth import router as auth_router
+    app.include_router(auth_router)
+    print("✅ Auth router successfully included")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import auth router: {e}")
+    # 인증 기능이 없어도 다른 기능은 동작하도록 함
+
 try:
     from services_new.saju_service import SajuService, BirthInfo, SajuResult as SajuServiceResult, Gender
 except ImportError:

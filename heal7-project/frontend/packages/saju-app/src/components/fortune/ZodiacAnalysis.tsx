@@ -20,26 +20,40 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   id, alt, className = '', sizes, loading = 'lazy', isActive = false, onClick 
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [imageSrc, setImageSrc] = useState(`/zodiac-images/${id}.webp`);
+
+  // id prop이 변경될 때 상태 초기화
+  useEffect(() => {
+    setIsLoaded(false);
+    setImageSrc(`/zodiac-images/${id}.webp`);
+  }, [id]);
 
   const handleImageLoad = () => {
     setIsLoaded(true);
   };
 
+  const handleImageError = () => {
+    // WebP 실패 시 PNG로 폴백
+    if (imageSrc.includes('.webp')) {
+      setImageSrc(`/zodiac-images/${id}.png`);
+    } else {
+      console.error(`Failed to load both WebP and PNG images for: ${id}`);
+    }
+  };
+
   return (
     <div className={`relative overflow-hidden ${className}`} onClick={onClick}>
       <motion.img
-        src={`/zodiac-images/${id}.png`}
+        src={imageSrc}
         alt={alt}
         loading={loading}
-        className={`w-full h-full object-contain transition-all duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
+        className={`w-full h-full object-contain transition-all duration-500 ${
+          isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
         } ${
-          isActive ? 'scale-105 brightness-110 saturate-110' : ''
+          isActive ? 'brightness-110 saturate-110' : ''
         }`}
         onLoad={handleImageLoad}
-        onError={(e) => {
-          console.error(`Failed to load image: /zodiac-images/${id}.png`);
-        }}
+        onError={handleImageError}
         whileHover={isActive ? { 
           scale: 1.08,
           rotate: [0, -1, 1, 0],
@@ -318,28 +332,21 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                 />
               )}
               <div className="text-center">
-                {/* 선택된 띠만 이미지, 나머지는 이모지로 최적화 */}
+                {/* 선택 그리드는 항상 이모지 아이콘으로 표시 */}
                 <div className="mb-2">
-                  {selectedZodiac?.id === zodiac.id ? (
-                    <OptimizedImage
-                      id={zodiac.id}
-                      alt={zodiac.name}
-                      className="w-12 h-16 mx-auto rounded-md shadow-lg border border-white/20"
-                      loading="eager"
-                      isActive={true}
-                    />
-                  ) : (
-                    <motion.div 
-                      className="text-4xl"
-                      animate={hoveredZodiac === zodiac.id ? {
-                        scale: [1, 1.2, 1],
-                        rotate: [0, -10, 10, 0]
-                      } : {}}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {zodiac.emoji}
-                    </motion.div>
-                  )}
+                  <motion.div 
+                    className="text-4xl"
+                    animate={hoveredZodiac === zodiac.id ? {
+                      scale: [1, 1.2, 1],
+                      rotate: [0, -10, 10, 0]
+                    } : selectedZodiac?.id === zodiac.id ? {
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    } : {}}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {zodiac.emoji}
+                  </motion.div>
                 </div>
                 <h3 className="text-white font-medium text-sm">{zodiac.name}</h3>
                 <p className="text-white/60 text-xs mt-1">{zodiac.chineseName}</p>
@@ -391,10 +398,50 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* 좌측 - 띠 결과 이미지/설명 */}
               <div className="lg:col-span-1">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center h-full flex flex-col justify-center">
+                <motion.div 
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center h-full flex flex-col justify-center"
+                  initial={{ 
+                    opacity: 0, 
+                    scale: 0.8, 
+                    rotateY: -90 
+                  }}
+                  animate={{ 
+                    opacity: 1, 
+                    scale: 1, 
+                    rotateY: 0 
+                  }}
+                  transition={{ 
+                    duration: 0.8, 
+                    delay: 0.2,
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 15
+                  }}
+                  style={{ perspective: 1000 }}
+                >
                   {/* 메인 이미지 */}
-                  <div className="mb-6">
+                  <motion.div 
+                    className="mb-6"
+                    initial={{ 
+                      opacity: 0, 
+                      scale: 0.5, 
+                      rotate: -180 
+                    }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1, 
+                      rotate: 0 
+                    }}
+                    transition={{ 
+                      duration: 1.2, 
+                      delay: 0.5,
+                      type: "spring",
+                      stiffness: 80,
+                      damping: 12
+                    }}
+                  >
                     <OptimizedImage
+                      key={`zodiac-image-${selectedZodiac.id}`}
                       id={selectedZodiac.id}
                       alt={selectedZodiac.name}
                       className="w-32 h-48 md:w-40 md:h-60 lg:w-48 lg:h-72 mx-auto rounded-lg shadow-lg"
@@ -402,35 +449,60 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                       loading="eager"
                       isActive={true}
                     />
-                  </div>
+                  </motion.div>
                   
                   {/* 띠 정보 */}
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-bold text-white">
+                  <motion.div 
+                    className="space-y-3"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                  >
+                    <motion.h3 
+                      className="text-2xl font-bold text-white"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: 0.9 }}
+                    >
                       {selectedZodiac.name}
-                    </h3>
-                    <p className="text-white/70 text-lg">
+                    </motion.h3>
+                    <motion.p 
+                      className="text-white/70 text-lg"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.4, delay: 1.0 }}
+                    >
                       {selectedZodiac.chineseName}
-                    </p>
+                    </motion.p>
                     
                     {/* 기본 속성 */}
-                    <div className="space-y-2">
+                    <motion.div 
+                      className="space-y-2"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 1.1 }}
+                    >
                       <div className="bg-purple-500/20 text-purple-300 px-3 py-2 rounded-lg text-sm">
                         <span className="font-medium">오행:</span> {selectedZodiac.element}
                       </div>
                       <div className="bg-blue-500/20 text-blue-300 px-3 py-2 rounded-lg text-sm">
                         <span className="font-medium">최근 해:</span> {getMostRecentZodiacYear(selectedZodiac.id)}년
                       </div>
-                    </div>
+                    </motion.div>
                     
                     {/* 대표 특징 */}
-                    <div className="mt-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
+                    <motion.div 
+                      className="mt-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: 1.2 }}
+                    >
                       <p className="text-yellow-200 text-sm font-medium">
                         "{selectedZodiac.characteristics[0]}"
                       </p>
-                    </div>
-                  </div>
-                </div>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
               </div>
 
               {/* 우측 - 정보 섹터들 */}

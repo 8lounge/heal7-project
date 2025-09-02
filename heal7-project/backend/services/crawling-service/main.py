@@ -1006,12 +1006,12 @@ async def websocket_endpoint(websocket: WebSocket):
         # 초기 데이터 전송
         await websocket.send_text(json.dumps({
             "type": "real_time_update",
-            "services": list(services_data.values()),
+            "services": [service.dict() for service in services_data.values()],
             "stats": {
-                "total_collected": sum(s["collected_count"] for s in services_data.values()),
-                "avg_success_rate": sum(s["success_rate"] for s in services_data.values()) / len(services_data) if services_data else 0,
-                "avg_response_time": sum(s["avg_response_time"] for s in services_data.values()) / len(services_data) if services_data else 0,
-                "data_quality": sum(s["data_quality_score"] for s in services_data.values()) / len(services_data) if services_data else 0
+                "total_collected": sum(s.collected_count for s in services_data.values()),
+                "avg_success_rate": sum(s.success_rate for s in services_data.values()) / len(services_data) if services_data else 0,
+                "avg_response_time": sum(s.avg_response_time for s in services_data.values()) / len(services_data) if services_data else 0,
+                "data_quality": sum(s.data_quality_score for s in services_data.values()) / len(services_data) if services_data else 0
             }
         }))
         

@@ -1,12 +1,16 @@
-import { useState, useEffect, Suspense, lazy, useMemo } from 'react'
+import { useState, useEffect, Suspense, lazy, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 
+// 라우팅 관련 imports
+import { getPageIdFromPath } from './config/routeConfig'
+
 // 컴포넌트 imports
 import Header from './components/layout/Header'
 import Navigation from './components/layout/Navigation'
+import RouteAwareNavigation from './components/routing/RouteAwareNavigation'
 import EnhancedDashboard from './components/dashboard/EnhancedDashboard'
 // EnhancedDashboard moved to cube-module-app
 import SajuCalculator from './components/fortune/SajuCalculator'
@@ -54,6 +58,9 @@ function App() {
   const [currentBgImage, setCurrentBgImage] = useState(0)
   const [adminAuthenticated, setAdminAuthenticated] = useState(false)
   
+  // 🚀 하이브리드 라우팅 모드 (테스트용 - 나중에 사용자 설정으로 변경 가능)
+  const [useHybridNavigation] = useState(true)
+  
   // 성능 최적화: 디바이스 성능 감지
   const performanceLevel = useMemo(() => {
     const memory = (navigator as any).deviceMemory || 4
@@ -72,9 +79,24 @@ function App() {
   // 배터리 절약 모드 감지
   const [batteryOptimized, setBatteryOptimized] = useState(false)
   
-  // URL 기반 라우팅 초기화
+  // 🔄 개선된 URL 기반 라우팅 초기화 (config 활용)
   useEffect(() => {
     const path = window.location.pathname
+    
+    // 새로운 방식: 설정 기반 매핑 (우선순위)
+    try {
+      const pageId = getPageIdFromPath(path)
+      
+      if (pageId) {
+        setCurrentPage(pageId)
+        return
+      }
+    } catch (error) {
+      // 설정 로딩 실패 시 기존 방식 폴백
+      console.warn('Route config loading failed, using fallback:', error)
+    }
+    
+    // 기존 방식 폴백 (하위 호환성)
     if (path === '/admin') {
       setCurrentPage('admin')
     } else if (path === '/saju' || path.startsWith('/saju/')) {
@@ -97,6 +119,31 @@ function App() {
       setCurrentPage('calendar')
     }
   }, [])
+  
+  // 🌐 하이브리드 모드용 URL 변경 핸들러
+  const handleUrlChange = useCallback((path: string) => {
+    if (useHybridNavigation) {
+      // 브라우저 히스토리에 추가 (뒤로가기 지원)
+      window.history.pushState(null, '', path)
+    }
+  }, [useHybridNavigation])
+  
+  // 🔄 브라우저 뒤로가기/앞으로가기 지원
+  useEffect(() => {
+    if (!useHybridNavigation) return
+    
+    const handlePopState = () => {
+      const path = window.location.pathname
+      const pageId = getPageIdFromPath(path)
+      
+      if (pageId && pageId !== currentPage) {
+        setCurrentPage(pageId)
+      }
+    }
+    
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [currentPage, useHybridNavigation])
 
   // 배경 이미지 자동 페이드 전환 (30초 간격)
   useEffect(() => {
@@ -228,12 +275,22 @@ function App() {
           onPageChange={setCurrentPage}
         />
 
-        {/* 네비게이션 */}
-        <Navigation 
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          viewMode={viewMode}
-        />
+        {/* 네비게이션 - 하이브리드 모드 */}
+        {useHybridNavigation ? (
+          <RouteAwareNavigation
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            viewMode={viewMode}
+            routingMode="router_hybrid"
+            onUrlChange={handleUrlChange}
+          />
+        ) : (
+          <Navigation 
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            viewMode={viewMode}
+          />
+        )}
 
         {/* 메인 콘텐츠 영역 */}
         <main className="container mx-auto px-4 py-8">

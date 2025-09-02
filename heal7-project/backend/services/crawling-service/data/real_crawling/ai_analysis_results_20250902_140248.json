@@ -1,0 +1,96 @@
+{
+  "processed_files": 3,
+  "successful_analyses": 3,
+  "failed_analyses": 0,
+  "analyses": [
+    {
+      "source_file": "real_html_test_example.com_20250831_102049.json",
+      "original_url": "https://example.com",
+      "crawled_at": "2025-08-31T10:20:49.251065",
+      "ai_analysis": {
+        "success": true,
+        "model": "gpt-3.5-turbo",
+        "analysis": {
+          "title": "Example Domain",
+          "summary": "This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission.",
+          "category": "General Information",
+          "keywords": [
+            "Example Domain",
+            "illustrative examples",
+            "literature"
+          ],
+          "sentiment": "neutral",
+          "importance_score": 0.8,
+          "extracted_info": {
+            "dates": [],
+            "amounts": [],
+            "organizations": []
+          }
+        },
+        "tokens_used": 680,
+        "cost_estimate": 0.00136
+      },
+      "processed_at": "2025-09-02T14:02:38.702551"
+    },
+    {
+      "source_file": "real_api_test_httpbin.org_json_20250831_102046.json",
+      "original_url": "https://httpbin.org/json",
+      "crawled_at": "2025-08-31T10:20:46.829606",
+      "ai_analysis": {
+        "success": true,
+        "model": "gpt-3.5-turbo",
+        "analysis": {
+          "title": "Sample Slide Show",
+          "summary": "This is a sample slide show with information about WonderWidgets.",
+          "category": "General Information",
+          "keywords": [
+            "WonderWidgets",
+            "Sample Slide Show",
+            "Yours Truly"
+          ],
+          "sentiment": "neutral",
+          "importance_score": 0.8,
+          "extracted_info": {
+            "dates": [
+              "date of publication"
+            ],
+            "amounts": [],
+            "organizations": []
+          }
+        },
+        "tokens_used": 434,
+        "cost_estimate": 0.000868
+      },
+      "processed_at": "2025-09-02T14:02:42.304883"
+    },
+    {
+      "source_file": "real_government_www.bizinfo.go.kr_20250831_102056.json",
+      "original_url": "https://www.bizinfo.go.kr",
+      "crawled_at": "2025-08-31T10:20:56.637673",
+      "ai_analysis": {
+        "success": true,
+        "model": "gpt-3.5-turbo",
+        "analysis": {
+          "title": "기업마당",
+          "summary": "중소기업 성공 길잡이 기업마당",
+          "category": "정부지원사업",
+          "keywords": [
+            "중소기업",
+            "성공",
+            "길잡이"
+          ],
+          "sentiment": "neutral",
+          "importance_score": 0.8,
+          "extracted_info": {
+            "dates": [],
+            "amounts": [],
+            "organizations": []
+          }
+        },
+        "tokens_used": 881,
+        "cost_estimate": 0.0017620000000000001
+      },
+      "processed_at": "2025-09-02T14:02:46.051998"
+    }
+  ]
+}

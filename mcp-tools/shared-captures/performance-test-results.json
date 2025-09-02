@@ -1,0 +1,94 @@
+{
+  "summary": {
+    "totalTests": 4,
+    "successfulTests": 4,
+    "averageLoadTime": 1128.25,
+    "testDate": "2025-09-02T14:19:05.036Z"
+  },
+  "results": [
+    {
+      "page": "Dashboard",
+      "path": "/",
+      "critical": true,
+      "totalTime": 1202,
+      "metrics": {
+        "domContentLoaded": 0.10000000149011612,
+        "loadComplete": 0,
+        "firstPaint": 0,
+        "firstContentfulPaint": 0,
+        "resourceCount": 61,
+        "memoryUsage": {
+          "used": 37300000,
+          "total": 39600000,
+          "limit": 1070000000
+        }
+      },
+      "interactive": true,
+      "imageLoadRate": 100,
+      "status": "success"
+    },
+    {
+      "page": "Saju Calculator",
+      "path": "/saju",
+      "critical": true,
+      "totalTime": 1149,
+      "metrics": {
+        "domContentLoaded": 0,
+        "loadComplete": 0,
+        "firstPaint": 684,
+        "firstContentfulPaint": 684,
+        "resourceCount": 61,
+        "memoryUsage": {
+          "used": 37300000,
+          "total": 39600000,
+          "limit": 1070000000
+        }
+      },
+      "interactive": true,
+      "imageLoadRate": 100,
+      "status": "success"
+    },
+    {
+      "page": "Tarot Reader",
+      "path": "/tarot",
+      "critical": false,
+      "totalTime": 1102,
+      "metrics": {
+        "domContentLoaded": 0,
+        "loadComplete": 0,
+        "firstPaint": 584,
+        "firstContentfulPaint": 584,
+        "resourceCount": 61,
+        "memoryUsage": {
+          "used": 37300000,
+          "total": 39600000,
+          "limit": 1070000000
+        }
+      },
+      "interactive": true,
+      "imageLoadRate": 100,
+      "status": "success"
+    },
+    {
+      "page": "Zodiac Analysis",
+      "path": "/zodiac",
+      "critical": false,
+      "totalTime": 1060,
+      "metrics": {
+        "domContentLoaded": 0,
+        "loadComplete": 0,
+        "firstPaint": 596,
+        "firstContentfulPaint": 596,
+        "resourceCount": 61,
+        "memoryUsage": {
+          "used": 37300000,
+          "total": 39600000,
+          "limit": 1070000000
+        }
+      },
+      "interactive": true,
+      "imageLoadRate": 100,
+      "status": "success"
+    }
+  ]
+}
