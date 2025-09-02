@@ -23,6 +23,7 @@ import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
 import IntegratedAdminDashboard from './components/admin/IntegratedAdminDashboard'
+import AdminLogin from './components/admin/AdminLogin'
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
 
@@ -51,6 +52,7 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('basic')
   const [currentPage, setCurrentPage] = useState<CurrentPage>('dashboard')
   const [currentBgImage, setCurrentBgImage] = useState(0)
+  const [adminAuthenticated, setAdminAuthenticated] = useState(false)
   
   // 성능 최적화: 디바이스 성능 감지
   const performanceLevel = useMemo(() => {
@@ -70,6 +72,32 @@ function App() {
   // 배터리 절약 모드 감지
   const [batteryOptimized, setBatteryOptimized] = useState(false)
   
+  // URL 기반 라우팅 초기화
+  useEffect(() => {
+    const path = window.location.pathname
+    if (path === '/admin') {
+      setCurrentPage('admin')
+    } else if (path === '/saju' || path.startsWith('/saju/')) {
+      setCurrentPage('saju')
+    } else if (path === '/tarot' || path.startsWith('/tarot/')) {
+      setCurrentPage('tarot')
+    } else if (path === '/magazine' || path.startsWith('/magazine/')) {
+      setCurrentPage('magazine')
+    } else if (path === '/consultation' || path.startsWith('/consultation/')) {
+      setCurrentPage('consultation')
+    } else if (path === '/store' || path.startsWith('/store/')) {
+      setCurrentPage('store')
+    } else if (path === '/notices' || path.startsWith('/notices/')) {
+      setCurrentPage('notices')
+    } else if (path === '/fortune' || path.startsWith('/fortune/')) {
+      setCurrentPage('fortune')
+    } else if (path === '/dream' || path.startsWith('/dream/')) {
+      setCurrentPage('dream')
+    } else if (path === '/calendar' || path.startsWith('/calendar/')) {
+      setCurrentPage('calendar')
+    }
+  }, [])
+
   // 배경 이미지 자동 페이드 전환 (30초 간격)
   useEffect(() => {
     const bgTimer = setInterval(() => {
@@ -286,7 +314,11 @@ function App() {
                 <FortuneCalendar viewMode={viewMode} />
               )}
               {currentPage === 'admin' && (
-                <IntegratedAdminDashboard />
+                adminAuthenticated ? (
+                  <IntegratedAdminDashboard />
+                ) : (
+                  <AdminLogin onAuthenticated={() => setAdminAuthenticated(true)} />
+                )
               )}
             </motion.div>
           </AnimatePresence>
