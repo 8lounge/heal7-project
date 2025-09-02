@@ -271,6 +271,16 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               >
                 👤 프로필
               </button>
+              <button 
+                onClick={() => onPageChange?.('admin')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
+                  currentPage === 'admin' 
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
+                    : 'bg-white/10 text-white/80 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/20'
+                }`}
+              >
+                ⚙️ 관리자
+              </button>
             </nav>
             
             {/* 스크롤 인디케이터 */}

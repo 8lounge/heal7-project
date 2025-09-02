@@ -19,28 +19,15 @@ interface OptimizedImageProps {
 const OptimizedImage: React.FC<OptimizedImageProps> = ({ 
   id, alt, className = '', sizes, loading = 'lazy', isActive = false, onClick 
 }) => {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [imageError, setImageError] = useState({ avif: false, webp: false });
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleImageLoad = () => {
     setIsLoaded(true);
   };
 
-  const handleImageError = (format: 'avif' | 'webp') => {
-    setImageError(prev => ({ ...prev, [format]: true }));
-  };
-
-  const getImageSrc = () => {
-    if (!imageError.avif) return `/zodiac-images/${id}.avif`;
-    if (!imageError.webp) return `/zodiac-images/${id}.webp`;
-    return `/zodiac-images/${id}.png`;
-  };
-
   return (
     <div className={`relative overflow-hidden ${className}`} onClick={onClick}>
       <motion.img
-        ref={imgRef}
         src={`/zodiac-images/${id}.png`}
         alt={alt}
         loading={loading}
@@ -53,21 +40,20 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         onError={(e) => {
           console.error(`Failed to load image: /zodiac-images/${id}.png`);
         }}
-          whileHover={isActive ? { 
-            scale: 1.08,
-            rotate: [0, -1, 1, 0],
-            transition: { duration: 0.3 }
-          } : {}}
-          animate={isActive ? {
-            filter: ['brightness(1)', 'brightness(1.1)', 'brightness(1)'],
-            transition: { 
-              duration: 2,
-              repeat: Infinity,
-              repeatType: 'reverse'
-            }
-          } : {}}
-        />
-      </picture>
+        whileHover={isActive ? { 
+          scale: 1.08,
+          rotate: [0, -1, 1, 0],
+          transition: { duration: 0.3 }
+        } : {}}
+        animate={isActive ? {
+          filter: ['brightness(1)', 'brightness(1.1)', 'brightness(1)'],
+          transition: { 
+            duration: 2,
+            repeat: Infinity,
+            repeatType: 'reverse'
+          }
+        } : {}}
+      />
       
       {/* 로딩 스피너 */}
       {!isLoaded && (
@@ -300,13 +286,6 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                 transition: { duration: 0.3 }
               }}
               whileTap={{ scale: 0.95 }}
-              animate={selectedZodiac?.id === zodiac.id ? {
-                boxShadow: [
-                  '0 0 20px rgba(147, 51, 234, 0.3)',
-                  '0 0 30px rgba(147, 51, 234, 0.5)',
-                  '0 0 20px rgba(147, 51, 234, 0.3)'
-                ]
-              } : {}}
             >
               {/* 선택된 카드 배경 글로우 효과 */}
               {selectedZodiac?.id === zodiac.id && (
