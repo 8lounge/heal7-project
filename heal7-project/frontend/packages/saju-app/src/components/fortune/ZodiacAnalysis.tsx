@@ -39,33 +39,20 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   return (
     <div className={`relative overflow-hidden ${className}`} onClick={onClick}>
-      <picture>
-        <source 
-          srcSet={`/zodiac-images/${id}.avif`}
-          type="image/avif"
-          sizes={sizes}
-        />
-        <source 
-          srcSet={`/zodiac-images/${id}.webp`}
-          type="image/webp" 
-          sizes={sizes}
-        />
-        <motion.img
-          ref={imgRef}
-          src={getImageSrc()}
-          alt={alt}
-          loading={loading}
-          className={`w-full h-full object-contain transition-all duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${
-            isActive ? 'scale-105 brightness-110 saturate-110' : ''
-          }`}
-          onLoad={handleImageLoad}
-          onError={(e) => {
-            const src = (e.target as HTMLImageElement).src;
-            if (src.endsWith('.avif')) handleImageError('avif');
-            else if (src.endsWith('.webp')) handleImageError('webp');
-          }}
+      <motion.img
+        ref={imgRef}
+        src={`/zodiac-images/${id}.png`}
+        alt={alt}
+        loading={loading}
+        className={`w-full h-full object-contain transition-all duration-300 ${
+          isLoaded ? 'opacity-100' : 'opacity-0'
+        } ${
+          isActive ? 'scale-105 brightness-110 saturate-110' : ''
+        }`}
+        onLoad={handleImageLoad}
+        onError={(e) => {
+          console.error(`Failed to load image: /zodiac-images/${id}.png`);
+        }}
           whileHover={isActive ? { 
             scale: 1.08,
             rotate: [0, -1, 1, 0],

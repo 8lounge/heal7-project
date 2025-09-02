@@ -193,8 +193,7 @@ export const mbtiFortuneData: Record<string, MBTIFortune> = {
     luckyNumber: 3,
     advice: '완벽을 추구하되 작은 실수에 너무 얽매이지 마세요',
     mood: '집중력 MAX 상태 💪'
-  },
-  // ... 다른 MBTI 타입들도 추가 가능
+  }
 }
 
 // 업적 배지 시스템

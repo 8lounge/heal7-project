@@ -7,6 +7,7 @@ import { OrbitControls } from '@react-three/drei'
 // 컴포넌트 imports
 import Header from './components/layout/Header'
 import Navigation from './components/layout/Navigation'
+import EnhancedDashboard from './components/dashboard/EnhancedDashboard'
 // EnhancedDashboard moved to cube-module-app
 import SajuCalculator from './components/fortune/SajuCalculator'
 import InteractiveTarotReader from './components/fortune/InteractiveTarotReader'
@@ -21,7 +22,7 @@ import ZodiacAnalysis from './components/fortune/ZodiacAnalysis'
 import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
-// IntegratedAdminDashboard moved to admin-app
+import IntegratedAdminDashboard from './components/admin/IntegratedAdminDashboard'
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
 
@@ -37,8 +38,8 @@ interface ApiHealth {
 }
 
 type ViewMode = 'basic' | 'cyber_fantasy'
-type CurrentPage = 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
-                  'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'dream' | 'calendar' | 'subscription'
+type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
+                  'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
 // 전체 배경 이미지 배열
 const backgroundImages = [
@@ -48,7 +49,7 @@ const backgroundImages = [
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('basic')
-  const [currentPage, setCurrentPage] = useState<CurrentPage>('saju')
+  const [currentPage, setCurrentPage] = useState<CurrentPage>('dashboard')
   const [currentBgImage, setCurrentBgImage] = useState(0)
   
   // 성능 최적화: 디바이스 성능 감지
@@ -216,6 +217,9 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
+              {currentPage === 'dashboard' && (
+                <EnhancedDashboard viewMode={viewMode} />
+              )}
               {currentPage === 'saju' && (
                 <SajuCalculator viewMode={viewMode} />
               )}
@@ -280,6 +284,9 @@ function App() {
               )}
               {currentPage === 'calendar' && (
                 <FortuneCalendar viewMode={viewMode} />
+              )}
+              {currentPage === 'admin' && (
+                <IntegratedAdminDashboard />
               )}
             </motion.div>
           </AnimatePresence>

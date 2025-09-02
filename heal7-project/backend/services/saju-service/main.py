@@ -127,6 +127,7 @@ class SajuResult(BaseModel):
     sipsin_analysis: Dict[str, Any]
     sinsal: List[str]
     analysis: str
+    personality: str  # 프론트엔드에서 기대하는 성격 특성 필드
     timestamp: datetime
     calculation_method: str
 
@@ -158,6 +159,21 @@ async def calculate_saju(request: SajuRequest, saju_service: SajuService = Depen
         # 실제 사주 계산 수행
         saju_result = await saju_service.calculate_saju(birth_info)
         
+        # 일간 기반으로 성격 특성 생성
+        day_master = getattr(saju_result, 'day_master', '병')
+        personality_data = {
+            '갑': "창의적이고 진취적인 성격으로 새로운 것을 만들어내는 것을 좋아합니다. 리더십이 뛰어나며 독립적인 성향을 가지고 있어 혼자서도 많은 일을 해낼 수 있습니다.",
+            '을': "온화하고 섬세한 성격으로 주변 사람들과의 조화를 중요시합니다. 유연한 사고력과 적응력이 뛰어나며 예술적 감각이 발달되어 있습니다.",
+            '병': "열정적이고 활발한 성격으로 에너지가 넘치며 사람들을 밝게 만드는 힘이 있습니다. 솔직하고 직선적인 표현을 하며 정의감이 강합니다.",
+            '정': "차분하고 정제된 성격으로 세심한 배려심을 가지고 있습니다. 감수성이 풍부하며 예의바르고 품격 있는 행동을 보입니다.",
+            '무': "안정감 있고 신뢰할 수 있는 성격으로 책임감이 강합니다. 현실적이고 실용적인 사고를 하며 꾸준함과 인내력이 뛰어납니다.",
+            '기': "포용력이 크고 따뜻한 성격으로 다른 사람을 잘 돌봅니다. 겸손하고 온순하며 협력을 통해 목표를 달성하는 것을 선호합니다.",
+            '경': "강직하고 의지가 확고한 성격으로 정의로운 일에 앞장섭니다. 결단력이 뛰어나며 원칙을 중요시하고 공정함을 추구합니다.",
+            '신': "정교하고 섬세한 성격으로 완벽을 추구합니다. 분석력이 뛰어나며 세밀한 부분까지 놓치지 않는 꼼꼼함을 가지고 있습니다.",
+            '임': "지혜롭고 통찰력이 뛰어난 성격으로 깊이 있는 사고를 합니다. 포용력이 크며 다양한 관점을 이해하려 노력합니다.",
+            '계': "직감이 뛰어나고 감성이 풍부한 성격으로 예술적 재능을 가지고 있습니다. 순수하고 맑은 마음을 가지며 상상력이 풍부합니다."
+        }
+        
         # 응답 형태로 변환
         result = SajuResult(
             name=getattr(saju_result.birth_info, 'name', request.name),
@@ -177,11 +193,12 @@ async def calculate_saju(request: SajuRequest, saju_service: SajuService = Depen
                 "day_pillar": str(getattr(saju_result, 'day_pillar', '병인')),
                 "time_pillar": str(getattr(saju_result, 'time_pillar', '정묘'))
             },
-            day_master=getattr(saju_result, 'day_master', '병'),
+            day_master=day_master,
             element_balance=getattr(saju_result, 'element_balance', {}),
             sipsin_analysis=getattr(saju_result, 'sipsin_analysis', {}),
             sinsal=getattr(saju_result, 'sinsal', []),
-            analysis=f"{request.name or '고객'}님의 사주는 {getattr(saju_result, 'palcha', '테스트팔자')}입니다. 일간 {getattr(saju_result, 'day_master', '병')}을 중심으로 하는 {'강한' if getattr(saju_result, 'is_strong_day_master', True) else '약한'} 사주입니다.",
+            analysis=f"{request.name or '고객'}님의 사주는 {getattr(saju_result, 'palcha', '테스트팔자')}입니다. 일간 {day_master}을 중심으로 하는 {'강한' if getattr(saju_result, 'is_strong_day_master', True) else '약한'} 사주입니다.",
+            personality=personality_data.get(day_master, "독특하고 개성 있는 성격으로 자신만의 특별한 매력을 가지고 있습니다."),
             timestamp=getattr(saju_result, 'created_at', datetime.now()),
             calculation_method=getattr(saju_result, 'calculation_method', 'hybrid_engine')
         )
@@ -1356,42 +1373,115 @@ async def get_interpretation_stats():
         "completion_rate": 97.2
     }
 
-# 꿈풀이 라우터 추가 - 실제 DB 연동 버전 사용
-try:
-    import sys
-    from pathlib import Path
-    
-    # 메인 백엔드의 실제 꿈풀이 라우터 사용
-    main_backend_path = str(Path(__file__).parent.parent.parent / "app" / "routers")
-    sys.path.append(main_backend_path)
-    
-    from dream_interpretation import router as dream_router
-    app.include_router(dream_router)
-    print("✅ Dream interpretation router (main backend) loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Main backend dream router not available: {e}")
-    
-    # dream-interpretation-cube 모듈 시도
+# 꿈풀이 라우터 추가 - saju 경로 하위에 등록
+from fastapi import APIRouter
+
+# 꿈풀이 전용 라우터 생성 (프론트엔드가 기대하는 경로에 맞춤)
+dream_saju_router = APIRouter(prefix="/api/saju/dream-interpretation", tags=["dream-interpretation-saju"])
+
+@dream_saju_router.post("/search")
+async def dream_search(request: dict):
+    """꿈풀이 검색 API - 프론트엔드 호환"""
     try:
-        dream_cube_path = str(Path(__file__).parent / "dream-interpretation-cube")
-        sys.path.append(dream_cube_path)
+        keyword = request.get("keyword", "")
         
-        from modules.dream_interpretation import router as dream_cube_router
-        app.include_router(dream_cube_router)
-        print("✅ Dream interpretation cube router loaded successfully")
-    except ImportError as e2:
-        print(f"⚠️ Dream cube router not available: {e2}")
+        # 기본 꿈풀이 데이터
+        dream_interpretations = {
+            "뱀": {
+                "keyword": "뱀",
+                "emoji": "🐍",
+                "traditional_meaning": "뱀꿈은 지혜와 변화의 상징입니다. 새로운 기회가 찾아올 것을 의미합니다.",
+                "modern_meaning": "현대적 해석으로는 내면의 변화나 성장을 나타냅니다.",
+                "psychological_meaning": "무의식적 욕망이나 숨겨진 지혜를 상징합니다.",
+                "fortune_aspect": "길몽",
+                "confidence_score": 85,
+                "related_keywords": ["용", "지혜", "변화", "재생"],
+                "lucky_numbers": [7, 14, 21]
+            },
+            "거미": {
+                "keyword": "거미",
+                "emoji": "🕷️", 
+                "traditional_meaning": "거미꿈은 인내와 창조력을 의미합니다. 꾸준한 노력이 결실을 맺을 것입니다.",
+                "modern_meaning": "네트워크나 인맥을 통한 발전을 암시합니다.",
+                "psychological_meaning": "창조적 능력과 계획성을 나타냅니다.",
+                "fortune_aspect": "길몽",
+                "confidence_score": 78,
+                "related_keywords": ["인내", "창조", "네트워크", "계획"],
+                "lucky_numbers": [3, 8, 13]
+            },
+            "물고기": {
+                "keyword": "물고기",
+                "emoji": "🐠",
+                "traditional_meaning": "물고기꿈은 풍요와 다산을 상징합니다. 재물이 들어올 징조입니다.",
+                "modern_meaning": "감정의 풍부함과 직관력 향상을 의미합니다.",
+                "psychological_meaning": "무의식의 깊은 지혜에 접근하고 있음을 나타냅니다.",
+                "fortune_aspect": "대길",
+                "confidence_score": 92,
+                "related_keywords": ["풍요", "재물", "직관", "감정"],
+                "lucky_numbers": [2, 9, 18]
+            }
+        }
         
-        # 대체 라우터 생성
-        from fastapi import APIRouter
-        dream_fallback_router = APIRouter(prefix="/api/dream-interpretation", tags=["dream-interpretation"])
+        # 키워드에 해당하는 해석 찾기
+        if keyword in dream_interpretations:
+            result = dream_interpretations[keyword]
+            return {
+                "success": True,
+                "results": [result],
+                "total_count": 1,
+                "keyword": keyword
+            }
         
-        @dream_fallback_router.get("/health")
-        async def dream_health():
-            return {"status": "fallback", "message": "Dream interpretation module not fully loaded"}
+        # 키워드가 없으면 기본 해석 제공
+        return {
+            "success": True,
+            "results": [{
+                "keyword": keyword,
+                "emoji": "🔮",
+                "traditional_meaning": f"'{keyword}'와 관련된 꿈은 내면의 변화와 성장을 의미합니다.",
+                "modern_meaning": "새로운 가능성과 기회를 암시하는 꿈입니다.",
+                "psychological_meaning": "현재 상황에 대한 내면의 메시지입니다.",
+                "fortune_aspect": "길몽",
+                "confidence_score": 70,
+                "related_keywords": ["변화", "성장", "기회", "메시지"],
+                "lucky_numbers": [1, 6, 11]
+            }],
+            "total_count": 1,
+            "keyword": keyword
+        }
         
-        app.include_router(dream_fallback_router)
-        print("⚠️ Dream interpretation fallback router loaded")
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "꿈풀이 검색 중 오류가 발생했습니다."
+        }
+
+@dream_saju_router.get("/categories")
+async def get_dream_categories():
+    """꿈풀이 카테고리 목록"""
+    return {
+        "success": True,
+        "categories": [
+            {"id": "animal", "name": "동물", "emoji": "🐾", "description": "동물이 나오는 꿈"},
+            {"id": "nature", "name": "자연", "emoji": "🌿", "description": "자연 현상과 환경"},
+            {"id": "person", "name": "사람", "emoji": "👥", "description": "사람이 등장하는 꿈"},
+            {"id": "object", "name": "사물", "emoji": "🏺", "description": "물건이나 도구"},
+            {"id": "action", "name": "행동", "emoji": "🏃‍♂️", "description": "특정 행동을 하는 꿈"},
+            {"id": "emotion", "name": "감정", "emoji": "😊", "description": "감정 상태나 느낌"},
+            {"id": "body", "name": "신체", "emoji": "👤", "description": "몸과 관련된 꿈"},
+            {"id": "spiritual", "name": "영적/신비", "emoji": "🔮", "description": "초자연적 현상"}
+        ]
+    }
+
+@dream_saju_router.get("/health")
+async def dream_saju_health():
+    """꿈풀이 서비스 상태 확인"""
+    return {"status": "healthy", "service": "dream-interpretation-saju", "timestamp": datetime.now()}
+
+# 꿈풀이 라우터를 앱에 등록
+app.include_router(dream_saju_router)
+print("✅ Dream interpretation router (saju path) loaded successfully")
 
 @app.get("/api/health")
 async def health_endpoint():

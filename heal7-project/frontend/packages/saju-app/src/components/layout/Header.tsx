@@ -284,7 +284,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
       </div>
 
       {/* 인증 모달 */}
-      <AuthModal
+      <AuthModal 
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onAuthSuccess={handleAuthSuccess}
