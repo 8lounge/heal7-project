@@ -41,46 +41,49 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              keywords: [query],
-              search_mode: 'any',
-              limit: 50
+              keyword: query
             })
           });
 
           if (response.ok) {
             const apiResults = await response.json();
             
-            // API 응답을 프론트엔드 형식으로 변환
-            const formattedResults = apiResults.map((dream: any) => ({
-              id: dream.id.toString(),
-              keyword: dream.keyword,
-              category: dream.category_name || '기타',
-              emoji: '🌙',
-              traditionInterpretation: dream.traditional_meaning,
-              modernInterpretation: dream.modern_meaning,
-              psychologyInterpretation: dream.psychological_meaning || '',
-              mood: dream.fortune_aspect === 'positive' ? 'positive' : 
-                    dream.fortune_aspect === 'negative' ? 'negative' : 'neutral',
-              frequency: dream.search_frequency || 0,
-              keywords: dream.related_keywords || [],
-              variations: [dream.keyword],
-              luckyNumbers: dream.lucky_numbers || [],
-              tags: [dream.category_name || '기타'],
-              relatedDreams: []
-            }));
-            
-            setSearchResults(formattedResults);
+            // API 응답 구조 확인: {success: true, results: [...]}
+            if (apiResults.success && Array.isArray(apiResults.results)) {
+              // API 응답을 프론트엔드 형식으로 변환
+              const formattedResults = apiResults.results.map((dream: any, index: number) => ({
+                id: (index + 1).toString(),
+                keyword: dream.keyword || '알 수 없는 꿈',
+                category: '꿈풀이',
+                emoji: dream.emoji || '🌙',
+                traditionInterpretation: dream.traditional_meaning || '',
+                modernInterpretation: dream.modern_meaning || dream.traditional_meaning || '',
+                psychologyInterpretation: dream.psychological_meaning || '',
+                mood: dream.fortune_aspect === '대길' ? 'positive' : dream.fortune_aspect === '길몽' ? 'positive' : 'neutral',
+                frequency: dream.confidence_score || Math.floor(Math.random() * 100) + 1,
+                keywords: Array.isArray(dream.related_keywords) ? dream.related_keywords : [dream.keyword].filter(Boolean),
+                variations: [dream.keyword].filter(Boolean),
+                luckyNumbers: Array.isArray(dream.lucky_numbers) ? dream.lucky_numbers : [],
+                tags: ['꿈풀이'],
+                relatedDreams: []
+              }));
+              
+              console.log('Formatted Results:', formattedResults);
+              setSearchResults(formattedResults);
+            } else {
+              console.warn('API 응답 형식 오류:', apiResults);
+              // API 응답이 예상 형식이 아닐 경우 빈 결과 표시 (더미 데이터 사용하지 않음)
+              setSearchResults([]);
+            }
           } else {
-            // API 실패 시 기본 데이터 사용
-            console.warn('API 호출 실패, 기본 데이터 사용');
-            const filteredDreams = searchDreams(query);
-            setSearchResults(Array.isArray(filteredDreams) ? filteredDreams.slice(0, 50) : []);
+            // API 실패 시 빈 결과 표시 (더미 데이터 사용하지 않음)
+            console.warn('API 호출 실패, 빈 결과 표시');
+            setSearchResults([]);
           }
         } catch (error) {
           console.error('API 호출 오류:', error);
-          // 오류 시 기본 데이터 사용
-          const filteredDreams = searchDreams(searchQuery);
-          setSearchResults(Array.isArray(filteredDreams) ? filteredDreams.slice(0, 50) : []);
+          // 오류 시 빈 결과 표시 (더미 데이터 사용하지 않음)
+          setSearchResults([]);
         } finally {
           setIsSearching(false);
         }
