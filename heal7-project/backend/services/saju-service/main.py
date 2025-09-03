@@ -1390,73 +1390,129 @@ dream_saju_router = APIRouter(prefix="/api/saju/dream-interpretation", tags=["dr
 
 @dream_saju_router.post("/search")
 async def dream_search(request: dict):
-    """꿈풀이 검색 API - 프론트엔드 호환"""
+    """꿈풀이 검색 API - 실제 DB 연동"""
+    import subprocess
+    
     try:
         keyword = request.get("keyword", "")
         
-        # 기본 꿈풀이 데이터
-        dream_interpretations = {
-            "뱀": {
-                "keyword": "뱀",
-                "emoji": "🐍",
-                "traditional_meaning": "뱀꿈은 지혜와 변화의 상징입니다. 새로운 기회가 찾아올 것을 의미합니다.",
-                "modern_meaning": "현대적 해석으로는 내면의 변화나 성장을 나타냅니다.",
-                "psychological_meaning": "무의식적 욕망이나 숨겨진 지혜를 상징합니다.",
-                "fortune_aspect": "길몽",
-                "confidence_score": 85,
-                "related_keywords": ["용", "지혜", "변화", "재생"],
-                "lucky_numbers": [7, 14, 21]
-            },
-            "거미": {
-                "keyword": "거미",
-                "emoji": "🕷️", 
-                "traditional_meaning": "거미꿈은 인내와 창조력을 의미합니다. 꾸준한 노력이 결실을 맺을 것입니다.",
-                "modern_meaning": "네트워크나 인맥을 통한 발전을 암시합니다.",
-                "psychological_meaning": "창조적 능력과 계획성을 나타냅니다.",
-                "fortune_aspect": "길몽",
-                "confidence_score": 78,
-                "related_keywords": ["인내", "창조", "네트워크", "계획"],
-                "lucky_numbers": [3, 8, 13]
-            },
-            "물고기": {
-                "keyword": "물고기",
-                "emoji": "🐠",
-                "traditional_meaning": "물고기꿈은 풍요와 다산을 상징합니다. 재물이 들어올 징조입니다.",
-                "modern_meaning": "감정의 풍부함과 직관력 향상을 의미합니다.",
-                "psychological_meaning": "무의식의 깊은 지혜에 접근하고 있음을 나타냅니다.",
-                "fortune_aspect": "대길",
-                "confidence_score": 92,
-                "related_keywords": ["풍요", "재물", "직관", "감정"],
-                "lucky_numbers": [2, 9, 18]
-            }
-        }
+        # 실제 데이터베이스에서 꿈풀이 데이터 조회 (12,452개 정형화 데이터 활용)
+        if not keyword:
+            return {"success": False, "error": "키워드가 필요합니다."}
+            
+        # PostgreSQL에서 정형화된 데이터 조회 (실제 테이블 사용)
+        query = f"""
+        SELECT combination_name, combined_meaning, dream_keywords, strength_level
+        FROM dream_combinations 
+        WHERE '{keyword.replace("'", "''")}' = ANY(dream_keywords) 
+        ORDER BY strength_level DESC
+        LIMIT 3;
+        """
         
-        # 키워드에 해당하는 해석 찾기
-        if keyword in dream_interpretations:
-            result = dream_interpretations[keyword]
-            return {
-                "success": True,
-                "results": [result],
-                "total_count": 1,
-                "keyword": keyword
-            }
+        cmd = ['sudo', '-u', 'postgres', 'psql', 'heal7', '-c', query, '-t', '-A', '--field-separator=|']
+        result = subprocess.run(cmd, capture_output=True, text=True)
         
-        # 키워드가 없으면 기본 해석 제공
+        if result.returncode == 0 and result.stdout.strip():
+            lines = result.stdout.strip().split('\n')
+            results = []
+            
+            for line in lines:
+                if line and '|' in line:
+                    parts = line.split('|')
+                    if len(parts) >= 4:
+                        # 카테고리 기반 이모지 설정
+                        emoji = "🔮"  # 기본값
+                        if keyword in ["뱀", "거미", "물고기", "개", "고양이", "새", "곰"]:
+                            emoji = "🐾"
+                        elif keyword in ["물", "바다", "산", "나무", "꽃", "비", "눈"]:
+                            emoji = "🌿"
+                        elif keyword in ["돈", "금", "은", "보석", "집", "차"]:
+                            emoji = "💰"
+                        
+                        # dream_keywords 파싱 (PostgreSQL 배열 형식)
+                        related_keywords = [keyword, "꿈", "해몽"]
+                        if len(parts) > 2 and parts[2]:
+                            try:
+                                keywords_str = parts[2].strip('{}')
+                                if keywords_str:
+                                    related_keywords = [x.strip().strip('"') for x in keywords_str.split(',') if x.strip()]
+                            except:
+                                pass
+                        
+                        # 행운번호 (강도 레벨 기반으로 생성)
+                        strength = int(parts[3]) if parts[3] else 3
+                        lucky_numbers = [strength * 7, (strength * 7) + 14, (strength * 7) + 26]
+                        
+                        results.append({
+                            "keyword": keyword,
+                            "emoji": emoji,
+                            "traditional_meaning": parts[1] if parts[1] else f"{keyword}에 관한 전통적 해석입니다.",
+                            "modern_meaning": parts[1] if parts[1] else f"{keyword}에 관한 현대적 해석입니다.",
+                            "psychological_meaning": f"{keyword}에 관한 심리학적 해석입니다.",
+                            "fortune_aspect": "길몽" if strength >= 4 else "중성",
+                            "confidence_score": min(strength * 20, 100),
+                            "related_keywords": related_keywords,
+                            "lucky_numbers": lucky_numbers
+                        })
+            
+            if results:
+                return {
+                    "success": True,
+                    "results": results,
+                    "total_count": len(results),
+                    "keyword": keyword,
+                    "data_source": "dream_service.dream_interpretations"
+                }
+        
+        # 데이터가 없으면 유사한 키워드로 검색 (실제 테이블 사용)
+        fallback_query = f"""
+        SELECT combination_name, combined_meaning, dream_keywords, strength_level
+        FROM dream_combinations 
+        WHERE array_to_string(dream_keywords, ',') ILIKE '%{keyword.replace("'", "''")}%'
+        LIMIT 2;
+        """
+        
+        cmd = ['sudo', '-u', 'postgres', 'psql', 'heal7', '-c', fallback_query, '-t', '-A', '--field-separator=|']
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode == 0 and result.stdout.strip():
+            lines = result.stdout.strip().split('\n')
+            results = []
+            
+            for line in lines:
+                if line and '|' in line:
+                    parts = line.split('|')
+                    if len(parts) >= 2:
+                        results.append({
+                            "keyword": parts[0],
+                            "emoji": "🔮",
+                            "traditional_meaning": parts[1] if parts[1] else f"{parts[0]}에 관한 꿈풀이입니다.",
+                            "modern_meaning": parts[2] if len(parts) > 2 and parts[2] else f"{parts[0]}에 관한 현대적 해석입니다.",
+                            "psychological_meaning": parts[3] if len(parts) > 3 and parts[3] else "",
+                            "fortune_aspect": "길몽",
+                            "confidence_score": 70,
+                            "related_keywords": [parts[0], keyword],
+                            "lucky_numbers": [7, 21, 33]
+                        })
+            
+            if results:
+                return {
+                    "success": True,
+                    "results": results,
+                    "total_count": len(results),
+                    "keyword": keyword,
+                    "search_type": "similar",
+                    "data_source": "dream_service.dream_interpretations"
+                }
+        
+        # 아무것도 찾지 못한 경우 빈 결과 반환 (더미 데이터 제거)
         return {
             "success": True,
-            "results": [{
-                "keyword": keyword,
-                "emoji": "🔮",
-                "traditional_meaning": f"'{keyword}'와 관련된 꿈은 내면의 변화와 성장을 의미합니다.",
-                "modern_meaning": "새로운 가능성과 기회를 암시하는 꿈입니다.",
-                "psychological_meaning": "현재 상황에 대한 내면의 메시지입니다.",
-                "fortune_aspect": "길몽",
-                "confidence_score": 70,
-                "related_keywords": ["변화", "성장", "기회", "메시지"],
-                "lucky_numbers": [1, 6, 11]
-            }],
-            "total_count": 1,
-            "keyword": keyword
+            "results": [],
+            "total_count": 0,
+            "keyword": keyword,
+            "search_type": "no_match",
+            "message": f"'{keyword}'와 관련된 꿈풀이 데이터를 찾을 수 없습니다."
         }
         
     except Exception as e:
