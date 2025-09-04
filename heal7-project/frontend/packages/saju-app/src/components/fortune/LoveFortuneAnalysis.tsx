@@ -65,7 +65,7 @@ export const LoveFortuneAnalysis: React.FC = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent mb-4">
             💕 연애운 분석
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-white text-lg">
             나의 연애 성향과 올해의 사랑운을 자세히 알아보세요
           </p>
         </div>

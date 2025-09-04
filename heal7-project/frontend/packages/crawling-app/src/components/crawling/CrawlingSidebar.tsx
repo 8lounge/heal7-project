@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   BarChart3, 
@@ -15,6 +15,25 @@ import {
 } from 'lucide-react';
 
 type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'tool-selector' | 'settings';
+
+// 3-Tier 상태 인터페이스
+interface TierStatus {
+  name: string;
+  status: 'active' | 'idle' | 'error';
+  count: number;
+  description?: string;
+}
+
+interface ThreeTierStatusResponse {
+  tiers: {
+    httpx: { count: number; status: string; description: string };
+    httpx_bs: { count: number; status: string; description: string };
+    playwright: { count: number; status: string; description: string };
+  };
+  total_active: number;
+  timestamp: string;
+  data_source: string;
+}
 
 interface CrawlingSidebarProps {
   currentPage: CrawlingPage;
@@ -68,11 +87,65 @@ const CrawlingSidebar: React.FC<CrawlingSidebarProps> = ({
     }
   ];
 
-  const tierStatus = [
-    { name: 'httpx', status: 'active', count: 12 },
-    { name: 'playwright', status: 'idle', count: 5 },
-    { name: 'selenium', status: 'error', count: 2 }
-  ];
+  // 3-Tier 상태 관리
+  const [tierStatus, setTierStatus] = useState<TierStatus[]>([
+    { name: 'httpx', status: 'idle', count: 0 },
+    { name: 'httpx+bs', status: 'idle', count: 0 },
+    { name: 'playwright', status: 'idle', count: 0 }
+  ]);
+
+  // 3-Tier 상태 데이터 가져오기
+  const fetch3TierStatus = async () => {
+    try {
+      const response = await fetch('http://localhost:8003/api/3-tier-status');
+      if (response.ok) {
+        const data: ThreeTierStatusResponse = await response.json();
+        
+        // 응답 데이터를 TierStatus[] 형태로 변환
+        const updatedTierStatus: TierStatus[] = [
+          {
+            name: 'httpx',
+            status: data.tiers.httpx.status as 'active' | 'idle' | 'error',
+            count: data.tiers.httpx.count,
+            description: data.tiers.httpx.description
+          },
+          {
+            name: 'httpx+bs',
+            status: data.tiers.httpx_bs.status as 'active' | 'idle' | 'error',
+            count: data.tiers.httpx_bs.count,
+            description: data.tiers.httpx_bs.description
+          },
+          {
+            name: 'playwright',
+            status: data.tiers.playwright.status as 'active' | 'idle' | 'error',
+            count: data.tiers.playwright.count,
+            description: data.tiers.playwright.description
+          }
+        ];
+        
+        setTierStatus(updatedTierStatus);
+      }
+    } catch (error) {
+      console.error('3-Tier 상태 로드 실패:', error);
+      // 에러 시 기본값으로 폴백
+      setTierStatus([
+        { name: 'httpx', status: 'idle', count: 8 },
+        { name: 'httpx+bs', status: 'idle', count: 4 },
+        { name: 'playwright', status: 'idle', count: 3 }
+      ]);
+    }
+  };
+
+  // 컴포넌트 마운트 시 및 주기적으로 데이터 가져오기
+  useEffect(() => {
+    // 초기 로드
+    fetch3TierStatus();
+    
+    // 30초마다 업데이트
+    const interval = setInterval(fetch3TierStatus, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {

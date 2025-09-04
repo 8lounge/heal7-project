@@ -29,10 +29,9 @@ logger = logging.getLogger(__name__)
 
 
 class CrawlerType(Enum):
-    """크롤러 타입"""
+    """크롤러 타입 (3단계 간소화 시스템)"""
     HTTPX = "httpx"           # Tier 1: 정적 콘텐츠, API 
-    PLAYWRIGHT = "playwright" # Tier 2: JavaScript 렌더링
-    SELENIUM = "selenium"     # Tier 3: 복잡한 상호작용
+    PLAYWRIGHT = "playwright" # Tier 2: JavaScript 렌더링, 복잡한 상호작용
 
 
 class TaskType(Enum):
@@ -104,67 +103,67 @@ class CrawlerToolkit:
             # 📊 테이블 데이터 추출
             TaskType.TABLE_EXTRACTION: CrawlerStrategy(
                 primary=CrawlerType.PLAYWRIGHT,
-                fallback=CrawlerType.SELENIUM,
+                fallback=CrawlerType.HTTPX,  # 3단계 간소화: Selenium 제거
                 task_type=TaskType.TABLE_EXTRACTION,
                 success_threshold=85.0,
                 timeout_seconds=60,
                 max_retries=2,
-                description="동적 테이블은 Playwright, 복잡한 테이블 조작은 Selenium으로 폴백"
+                description="동적 테이블은 Playwright, 간단한 테이블은 HTTPX로 폴백 (3단계 간소화)"
             ),
             
             # 📝 폼 상호작용
             TaskType.FORM_INTERACTION: CrawlerStrategy(
-                primary=CrawlerType.SELENIUM,
+                primary=CrawlerType.PLAYWRIGHT,  # 3단계 간소화: Selenium 제거
                 fallback=CrawlerType.PLAYWRIGHT,
                 task_type=TaskType.FORM_INTERACTION,
                 success_threshold=80.0,
                 timeout_seconds=90,
                 max_retries=2,
-                description="폼 입력/제출은 Selenium이 안정적, 단순 폼은 Playwright로 시도"
+                description="복잤 폼 입력/제출은 Playwright가 안정적 (3단계 간소화)"
             ),
             
             # 📄 정부 포털
             TaskType.GOVERNMENT_PORTAL: CrawlerStrategy(
                 primary=CrawlerType.PLAYWRIGHT,
-                fallback=CrawlerType.SELENIUM,
+                fallback=CrawlerType.HTTPX,  # 3단계 간소화: Selenium 제거
                 task_type=TaskType.GOVERNMENT_PORTAL,
                 success_threshold=90.0,
                 timeout_seconds=120,
                 max_retries=2,
-                description="정부 사이트는 JavaScript 필수, 인증 복잡시 Selenium으로 폴백"
+                description="정부 사이트는 JavaScript 필수, 단순 데이터는 HTTPX로 폴백 (3단계 간소화)"
             ),
             
             # 🔍 페이지 분석 (AI 지원)
             TaskType.PAGE_ANALYSIS: CrawlerStrategy(
                 primary=CrawlerType.PLAYWRIGHT,
-                fallback=CrawlerType.SELENIUM,
+                fallback=CrawlerType.HTTPX,  # 3단계 간소화: Selenium 제거
                 task_type=TaskType.PAGE_ANALYSIS,
                 success_threshold=75.0,
                 timeout_seconds=90,
                 max_retries=1,
-                description="스크린샷 + DOM 분석은 Playwright, 복잡한 요소 탐지는 Selenium"
+                description="스크린샷 + DOM 분석은 Playwright, 기본 분석은 HTTPX (3단계 간소화)"
             ),
             
             # 🏛️ 레거시 사이트
             TaskType.LEGACY_SITE: CrawlerStrategy(
-                primary=CrawlerType.SELENIUM,
+                primary=CrawlerType.PLAYWRIGHT,  # 3단계 간소화: Selenium 제거
                 fallback=CrawlerType.HTTPX,
                 task_type=TaskType.LEGACY_SITE,
                 success_threshold=70.0,
                 timeout_seconds=180,
                 max_retries=1,
-                description="레거시 사이트는 Selenium, 단순 HTML만 있다면 HTTPX로 폴백"
+                description="레거시 사이트도 Playwright로 처리, 단순 HTML만 있다면 HTTPX로 폴백 (3단계 간소화)"
             ),
             
             # 🔍 디스커버리 크롤링
             TaskType.DISCOVERY: CrawlerStrategy(
                 primary=CrawlerType.PLAYWRIGHT,
-                fallback=CrawlerType.SELENIUM,
+                fallback=CrawlerType.HTTPX,  # 3단계 간소화: Selenium 제거
                 task_type=TaskType.DISCOVERY,
                 success_threshold=60.0,
                 timeout_seconds=150,
                 max_retries=1,
-                description="자동 요소 탐지는 Playwright, 정밀한 분석은 Selenium"
+                description="자동 요소 탐지는 Playwright, 기본 요소는 HTTPX로 분석 (3단계 간소화)"
             )
         }
     
@@ -323,8 +322,7 @@ class CrawlerToolkit:
                 "avg_performance_score": 0,
                 "crawler_stats": {
                     "httpx": {"runs": 0, "successes": 0, "avg_time": 0},
-                    "playwright": {"runs": 0, "successes": 0, "avg_time": 0},
-                    "selenium": {"runs": 0, "successes": 0, "avg_time": 0}
+                    "playwright": {"runs": 0, "successes": 0, "avg_time": 0}
                 },
                 "last_updated": None
             }
@@ -419,7 +417,7 @@ class CrawlerToolkit:
             fallback = sorted_crawlers[1][0]
         else:
             # 기본 전략 유지
-            return {"primary": "playwright", "fallback": "selenium", "reason": "성능 데이터 부족"}
+            return {"primary": "playwright", "fallback": "httpx", "reason": "성능 데이터 부족 (3단계 간소화 시스템)"}
         
         return {
             "primary": primary,
@@ -506,14 +504,14 @@ CRAWLER_COMBINATION_GUIDE = {
     
     "📊 테이블/동적데이터": {
         "primary": "Playwright",
-        "fallback": "Selenium",
+        "fallback": "HTTPX",  # 3단계 간소화
         "use_cases": ["JavaScript 테이블", "AJAX 로딩", "무한스크롤", "차트 데이터"],
         "success_rate": "85%+", 
         "avg_time": "3-8초"
     },
     
     "📝 폼/상호작용": {
-        "primary": "Selenium", 
+        "primary": "Playwright",  # 3단계 간소화 
         "fallback": "Playwright",
         "use_cases": ["로그인 폼", "다단계 입력", "파일 업로드", "드롭다운"],
         "success_rate": "80%+",
@@ -522,14 +520,14 @@ CRAWLER_COMBINATION_GUIDE = {
     
     "📄 정부포털": {
         "primary": "Playwright",
-        "fallback": "Selenium", 
+        "fallback": "HTTPX",  # 3단계 간소화 
         "use_cases": ["정부24", "나라장터", "국가정보포털", "공공API"],
         "success_rate": "90%+",
         "avg_time": "5-12초"
     },
     
     "🏛️ 레거시사이트": {
-        "primary": "Selenium",
+        "primary": "Playwright",  # 3단계 간소화
         "fallback": "HTTPX",
         "use_cases": ["ActiveX 사이트", "Flash 콘텐츠", "구형 JSP", "프레임셋"],
         "success_rate": "70%+",
@@ -538,7 +536,7 @@ CRAWLER_COMBINATION_GUIDE = {
     
     "🔍 디스커버리": {
         "primary": "Playwright",
-        "fallback": "Selenium",
+        "fallback": "HTTPX",  # 3단계 간소화
         "use_cases": ["요소 탐지", "구조 분석", "스크린샷", "AI 분석"],
         "success_rate": "75%+",
         "avg_time": "8-20초"

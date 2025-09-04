@@ -39,7 +39,7 @@ import {
 interface CrawlerStatus {
   id: string;
   name: string;
-  type: 'httpx' | 'playwright' | 'selenium';
+  type: 'httpx' | 'httpx_bs' | 'playwright';
   status: 'idle' | 'running' | 'paused' | 'error';
   progress: number;
   itemsCollected: number;
@@ -494,10 +494,23 @@ const CrawlingDashboard: React.FC = () => {
         return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
       case 'playwright':
         return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
-      case 'selenium':
+      case 'httpx_bs':
         return 'bg-orange-500/20 text-orange-300 border border-orange-500/30';
       default:
         return 'bg-gray-500/20 text-gray-300 border border-gray-500/30';
+    }
+  };
+
+  const getTierDisplayName = (type: string) => {
+    switch (type) {
+      case 'httpx':
+        return 'HTTPX';
+      case 'playwright':
+        return 'PLAYWRIGHT';
+      case 'httpx_bs':
+        return 'HTTPX+BS';
+      default:
+        return type.toUpperCase();
     }
   };
 
@@ -854,7 +867,7 @@ const CrawlingDashboard: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <h2 className={`text-xl font-semibold flex items-center bg-gradient-to-r ${currentTheme.secondary} bg-clip-text text-transparent`}>
                       <Activity className="w-5 h-5 mr-2 text-green-400" />
-                      3-Tier 크롤러 현황
+                      3-Tier 상태
                     </h2>
                     <div className="flex items-center space-x-2">
                       <motion.button
@@ -893,7 +906,7 @@ const CrawlingDashboard: React.FC = () => {
                                 {getStatusIcon(crawler.status)}
                                 <span className="font-medium">{crawler.name}</span>
                                 <span className={`px-2 py-1 rounded-full text-xs font-mono ${getTierBadgeColor(crawler.type)}`}>
-                                  {crawler.type.toUpperCase()}
+                                  {getTierDisplayName(crawler.type)}
                                 </span>
                               </div>
                               <div className="text-right">

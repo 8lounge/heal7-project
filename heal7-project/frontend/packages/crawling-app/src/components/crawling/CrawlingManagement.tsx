@@ -20,7 +20,7 @@ import {
 interface CrawlingJob {
   id: string;
   name: string;
-  tier: 'httpx' | 'playwright' | 'selenium';
+  tier: 'httpx' | 'httpx_bs' | 'playwright';
   status: 'running' | 'paused' | 'completed' | 'failed' | 'queued';
   url: string;
   schedule: string;
@@ -33,7 +33,7 @@ interface CrawlingJob {
 
 interface NewJobForm {
   name: string;
-  tier: 'httpx' | 'playwright' | 'selenium';
+  tier: 'httpx' | 'httpx_bs' | 'playwright';
   url: string;
   schedule: 'once' | 'daily' | 'weekly' | 'monthly';
   selectors: string;
@@ -42,7 +42,7 @@ interface NewJobForm {
 
 const CrawlingManagement: React.FC = () => {
   const [showNewJobModal, setShowNewJobModal] = useState(false);
-  const [selectedTier, setSelectedTier] = useState<'all' | 'httpx' | 'playwright' | 'selenium'>('all');
+  const [selectedTier, setSelectedTier] = useState<'all' | 'httpx' | 'httpx_bs' | 'playwright'>('all');
   
   const [jobs, setJobs] = useState<CrawlingJob[]>([]);
   const [loading, setLoading] = useState(true);
@@ -130,7 +130,7 @@ const CrawlingManagement: React.FC = () => {
         return <Zap className="w-5 h-5 text-blue-400" />;
       case 'playwright':
         return <Globe className="w-5 h-5 text-purple-400" />;
-      case 'selenium':
+      case 'httpx_bs':
         return <Activity className="w-5 h-5 text-orange-400" />;
     }
   };
@@ -141,7 +141,7 @@ const CrawlingManagement: React.FC = () => {
         return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
       case 'playwright':
         return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
-      case 'selenium':
+      case 'httpx_bs':
         return 'bg-orange-500/20 text-orange-300 border border-orange-500/30';
     }
   };
@@ -268,7 +268,7 @@ const CrawlingManagement: React.FC = () => {
             Tier 필터
           </h3>
           <div className="flex space-x-2">
-            {(['all', 'httpx', 'playwright', 'selenium'] as const).map((tier) => (
+            {(['all', 'httpx', 'httpx_bs', 'playwright'] as const).map((tier) => (
               <button
                 key={tier}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
@@ -470,8 +470,8 @@ const CrawlingManagement: React.FC = () => {
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="httpx">Tier 1 - httpx (빠름)</option>
-                    <option value="playwright">Tier 2 - Playwright (중간)</option>
-                    <option value="selenium">Tier 3 - Selenium (복잡)</option>
+                    <option value="httpx_bs">Tier 2 - httpx + BeautifulSoup (중간)</option>
+                    <option value="playwright">Tier 3 - Playwright (복잡)</option>
                   </select>
                 </div>
 

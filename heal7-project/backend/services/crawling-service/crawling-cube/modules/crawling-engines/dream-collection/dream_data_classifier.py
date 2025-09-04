@@ -76,7 +76,17 @@ class DreamDataClassifier:
     
     def get_connection(self):
         """DB 연결"""
-        return psycopg2.connect(**self.db_config)
+        # postgres 사용자로 직접 연결
+        import subprocess
+        import os
+        
+        # postgres 사용자 권한으로 DB 연결을 위해 subprocess 활용
+        return psycopg2.connect(
+            host=self.db_config['host'],
+            database=self.db_config['database'],
+            user='postgres',
+            port=self.db_config['port']
+        )
     
     def extract_keywords_from_text(self, text: str) -> List[str]:
         """텍스트에서 키워드 추출"""
@@ -411,7 +421,7 @@ def main():
     
     args = parser.parse_args()
     
-    # DB 설정
+    # DB 설정 - postgres 사용자로 연결
     db_config = {
         'host': 'localhost',
         'database': args.db_name,

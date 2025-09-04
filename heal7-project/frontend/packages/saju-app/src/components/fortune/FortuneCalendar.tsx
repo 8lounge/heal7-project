@@ -13,6 +13,7 @@ import {
   generateCalendarMonth, 
   getMonthlyFortune, 
   getTodayFortune,
+  getKasiApiErrorSummary,
   type CalendarDate,
   type MonthlyFortune 
 } from '../../data/calendarData';
@@ -37,13 +38,39 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
   const month = currentDate.getMonth() + 1;
 
   useEffect(() => {
-    const data = generateCalendarMonth(year, month);
-    const fortune = getMonthlyFortune(year, month);
-    const today = getTodayFortune();
+    const loadCalendarData = async () => {
+      try {
+        console.log(`🔮 캘린더 데이터 로딩 시작: ${year}년 ${month}월`);
+        
+        // KASI API를 사용한 비동기 데이터 로딩
+        const [data, fortune, today] = await Promise.all([
+          generateCalendarMonth(year, month),
+          Promise.resolve(getMonthlyFortune(year, month)), // 동기 함수를 Promise로 래핑
+          Promise.resolve(getTodayFortune()) // 동기 함수를 Promise로 래핑
+        ]);
+        
+        setMonthlyData(data);
+        setMonthlyFortune(fortune);
+        setTodayFortune(today);
+        
+        console.log(`✅ 캘린더 데이터 로딩 완료: ${data.length}개 날짜`);
+        
+        // KASI API 오류 요약 로그
+        const errorSummary = getKasiApiErrorSummary();
+        if (errorSummary.total > 0) {
+          console.warn(`⚠️  KASI API 오류 요약: 총 ${errorSummary.total}건`, errorSummary.byType);
+        }
+        
+      } catch (error) {
+        console.error('캘린더 데이터 로딩 실패:', error);
+        // 오류 발생 시 빈 데이터로 설정
+        setMonthlyData([]);
+        setMonthlyFortune(null);
+        setTodayFortune(null);
+      }
+    };
     
-    setMonthlyData(data);
-    setMonthlyFortune(fortune);
-    setTodayFortune(today);
+    loadCalendarData();
   }, [year, month]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {

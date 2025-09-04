@@ -27,7 +27,12 @@ from urllib.parse import urlparse
 
 from .crawlers import (
     BaseCrawler, CrawlResult, CrawlConfig, CrawlerType,
-    HttpxCrawler, PlaywrightCrawler, SeleniumCrawler
+    HttpxCrawler, PlaywrightCrawler
+)
+from .ai_crawler_selector import get_ai_crawler_selector, select_crawler_for_url, evaluate_crawl_result
+from .user_approval_workflow import (
+    get_approval_workflow, request_crawl_approval, wait_for_approval, 
+    ApprovalStatus, ApprovalUrgency
 )
 
 
@@ -37,9 +42,9 @@ logger = logging.getLogger(__name__)
 class CrawlStrategy(Enum):
     """크롤링 전략"""
     AUTO = "auto"           # 자동 선택
-    FAST = "fast"          # 속도 우선 (httpx → playwright → selenium)
-    RENDER = "render"      # 렌더링 우선 (playwright → httpx → selenium)  
-    STEALTH = "stealth"    # 스텔스 우선 (selenium → playwright → httpx)
+    FAST = "fast"          # 속도 우선 (httpx → playwright)
+    RENDER = "render"      # 렌더링 우선 (playwright → httpx)  
+    STEALTH = "stealth"    # 복잡 사이트 우선 (playwright → httpx)
     SAFE = "safe"          # 안정성 우선 (모든 크롤러 시도)
 
 
@@ -95,12 +100,11 @@ class SmartCrawler:
         self.name = "smart_crawler"
         self.logger = logging.getLogger(f"{__name__}.SmartCrawler")
         
-        # 크롤러 인스턴스들
+        # 크롤러 인스턴스들 (3단계 간소화)
         self.crawlers: Dict[CrawlerType, BaseCrawler] = {}
         self.crawler_stats: Dict[CrawlerType, CrawlerStats] = {
             CrawlerType.HTTPX: CrawlerStats(),
-            CrawlerType.PLAYWRIGHT: CrawlerStats(), 
-            CrawlerType.SELENIUM: CrawlerStats()
+            CrawlerType.PLAYWRIGHT: CrawlerStats()
         }
         
         # 도메인별 최적 크롤러 캐시
@@ -126,11 +130,10 @@ class SmartCrawler:
         self.logger.info("🧠 Smart Crawler 시스템 초기화 시작")
         
         try:
-            # 크롤러 인스턴스 생성
+            # 크롤러 인스턴스 생성 (3단계 간소화)
             self.crawlers = {
                 CrawlerType.HTTPX: HttpxCrawler(),
-                CrawlerType.PLAYWRIGHT: PlaywrightCrawler(headless=True),
-                CrawlerType.SELENIUM: SeleniumCrawler(use_undetected=True, headless=True)
+                CrawlerType.PLAYWRIGHT: PlaywrightCrawler(headless=True)
             }
             
             # 병렬 초기화
@@ -174,13 +177,56 @@ class SmartCrawler:
         self, 
         url: str, 
         strategy: CrawlStrategy = CrawlStrategy.AUTO,
+        require_approval: bool = False,
         **kwargs
     ) -> CrawlResult:
-        """지능형 크롤링 실행"""
+        """지능형 크롤링 실행 (사용자 승인 워크플로우 포함)"""
         if not self.is_initialized:
             await self.initialize()
         
         config = CrawlConfig(url=url, **kwargs)
+        
+        # 🧠 AI 기반 크롤러 추천
+        try:
+            ai_recommendation = await select_crawler_for_url(url, use_ai=True)
+            crawler_config_dict = {
+                "url": url,
+                "strategy": strategy.value,
+                "timeout": config.timeout,
+                "retries": config.retries,
+                "screenshot": config.screenshot,
+                "ai_recommendation": ai_recommendation.to_dict()
+            }
+            
+            # ✋ 사용자 승인 워크플로우 (필요시)
+            if require_approval:
+                approval_request_id = await self._request_crawl_approval(
+                    url, crawler_config_dict, ai_recommendation.to_dict()
+                )
+                
+                self.logger.info(f"📋 승인 요청 대기 중: {approval_request_id}")
+                
+                # 승인 대기
+                approval_response = await wait_for_approval(approval_request_id)
+                
+                if approval_response.status != ApprovalStatus.APPROVED:
+                    return CrawlResult(
+                        success=False,
+                        error=f"크롤링 승인 거부됨: {approval_response.comment}",
+                        url=url,
+                        metadata={"approval_status": approval_response.status.value}
+                    )
+                
+                # 승인된 설정으로 업데이트
+                if approval_response.modified_config:
+                    config = CrawlConfig(**approval_response.modified_config)
+                    self.logger.info(f"✅ 승인 완료, 수정된 설정 적용: {approval_request_id}")
+                else:
+                    self.logger.info(f"✅ 승인 완료, 원래 설정 사용: {approval_request_id}")
+        
+        except Exception as e:
+            self.logger.warning(f"⚠️ AI 추천 또는 승인 처리 실패: {e}")
+            ai_recommendation = None
         
         # 크롤러 순서 결정
         crawler_order = await self._determine_crawler_order(url, strategy)
@@ -210,6 +256,16 @@ class SmartCrawler:
                 
                 # 통계 업데이트
                 self.crawler_stats[crawler_type].update(result)
+                
+                # 🧠 AI 성능 평가 및 학습
+                try:
+                    ai_score = await evaluate_crawl_result(
+                        url, crawler_type, 
+                        {"success": result.success, "response_time": result.response_time, "html": result.html}
+                    )
+                    self.logger.debug(f"🤖 AI 성능 평가: {crawler_type.value} → {ai_score:.1f}점")
+                except Exception as ai_e:
+                    self.logger.warning(f"⚠️ AI 성능 평가 실패: {ai_e}")
                 
                 if result.success:
                     # 성공한 크롤러를 도메인 선호도에 저장
@@ -259,11 +315,11 @@ class SmartCrawler:
         
         # 전략별 순서 결정
         if strategy == CrawlStrategy.FAST:
-            order = [CrawlerType.HTTPX, CrawlerType.PLAYWRIGHT, CrawlerType.SELENIUM]
+            order = [CrawlerType.HTTPX, CrawlerType.PLAYWRIGHT]
         elif strategy == CrawlStrategy.RENDER:
-            order = [CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX, CrawlerType.SELENIUM]
+            order = [CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]
         elif strategy == CrawlStrategy.STEALTH:
-            order = [CrawlerType.SELENIUM, CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]
+            order = [CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]  # Selenium 제거, Playwright로 대체
         elif strategy == CrawlStrategy.SAFE:
             # 모든 크롤러를 안정성 순으로
             order = sorted(self.crawlers.keys(), 
@@ -276,30 +332,45 @@ class SmartCrawler:
         return [c for c in order if c in self.crawlers]
     
     async def _auto_determine_order(self, url: str) -> List[CrawlerType]:
-        """자동 크롤러 순서 결정"""
-        url_lower = url.lower()
-        
-        # URL 패턴 기반 분석
-        if any(keyword in url_lower for keyword in ['api', '.json', '/rest/', '/graphql']):
-            # API 엔드포인트 -> httpx 우선
-            return [CrawlerType.HTTPX, CrawlerType.PLAYWRIGHT, CrawlerType.SELENIUM]
-        
-        elif any(keyword in url_lower for keyword in ['cloudflare', 'protection']):
-            # 보호된 사이트 -> selenium 우선
-            return [CrawlerType.SELENIUM, CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]
-        
-        elif '.go.kr' in url_lower or '.gov' in url_lower:
-            # 정부 사이트 -> selenium 우선 (보안이 강함)
-            return [CrawlerType.SELENIUM, CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]
-        
-        else:
-            # 일반 사이트 -> 성능 기준 정렬
-            available_crawlers = list(self.crawlers.keys())
-            available_crawlers.sort(
-                key=lambda c: self.crawler_stats[c].reliability_score, 
-                reverse=True
+        """🧠 AI 기반 자동 크롤러 순서 결정 (Gemini 2.0 통합)"""
+        try:
+            # AI 기반 크롤러 추천
+            recommendation = await select_crawler_for_url(url, use_ai=True)
+            
+            self.logger.info(
+                f"🤖 AI 추천: {recommendation.primary_crawler.value} "
+                f"(신뢰도: {recommendation.confidence_score:.1f}%) - {recommendation.reasoning}"
             )
-            return available_crawlers
+            
+            return [recommendation.primary_crawler, recommendation.fallback_crawler]
+            
+        except Exception as e:
+            self.logger.warning(f"⚠️ AI 크롤러 선택 실패, 휴리스틱 폴백: {e}")
+            
+            # 폴백: 기존 휴리스틱 기반 분석
+            url_lower = url.lower()
+            
+            # URL 패턴 기반 분석
+            if any(keyword in url_lower for keyword in ['api', '.json', '/rest/', '/graphql']):
+                # API 엔드포인트 -> httpx 우선
+                return [CrawlerType.HTTPX, CrawlerType.PLAYWRIGHT]
+            
+            elif any(keyword in url_lower for keyword in ['cloudflare', 'protection']):
+                # 보호된 사이트 -> playwright 우선 (Selenium 제거)
+                return [CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]
+            
+            elif '.go.kr' in url_lower or '.gov' in url_lower:
+                # 정부 사이트 -> playwright 우선 (Selenium 제거, 보안 강화)
+                return [CrawlerType.PLAYWRIGHT, CrawlerType.HTTPX]
+            
+            else:
+                # 일반 사이트 -> 기본 순서
+                available_crawlers = list(self.crawlers.keys())
+                available_crawlers.sort(
+                    key=lambda c: self.crawler_stats[c].reliability_score, 
+                    reverse=True
+                )
+                return available_crawlers
     
     def _extract_domain(self, url: str) -> str:
         """URL에서 도메인 추출"""
@@ -447,6 +518,95 @@ class SmartCrawler:
             self.logger.info(f"도메인 선호도 제거: {domain}")
         
         self.logger.info("✅ 성능 최적화 완료")
+    
+    async def _request_crawl_approval(
+        self, 
+        url: str, 
+        crawler_config: Dict[str, Any], 
+        ai_recommendation: Dict[str, Any]
+    ) -> str:
+        """크롤링 승인 요청"""
+        title = f"크롤링 작업: {self._extract_domain(url)}"
+        
+        return await request_crawl_approval(
+            title=title,
+            urls=[url],
+            crawler_config=crawler_config,
+            ai_recommendation=ai_recommendation,
+            requester="smart_crawler",
+            estimated_duration="1-5분"
+        )
+    
+    async def get_ai_statistics(self) -> Dict[str, Any]:
+        """🧠 AI 크롤러 선택 시스템 통계"""
+        try:
+            ai_selector = await get_ai_crawler_selector()
+            ai_stats = ai_selector.get_selection_stats()
+            
+            return {
+                "ai_integration": {
+                    "status": "active" if ai_stats.get("ai_analyzer_status") == "active" else "inactive",
+                    "total_selections": ai_stats.get("total_selections", 0),
+                    "ai_selections": ai_stats.get("ai_selections", 0),
+                    "fallback_selections": ai_stats.get("fallback_selections", 0),
+                    "ai_usage_rate": ai_stats.get("ai_usage_rate", 0.0),
+                    "average_accuracy": ai_stats.get("average_accuracy", 0.0),
+                    "learning_domains": ai_stats.get("learning_domains", 0)
+                },
+                "system_enhancement": {
+                    "ai_model": "Gemini 2.0 Flash",
+                    "features": [
+                        "URL 패턴 AI 분석",
+                        "동적 크롤러 선택",
+                        "실시간 성능 학습",
+                        "품질 기반 최적화"
+                    ],
+                    "performance_impact": "향상된 선택 정확도 및 적응형 학습"
+                }
+            }
+        except Exception as e:
+            self.logger.error(f"❌ AI 통계 조회 실패: {e}")
+            return {
+                "ai_integration": {
+                    "status": "error",
+                    "error": str(e)
+                }
+            }
+    
+    async def get_approval_statistics(self) -> Dict[str, Any]:
+        """✋ 사용자 승인 워크플로우 통계"""
+        try:
+            approval_workflow = await get_approval_workflow()
+            approval_stats = approval_workflow.get_approval_statistics()
+            
+            return {
+                "approval_workflow": {
+                    "status": "active",
+                    "total_requests": approval_stats.get("total_requests", 0),
+                    "approved": approval_stats.get("approved", 0),
+                    "rejected": approval_stats.get("rejected", 0),
+                    "expired": approval_stats.get("expired", 0),
+                    "pending_requests": approval_stats.get("pending_requests", 0),
+                    "approval_rate": approval_stats.get("approval_rate", 0.0),
+                    "auto_approval_rate": approval_stats.get("auto_approval_rate", 0.0),
+                    "avg_response_time": approval_stats.get("avg_response_time", 0.0)
+                },
+                "workflow_features": [
+                    "위험도 기반 자동 분류",
+                    "긴급도별 타임아웃 설정",
+                    "자동 승인 규칙 적용",
+                    "실시간 알림 시스템",
+                    "승인 이력 추적"
+                ]
+            }
+        except Exception as e:
+            self.logger.error(f"❌ 승인 통계 조회 실패: {e}")
+            return {
+                "approval_workflow": {
+                    "status": "error",
+                    "error": str(e)
+                }
+            }
 
 
 # 유틸리티 함수들

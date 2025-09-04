@@ -1,0 +1,708 @@
+{
+  "categories": {
+    "nature": {
+      "id": "nature",
+      "name": "자연계",
+      "name_en": "nature_elements",
+      "description": "물, 불, 바람, 땅 등 자연 현상과 요소들",
+      "parent_category": null,
+      "estimated_keywords": 2000,
+      "cultural_weight": 10
+    },
+    "water": {
+      "id": "water",
+      "name": "물 관련",
+      "name_en": "water_related",
+      "description": "강, 바다, 비, 눈, 얼음 등 모든 물 관련 꿈",
+      "parent_category": "nature",
+      "estimated_keywords": 300,
+      "cultural_weight": 9
+    },
+    "fire": {
+      "id": "fire",
+      "name": "불 관련",
+      "name_en": "fire_related",
+      "description": "불, 화재, 촛불, 번개 등 불 관련 꿈",
+      "parent_category": "nature",
+      "estimated_keywords": 200,
+      "cultural_weight": 8
+    },
+    "earth": {
+      "id": "earth",
+      "name": "땅 관련",
+      "name_en": "earth_related",
+      "description": "산, 들판, 흙, 돌, 지진 등 땅 관련 꿈",
+      "parent_category": "nature",
+      "estimated_keywords": 250,
+      "cultural_weight": 8
+    },
+    "air": {
+      "id": "air",
+      "name": "바람 관련",
+      "name_en": "air_wind",
+      "description": "바람, 태풍, 구름, 하늘 등 공기 관련 꿈",
+      "parent_category": "nature",
+      "estimated_keywords": 180,
+      "cultural_weight": 7
+    },
+    "animals": {
+      "id": "animals",
+      "name": "동물",
+      "name_en": "animals",
+      "description": "모든 동물 관련 꿈, 십이지신 포함",
+      "parent_category": null,
+      "estimated_keywords": 1500,
+      "cultural_weight": 9
+    },
+    "zodiac_animals": {
+      "id": "zodiac_animals",
+      "name": "십이지신",
+      "name_en": "zodiac_animals",
+      "description": "쥐, 소, 호랑이, 토끼, 용, 뱀, 말, 양, 원숭이, 닭, 개, 돼지",
+      "parent_category": "animals",
+      "estimated_keywords": 240,
+      "cultural_weight": 10
+    },
+    "wild_animals": {
+      "id": "wild_animals",
+      "name": "야생동물",
+      "name_en": "wild_animals",
+      "description": "사자, 곰, 늑대, 여우 등 야생동물",
+      "parent_category": "animals",
+      "estimated_keywords": 300,
+      "cultural_weight": 8
+    },
+    "domestic_animals": {
+      "id": "domestic_animals",
+      "name": "가축",
+      "name_en": "domestic_animals",
+      "description": "소, 말, 돼지, 닭, 개, 고양이 등 가축",
+      "parent_category": "animals",
+      "estimated_keywords": 200,
+      "cultural_weight": 7
+    },
+    "birds": {
+      "id": "birds",
+      "name": "조류",
+      "name_en": "birds",
+      "description": "독수리, 까마귀, 학, 까치, 비둘기 등 새들",
+      "parent_category": "animals",
+      "estimated_keywords": 250,
+      "cultural_weight": 8
+    },
+    "insects": {
+      "id": "insects",
+      "name": "곤충",
+      "name_en": "insects",
+      "description": "나비, 벌, 개미, 거미 등 곤충류",
+      "parent_category": "animals",
+      "estimated_keywords": 150,
+      "cultural_weight": 6
+    },
+    "aquatic_animals": {
+      "id": "aquatic_animals",
+      "name": "수생동물",
+      "name_en": "aquatic_animals",
+      "description": "물고기, 거북이, 고래, 상어 등 물속 동물",
+      "parent_category": "animals",
+      "estimated_keywords": 200,
+      "cultural_weight": 7
+    },
+    "people": {
+      "id": "people",
+      "name": "사람",
+      "name_en": "people_relationships",
+      "description": "가족, 친구, 연인, 직장 동료 등 인간관계",
+      "parent_category": null,
+      "estimated_keywords": 1200,
+      "cultural_weight": 10
+    },
+    "family": {
+      "id": "family",
+      "name": "가족",
+      "name_en": "family",
+      "description": "부모, 형제자매, 조상, 후손 등 가족 관련",
+      "parent_category": "people",
+      "estimated_keywords": 300,
+      "cultural_weight": 10
+    },
+    "romance": {
+      "id": "romance",
+      "name": "연애/결혼",
+      "name_en": "romance_marriage",
+      "description": "연인, 배우자, 결혼식, 이별 등 연애 관련",
+      "parent_category": "people",
+      "estimated_keywords": 250,
+      "cultural_weight": 9
+    },
+    "social": {
+      "id": "social",
+      "name": "사회관계",
+      "name_en": "social_relationships",
+      "description": "친구, 동료, 상사, 선생님 등 사회적 관계",
+      "parent_category": "people",
+      "estimated_keywords": 200,
+      "cultural_weight": 8
+    },
+    "strangers": {
+      "id": "strangers",
+      "name": "낯선 사람",
+      "name_en": "strangers",
+      "description": "모르는 사람, 유명인, 역사적 인물 등",
+      "parent_category": "people",
+      "estimated_keywords": 180,
+      "cultural_weight": 6
+    },
+    "body": {
+      "id": "body",
+      "name": "신체",
+      "name_en": "body_health",
+      "description": "신체 부위, 건강, 질병, 치료 등",
+      "parent_category": null,
+      "estimated_keywords": 800,
+      "cultural_weight": 9
+    },
+    "body_parts": {
+      "id": "body_parts",
+      "name": "신체 부위",
+      "name_en": "body_parts",
+      "description": "머리, 눈, 손, 발 등 신체 각 부위",
+      "parent_category": "body",
+      "estimated_keywords": 200,
+      "cultural_weight": 8
+    },
+    "health": {
+      "id": "health",
+      "name": "건강/질병",
+      "name_en": "health_disease",
+      "description": "병, 치료, 의료, 약 등 건강 관련",
+      "parent_category": "body",
+      "estimated_keywords": 200,
+      "cultural_weight": 9
+    },
+    "death_birth": {
+      "id": "death_birth",
+      "name": "생사",
+      "name_en": "death_birth",
+      "description": "죽음, 탄생, 임신, 장례 등 생사 관련",
+      "parent_category": "body",
+      "estimated_keywords": 150,
+      "cultural_weight": 10
+    },
+    "actions": {
+      "id": "actions",
+      "name": "행동/활동",
+      "name_en": "actions_activities",
+      "description": "움직임, 일, 놀이, 운동 등 모든 행동",
+      "parent_category": null,
+      "estimated_keywords": 1000,
+      "cultural_weight": 8
+    },
+    "movement": {
+      "id": "movement",
+      "name": "이동/움직임",
+      "name_en": "movement",
+      "description": "걷기, 뛰기, 날기, 떨어지기 등 움직임",
+      "parent_category": "actions",
+      "estimated_keywords": 200,
+      "cultural_weight": 8
+    },
+    "work": {
+      "id": "work",
+      "name": "일/노동",
+      "name_en": "work_labor",
+      "description": "직업, 일하기, 공부, 창작 등 노동 활동",
+      "parent_category": "actions",
+      "estimated_keywords": 250,
+      "cultural_weight": 8
+    },
+    "leisure": {
+      "id": "leisure",
+      "name": "여가/놀이",
+      "name_en": "leisure_play",
+      "description": "게임, 여행, 스포츠, 춤 등 여가 활동",
+      "parent_category": "actions",
+      "estimated_keywords": 200,
+      "cultural_weight": 7
+    },
+    "communication": {
+      "id": "communication",
+      "name": "소통",
+      "name_en": "communication",
+      "description": "말하기, 듣기, 전화, 편지 등 의사소통",
+      "parent_category": "actions",
+      "estimated_keywords": 150,
+      "cultural_weight": 7
+    },
+    "objects": {
+      "id": "objects",
+      "name": "물건/재물",
+      "name_en": "objects_wealth",
+      "description": "돈, 보석, 도구, 의복 등 물질적 요소",
+      "parent_category": null,
+      "estimated_keywords": 1200,
+      "cultural_weight": 9
+    },
+    "money": {
+      "id": "money",
+      "name": "돈/재물",
+      "name_en": "money_wealth",
+      "description": "현금, 금, 은, 보석, 부동산 등 재산",
+      "parent_category": "objects",
+      "estimated_keywords": 200,
+      "cultural_weight": 10
+    },
+    "clothing": {
+      "id": "clothing",
+      "name": "의복",
+      "name_en": "clothing",
+      "description": "옷, 신발, 모자, 액세서리 등 착용물",
+      "parent_category": "objects",
+      "estimated_keywords": 180,
+      "cultural_weight": 7
+    },
+    "food": {
+      "id": "food",
+      "name": "음식",
+      "name_en": "food",
+      "description": "밥, 고기, 과일, 술 등 모든 음식물",
+      "parent_category": "objects",
+      "estimated_keywords": 300,
+      "cultural_weight": 8
+    },
+    "tools": {
+      "id": "tools",
+      "name": "도구/기계",
+      "name_en": "tools_machines",
+      "description": "칼, 망치, 자동차, 전자기기 등 도구류",
+      "parent_category": "objects",
+      "estimated_keywords": 250,
+      "cultural_weight": 6
+    },
+    "places": {
+      "id": "places",
+      "name": "장소/공간",
+      "name_en": "places_spaces",
+      "description": "집, 학교, 회사, 자연 장소 등 공간",
+      "parent_category": null,
+      "estimated_keywords": 1000,
+      "cultural_weight": 8
+    },
+    "home": {
+      "id": "home",
+      "name": "집/가정",
+      "name_en": "home_domestic",
+      "description": "집, 방, 침실, 부엌 등 가정 공간",
+      "parent_category": "places",
+      "estimated_keywords": 200,
+      "cultural_weight": 9
+    },
+    "public_places": {
+      "id": "public_places",
+      "name": "공공장소",
+      "name_en": "public_places",
+      "description": "학교, 병원, 은행, 시장 등 공공 시설",
+      "parent_category": "places",
+      "estimated_keywords": 250,
+      "cultural_weight": 7
+    },
+    "natural_places": {
+      "id": "natural_places",
+      "name": "자연 장소",
+      "name_en": "natural_places",
+      "description": "산, 바다, 강, 숲, 들판 등 자연 공간",
+      "parent_category": "places",
+      "estimated_keywords": 200,
+      "cultural_weight": 8
+    },
+    "religious_places": {
+      "id": "religious_places",
+      "name": "종교적 장소",
+      "name_en": "religious_places",
+      "description": "절, 교회, 사찰, 제단 등 종교 공간",
+      "parent_category": "places",
+      "estimated_keywords": 120,
+      "cultural_weight": 8
+    },
+    "religion": {
+      "id": "religion",
+      "name": "종교/신화",
+      "name_en": "religion_mythology",
+      "description": "불교, 기독교, 무속, 신화적 존재 등",
+      "parent_category": null,
+      "estimated_keywords": 800,
+      "cultural_weight": 9
+    },
+    "buddhism": {
+      "id": "buddhism",
+      "name": "불교",
+      "name_en": "buddhism",
+      "description": "부처, 스님, 절, 법당, 염주 등 불교 관련",
+      "parent_category": "religion",
+      "estimated_keywords": 150,
+      "cultural_weight": 9
+    },
+    "christianity": {
+      "id": "christianity",
+      "name": "기독교",
+      "name_en": "christianity",
+      "description": "예수, 천사, 교회, 십자가 등 기독교 관련",
+      "parent_category": "religion",
+      "estimated_keywords": 120,
+      "cultural_weight": 7
+    },
+    "shamanism": {
+      "id": "shamanism",
+      "name": "무속/민간신앙",
+      "name_en": "shamanism",
+      "description": "무당, 굿, 조상신, 산신 등 무속 관련",
+      "parent_category": "religion",
+      "estimated_keywords": 200,
+      "cultural_weight": 10
+    },
+    "mythology": {
+      "id": "mythology",
+      "name": "신화/전설",
+      "name_en": "mythology",
+      "description": "용, 봉황, 신선, 도깨비 등 신화적 존재",
+      "parent_category": "religion",
+      "estimated_keywords": 180,
+      "cultural_weight": 9
+    },
+    "situations": {
+      "id": "situations",
+      "name": "상황/사건",
+      "name_en": "situations_events",
+      "description": "특별한 상황, 사건, 위기, 축하 등",
+      "parent_category": null,
+      "estimated_keywords": 1200,
+      "cultural_weight": 8
+    },
+    "crisis": {
+      "id": "crisis",
+      "name": "위기/위험",
+      "name_en": "crisis_danger",
+      "description": "화재, 지진, 사고, 추락 등 위험한 상황",
+      "parent_category": "situations",
+      "estimated_keywords": 200,
+      "cultural_weight": 8
+    },
+    "celebration": {
+      "id": "celebration",
+      "name": "축하/기쁨",
+      "name_en": "celebration_joy",
+      "description": "결혼식, 생일, 승진, 합격 등 기쁜 일",
+      "parent_category": "situations",
+      "estimated_keywords": 180,
+      "cultural_weight": 8
+    },
+    "conflict": {
+      "id": "conflict",
+      "name": "갈등/다툼",
+      "name_en": "conflict_fight",
+      "description": "싸움, 전쟁, 논쟁, 경쟁 등 갈등 상황",
+      "parent_category": "situations",
+      "estimated_keywords": 150,
+      "cultural_weight": 7
+    },
+    "test": {
+      "id": "test",
+      "name": "시험/평가",
+      "name_en": "test_evaluation",
+      "description": "시험, 면접, 경연, 평가 등 시험 상황",
+      "parent_category": "situations",
+      "estimated_keywords": 120,
+      "cultural_weight": 8
+    },
+    "emotions": {
+      "id": "emotions",
+      "name": "감정/심리",
+      "name_en": "emotions_psychology",
+      "description": "기쁨, 슬픔, 분노, 두려움 등 감정 상태",
+      "parent_category": null,
+      "estimated_keywords": 500,
+      "cultural_weight": 9
+    },
+    "positive_emotions": {
+      "id": "positive_emotions",
+      "name": "긍정 감정",
+      "name_en": "positive_emotions",
+      "description": "기쁨, 행복, 평화, 만족 등 긍정적 감정",
+      "parent_category": "emotions",
+      "estimated_keywords": 120,
+      "cultural_weight": 8
+    },
+    "negative_emotions": {
+      "id": "negative_emotions",
+      "name": "부정 감정",
+      "name_en": "negative_emotions",
+      "description": "슬픔, 분노, 두려움, 절망 등 부정적 감정",
+      "parent_category": "emotions",
+      "estimated_keywords": 150,
+      "cultural_weight": 8
+    }
+  },
+  "hierarchy": {
+    "nature": {
+      "name": "자연계",
+      "estimated_keywords": 2000,
+      "children": [
+        {
+          "id": "water",
+          "name": "물 관련",
+          "estimated_keywords": 300
+        },
+        {
+          "id": "fire",
+          "name": "불 관련",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "earth",
+          "name": "땅 관련",
+          "estimated_keywords": 250
+        },
+        {
+          "id": "air",
+          "name": "바람 관련",
+          "estimated_keywords": 180
+        }
+      ]
+    },
+    "animals": {
+      "name": "동물",
+      "estimated_keywords": 1500,
+      "children": [
+        {
+          "id": "zodiac_animals",
+          "name": "십이지신",
+          "estimated_keywords": 240
+        },
+        {
+          "id": "wild_animals",
+          "name": "야생동물",
+          "estimated_keywords": 300
+        },
+        {
+          "id": "domestic_animals",
+          "name": "가축",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "birds",
+          "name": "조류",
+          "estimated_keywords": 250
+        },
+        {
+          "id": "insects",
+          "name": "곤충",
+          "estimated_keywords": 150
+        },
+        {
+          "id": "aquatic_animals",
+          "name": "수생동물",
+          "estimated_keywords": 200
+        }
+      ]
+    },
+    "people": {
+      "name": "사람",
+      "estimated_keywords": 1200,
+      "children": [
+        {
+          "id": "family",
+          "name": "가족",
+          "estimated_keywords": 300
+        },
+        {
+          "id": "romance",
+          "name": "연애/결혼",
+          "estimated_keywords": 250
+        },
+        {
+          "id": "social",
+          "name": "사회관계",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "strangers",
+          "name": "낯선 사람",
+          "estimated_keywords": 180
+        }
+      ]
+    },
+    "body": {
+      "name": "신체",
+      "estimated_keywords": 800,
+      "children": [
+        {
+          "id": "body_parts",
+          "name": "신체 부위",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "health",
+          "name": "건강/질병",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "death_birth",
+          "name": "생사",
+          "estimated_keywords": 150
+        }
+      ]
+    },
+    "actions": {
+      "name": "행동/활동",
+      "estimated_keywords": 1000,
+      "children": [
+        {
+          "id": "movement",
+          "name": "이동/움직임",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "work",
+          "name": "일/노동",
+          "estimated_keywords": 250
+        },
+        {
+          "id": "leisure",
+          "name": "여가/놀이",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "communication",
+          "name": "소통",
+          "estimated_keywords": 150
+        }
+      ]
+    },
+    "objects": {
+      "name": "물건/재물",
+      "estimated_keywords": 1200,
+      "children": [
+        {
+          "id": "money",
+          "name": "돈/재물",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "clothing",
+          "name": "의복",
+          "estimated_keywords": 180
+        },
+        {
+          "id": "food",
+          "name": "음식",
+          "estimated_keywords": 300
+        },
+        {
+          "id": "tools",
+          "name": "도구/기계",
+          "estimated_keywords": 250
+        }
+      ]
+    },
+    "places": {
+      "name": "장소/공간",
+      "estimated_keywords": 1000,
+      "children": [
+        {
+          "id": "home",
+          "name": "집/가정",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "public_places",
+          "name": "공공장소",
+          "estimated_keywords": 250
+        },
+        {
+          "id": "natural_places",
+          "name": "자연 장소",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "religious_places",
+          "name": "종교적 장소",
+          "estimated_keywords": 120
+        }
+      ]
+    },
+    "religion": {
+      "name": "종교/신화",
+      "estimated_keywords": 800,
+      "children": [
+        {
+          "id": "buddhism",
+          "name": "불교",
+          "estimated_keywords": 150
+        },
+        {
+          "id": "christianity",
+          "name": "기독교",
+          "estimated_keywords": 120
+        },
+        {
+          "id": "shamanism",
+          "name": "무속/민간신앙",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "mythology",
+          "name": "신화/전설",
+          "estimated_keywords": 180
+        }
+      ]
+    },
+    "situations": {
+      "name": "상황/사건",
+      "estimated_keywords": 1200,
+      "children": [
+        {
+          "id": "crisis",
+          "name": "위기/위험",
+          "estimated_keywords": 200
+        },
+        {
+          "id": "celebration",
+          "name": "축하/기쁨",
+          "estimated_keywords": 180
+        },
+        {
+          "id": "conflict",
+          "name": "갈등/다툼",
+          "estimated_keywords": 150
+        },
+        {
+          "id": "test",
+          "name": "시험/평가",
+          "estimated_keywords": 120
+        }
+      ]
+    },
+    "emotions": {
+      "name": "감정/심리",
+      "estimated_keywords": 500,
+      "children": [
+        {
+          "id": "positive_emotions",
+          "name": "긍정 감정",
+          "estimated_keywords": 120
+        },
+        {
+          "id": "negative_emotions",
+          "name": "부정 감정",
+          "estimated_keywords": 150
+        }
+      ]
+    }
+  },
+  "total_estimated_keywords": 11200,
+  "metadata": {
+    "created_at": "2025-09-04",
+    "version": "1.0",
+    "description": "한국 전통 꿈해몽 카테고리 체계 - 전문서적 3권 수준"
+  }
+}

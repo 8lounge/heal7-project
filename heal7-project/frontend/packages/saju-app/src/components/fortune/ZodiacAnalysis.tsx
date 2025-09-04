@@ -42,7 +42,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   return (
-    <div className={`relative overflow-hidden ${className}`} onClick={onClick}>
+    <div 
+      className={`relative overflow-hidden ${className}`} 
+      onClick={onClick}
+      style={{ perspective: "1200px" }}
+    >
       <motion.img
         src={imageSrc}
         alt={alt}
@@ -54,18 +58,31 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         }`}
         onLoad={handleImageLoad}
         onError={handleImageError}
-        whileHover={isActive ? { 
-          scale: 1.08,
-          rotate: [0, -1, 1, 0],
-          transition: { duration: 0.3 }
+        style={{
+          transformStyle: "preserve-3d",
+          backfaceVisibility: "hidden"
+        }}
+        initial={isActive ? {
+          rotateY: -90,
+          scale: 0.8,
+          opacity: 0
         } : {}}
         animate={isActive ? {
-          filter: ['brightness(1)', 'brightness(1.1)', 'brightness(1)'],
-          transition: { 
-            duration: 2,
-            repeat: Infinity,
-            repeatType: 'reverse'
-          }
+          rotateY: [360, 0],
+          scale: [0.8, 1.05, 1],
+          opacity: [0, 0.8, 1],
+          filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1.1)', 'brightness(1)']
+        } : {}}
+        transition={isActive ? {
+          duration: 3.5,
+          ease: [0.23, 1, 0.32, 1],
+          times: [0, 0.6, 0.8, 1]
+        } : {}}
+        whileHover={isActive ? { 
+          scale: 1.08,
+          rotateX: 5,
+          rotateY: 5,
+          transition: { duration: 0.3 }
         } : {}}
       />
       
@@ -402,42 +419,53 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                   className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center h-full flex flex-col justify-center"
                   initial={{ 
                     opacity: 0, 
-                    scale: 0.8, 
-                    rotateY: -90 
+                    scale: 0.5, 
+                    rotateY: -180,
+                    rotateX: 15,
+                    z: -300
                   }}
                   animate={{ 
                     opacity: 1, 
                     scale: 1, 
-                    rotateY: 0 
+                    rotateY: [360, 0],
+                    rotateX: 0,
+                    z: 0
                   }}
                   transition={{ 
-                    duration: 0.8, 
-                    delay: 0.2,
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 15
+                    duration: 4.5, 
+                    delay: 0.1,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                    times: [0, 0.4, 1]
                   }}
-                  style={{ perspective: 1000 }}
+                  style={{ 
+                    perspective: "1500px",
+                    transformStyle: "preserve-3d"
+                  }}
                 >
-                  {/* 메인 이미지 */}
+                  {/* 메인 이미지 - 로열카드 3D 회전 효과 */}
                   <motion.div 
                     className="mb-6"
+                    style={{ 
+                      perspective: "1000px",
+                      perspectiveOrigin: "center center"
+                    }}
                     initial={{ 
                       opacity: 0, 
-                      scale: 0.5, 
-                      rotate: -180 
+                      scale: 0.3, 
+                      rotateY: -180,
+                      z: -200
                     }}
                     animate={{ 
                       opacity: 1, 
                       scale: 1, 
-                      rotate: 0 
+                      rotateY: 0,
+                      z: 0
                     }}
                     transition={{ 
-                      duration: 1.2, 
-                      delay: 0.5,
-                      type: "spring",
-                      stiffness: 80,
-                      damping: 12
+                      duration: 4.0,
+                      delay: 0.3,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                      times: [0, 0.3, 0.8, 1]
                     }}
                   >
                     <OptimizedImage

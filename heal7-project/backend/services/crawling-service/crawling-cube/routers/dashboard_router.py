@@ -43,7 +43,7 @@ class CrawlerStatus(BaseModel):
     id: str
     name: str
     status: str  # 'running', 'idle', 'error', 'stopped'
-    tier: str   # 'httpx', 'playwright', 'selenium'
+    tier: str   # 'httpx', 'playwright' (3단계 간소화 시스템)
     current_url: Optional[str] = None
     requests_today: int = 0
     success_rate: float = 0.0
@@ -105,7 +105,7 @@ def init_sample_data():
     global crawler_status_store, ai_stats_store
     
     # 크롤러 상태 초기화
-    crawler_tiers = ['httpx', 'playwright', 'selenium']
+    crawler_tiers = ['httpx', 'playwright']  # 3단계 간소화 시스템
     crawler_statuses = ['running', 'idle', 'error', 'stopped']
     
     crawler_status_store = []

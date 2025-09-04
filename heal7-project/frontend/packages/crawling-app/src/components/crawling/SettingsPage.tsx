@@ -54,11 +54,11 @@ interface CrawlerSettings {
     timeout: number;
     viewport: { width: number; height: number };
   };
-  selenium: {
+  httpx_bs: {
     enabled: boolean;
-    headless: boolean;
+    parser: 'lxml' | 'html.parser' | 'html5lib';
     timeout: number;
-    driver: 'chrome' | 'firefox' | 'edge';
+    encoding: 'auto' | 'utf-8' | 'gbk';
   };
 }
 
@@ -101,11 +101,11 @@ const SettingsPage: React.FC = () => {
       timeout: 60,
       viewport: { width: 1920, height: 1080 }
     },
-    selenium: {
-      enabled: false,
-      headless: true,
-      timeout: 60,
-      driver: 'chrome'
+    httpx_bs: {
+      enabled: true,
+      parser: 'lxml',
+      timeout: 30,
+      encoding: 'auto'
     }
   });
 
@@ -393,7 +393,7 @@ const SettingsPage: React.FC = () => {
                   </div>
                 )}
                 
-                {(tier === 'playwright' || tier === 'selenium') && 'headless' in settings && (
+                {tier === 'playwright' && 'headless' in settings && (
                   <div>
                     <label className="flex items-center text-sm text-slate-300">
                       <input

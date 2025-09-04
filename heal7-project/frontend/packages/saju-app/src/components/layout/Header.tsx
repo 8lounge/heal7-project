@@ -12,14 +12,20 @@ interface HeaderProps {
   apiStatus: string
   currentPage?: CurrentPage
   onPageChange?: (page: CurrentPage) => void
+  onAuthModalStateChange?: (isOpen: boolean) => void
 }
 
-const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage, onPageChange }) => {
+const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage, onPageChange, onAuthModalStateChange }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  const handleAuthModalOpen = (isOpen: boolean) => {
+    setIsAuthModalOpen(isOpen);
+    onAuthModalStateChange?.(isOpen);
+  };
+
   const handleAuthSuccess = () => {
-    setIsAuthModalOpen(false);
+    handleAuthModalOpen(false);
   };
 
   const handleLogout = () => {
@@ -32,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
       onPageChange?.('profile');
     } else {
       // 로그인되지 않은 경우 인증 모달 열기
-      setIsAuthModalOpen(true);
+      handleAuthModalOpen(true);
     }
   };
 
@@ -176,7 +182,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                   className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-medium transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsAuthModalOpen(true)}
+                  onClick={() => handleAuthModalOpen(true)}
                 >
                   로그인
                 </motion.button>
@@ -296,7 +302,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
       {/* 인증 모달 */}
       <AuthModal 
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={() => handleAuthModalOpen(false)}
         onAuthSuccess={handleAuthSuccess}
       />
     </motion.header>

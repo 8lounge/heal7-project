@@ -1,4 +1,191 @@
 // 운세 캘린더 데이터 시스템 - KASI API 연동
+// ======================================================================
+// 🔥 만세력 핵심 상수 기준값 (CRITICAL CONSTANTS) 🔥
+// ======================================================================
+
+// 🎯 1. 60갑자 계산 핵심 기준점 (절대 변경 금지)
+export const GAPJA_REFERENCE_CONSTANTS = {
+  /** 
+   * 🔥 60갑자 절대 기준일: 1900년 1월 31일 = 갑진일
+   * ⚠️  이 값을 변경하면 모든 만세력 계산이 틀어짐
+   * 📚 출처: 전통 명리학 표준, KASI API 호환
+   */
+  REFERENCE_DATE: new Date(1900, 0, 31), // 1900년 1월 31일
+  REFERENCE_GAPJA: '갑진',
+  REFERENCE_GAPJA_INDEX: 40, // 갑자60순환 배열에서의 위치
+  
+  /** 
+   * 🔥 입춘 기준 (연주 계산의 핵심)
+   * ⚠️  매년 2월 4일 전후가 입춘이며, 이 기준으로 연주가 바뀜
+   */
+  SPRING_START_MONTH: 2,
+  SPRING_START_DAY: 4,
+} as const;
+
+// 🎯 2. 진태양시 계산 상수 (국가별 지역 기준)
+export const SOLAR_TIME_CONSTANTS = {
+  /** 
+   * 🔥 한국(서울) 기준 진태양시 보정
+   * 위도: 37.5665°N, 경도: 126.9780°E (서울 중심)
+   * 표준 경도: 135°E (동경 135도 - 한국표준시)
+   * 보정값: (126.978 - 135) × 4분/도 = -32.09분 ≈ -32분
+   */
+  KOREA_LONGITUDE: 126.978,
+  KOREA_STANDARD_LONGITUDE: 135.0,
+  KOREA_TIME_CORRECTION_MINUTES: -32, // 서울 표준시 기준 경도차 보정
+  
+  /** 
+   * 🔥 다른 국가 확장용 (향후 글로벌 서비스 대비)
+   */
+  CHINA_LONGITUDE: 116.4074, // 베이징
+  CHINA_TIME_CORRECTION_MINUTES: -46,
+  JAPAN_LONGITUDE: 139.6917, // 도쿄  
+  JAPAN_TIME_CORRECTION_MINUTES: 19,
+} as const;
+
+// 🎯 3. 24절기 및 계절 기준 상수
+export const SEASONAL_CONSTANTS = {
+  /** 
+   * 🔥 24절기 기준 (월주 계산의 핵심)
+   * ⚠️  KASI API 기준이지만 표준시 → 진태양시 보정 필요
+   * 📌 KASI는 표준시(KST) 기준이므로 진태양시 적용시 -32분 보정 적용
+   */
+  SOLAR_TERMS_REFERENCE: {
+    1: { term: '입춘', approx_date: [2, 4], kasi_time_offset: -32 }, // 2월 4일 전후, 진태양시 -32분
+    2: { term: '경칩', approx_date: [3, 5], kasi_time_offset: -32 },
+    3: { term: '청명', approx_date: [4, 5], kasi_time_offset: -32 },  
+    4: { term: '입하', approx_date: [5, 5], kasi_time_offset: -32 },
+    5: { term: '망종', approx_date: [6, 6], kasi_time_offset: -32 },
+    6: { term: '소서', approx_date: [7, 7], kasi_time_offset: -32 },
+    7: { term: '입추', approx_date: [8, 7], kasi_time_offset: -32 },
+    8: { term: '백로', approx_date: [9, 8], kasi_time_offset: -32 },
+    9: { term: '한로', approx_date: [10, 8], kasi_time_offset: -32 },
+    10: { term: '입동', approx_date: [11, 7], kasi_time_offset: -32 },
+    11: { term: '대설', approx_date: [12, 7], kasi_time_offset: -32 },
+    12: { term: '소한', approx_date: [1, 5], kasi_time_offset: -32 }, // 다음해 1월
+  },
+  
+  /** 
+   * 🔥 KASI API vs 진태양시 보정 상수
+   * ⚠️  KASI API는 KST(한국표준시) 기준으로 절기를 제공
+   * 📌 진태양시 사주계산에서는 이 보정값을 적용해야 정확함
+   */
+  KASI_TO_TRUE_SOLAR_CORRECTION: {
+    KOREA_KST_OFFSET_MINUTES: -32, // 서울 기준 진태양시 보정
+    DST_ADJUSTMENT_NEEDED: false, // 한국은 서머타임 없음
+    PRECISION_THRESHOLD_HOURS: 2, // 절기 전후 2시간 내에서는 정밀 계산 필요
+  },
+  
+  /** 
+   * 🔥 월지지 매핑 (절기 기준)
+   * ⚠️  입춘부터 시작하여 12개월 순환
+   */
+  MONTH_JIJI_MAP: {
+    1: '寅', 2: '卯', 3: '辰', 4: '巳', 5: '午', 6: '未',
+    7: '申', 8: '酉', 9: '戌', 10: '亥', 11: '子', 12: '丑'
+  },
+  
+  /** 
+   * 🔥 음력 + 절기 비교대조 계산 원칙 (2025-09-04 신규 반영)
+   * ⚠️  월주, 일주 계산의 정확성을 위한 핵심 원칙
+   * 📌 양력 계산 대비 복잡도 감소 및 정확도 향상
+   */
+  LUNAR_SOLAR_TERMS_PRINCIPLE: {
+    /** 월주 계산 방식: 음력 월 + 해당 절기 확인 */
+    MONTH_PILLAR_METHOD: '음력_절기_비교대조',
+    
+    /** 일주 계산 방식: 음력 날짜 기준 60갑자 순환 */
+    DAY_PILLAR_METHOD: '음력_60갑자_순환',
+    
+    /** 계산 복잡도 감소: 양력 → 음력 변환 후 계산 */
+    COMPLEXITY_REDUCTION: true,
+    
+    /** 정확도 보장: 전통 명리학 표준 준수 */
+    TRADITIONAL_ACCURACY: true,
+    
+    /** 
+     * 🔥 핵심 계산 순서 (반드시 준수)
+     * 1. 양력 출생일 → KASI API → 음력 변환
+     * 2. 음력 기준으로 해당 절기 확인
+     * 3. 절기와 음력 월 비교대조하여 월주 결정
+     * 4. 음력 일자로 60갑자 순환 계산하여 일주 결정
+     */
+    CALCULATION_ORDER: [
+      'solar_to_lunar_conversion',
+      'solar_term_identification', 
+      'lunar_month_solar_term_comparison',
+      'month_pillar_determination',
+      'lunar_date_60gapja_calculation',
+      'day_pillar_determination'
+    ],
+  },
+} as const;
+
+// 🎯 4. 서머타임 및 시간대 상수
+export const TIMEZONE_CONSTANTS = {
+  /** 
+   * 🔥 한국은 서머타임 없음 (연중 UTC+9 고정)
+   * ⚠️  따라서 KASI API도 서머타임 고려 불필요
+   */
+  KOREA_USES_DST: false,
+  KOREA_UTC_OFFSET: 9,
+  
+  /** 
+   * 🔥 서머타임 적용 국가들 (향후 확장용)
+   * ⚠️  이들 국가에서는 KASI 대응 API의 절기 시간도 DST 보정 필요
+   */
+  DST_COUNTRIES: {
+    'US': { 
+      start: [3, 2, 0], end: [11, 1, 0], // 3월 2주 일요일 ~ 11월 1주 일요일
+      standard_offset: -5, // EST UTC-5
+      dst_offset: -4, // EDT UTC-4
+      solar_time_correction_needed: true
+    },
+    'EU': { 
+      start: [3, -1, 0], end: [10, -1, 0], // 3월 마지막 일요일 ~ 10월 마지막 일요일  
+      standard_offset: 1, // CET UTC+1
+      dst_offset: 2, // CEST UTC+2
+      solar_time_correction_needed: true
+    },
+  },
+  
+  /** 
+   * 🔥 시간대별 KASI 대응 API 정보 (향후 글로벌 서비스용)
+   * ⚠️  각 국가의 천문 API는 해당 지역 표준시 기준이므로 진태양시 보정 필수
+   */
+  GLOBAL_ASTRONOMICAL_APIS: {
+    'KOREA': { source: 'KASI', timezone: 'KST', needs_solar_correction: true },
+    'CHINA': { source: 'CAS', timezone: 'CST', needs_solar_correction: true },
+    'JAPAN': { source: 'NAOJ', timezone: 'JST', needs_solar_correction: true },
+    'US': { source: 'USNO', timezone: 'multiple', needs_dst_handling: true },
+  },
+} as const;
+
+// 🎯 5. 시주 계산 핵심 상수
+export const HOUR_CONSTANTS = {
+  /** 
+   * 🔥 시두법 매핑 (일간에 따른 시천간 결정)
+   * ⚠️  이 매핑이 시주 계산의 핵심
+   */
+  HOUR_CHEONGAN_BY_DAY: {
+    '甲': ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸', '甲', '乙'],
+    '乙': ['丙', '丁', '戊', '己', '庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁'],
+    '丙': ['戊', '己', '庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己'],
+    '丁': ['庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛'],
+    '戊': ['壬', '癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
+    '己': ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸', '甲', '乙'],
+    '庚': ['丙', '丁', '戊', '己', '庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁'],
+    '辛': ['戊', '己', '庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己'],
+    '壬': ['庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛'],
+    '癸': ['壬', '癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'],
+  },
+  
+  /** 
+   * 🔥 시지지 매핑 (2시간 단위)
+   * 23:00-01:00=자, 01:00-03:00=축, ... 순서
+   */
+  HOUR_JIJI_BOUNDARIES: [23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23],
+} as const;
 
 export interface CalendarDate {
   date: Date;
@@ -65,9 +252,9 @@ export const 갑자60순환 = [
 
 // 60갑자 계산 함수 (배열 기반으로 정확한 조합만 반환)
 export const get60갑자 = (date: Date): string => {
-  // 기준일: 1900년 1월 31일 = 갑진일 (정확한 명리학 기준점)
-  const 기준일 = new Date(1900, 0, 31); // 1900년 1월 31일
-  const 기준갑자인덱스 = 40; // 갑진은 배열에서 40번째 (인덱스 40)
+  // 🔥 핵심 상수 사용 (상단에서 정의된 CRITICAL CONSTANTS)
+  const 기준일 = GAPJA_REFERENCE_CONSTANTS.REFERENCE_DATE;
+  const 기준갑자인덱스 = GAPJA_REFERENCE_CONSTANTS.REFERENCE_GAPJA_INDEX;
   
   const 날짜차이 = Math.floor((date.getTime() - 기준일.getTime()) / (24 * 60 * 60 * 1000));
   let 갑자인덱스 = (기준갑자인덱스 + 날짜차이) % 60;

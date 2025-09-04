@@ -29,6 +29,17 @@ interface CrawlingStats {
   timestamp: string;
 }
 
+interface ThreeTierStatus {
+  tiers: {
+    httpx: { count: number; status: string; description: string };
+    httpx_bs: { count: number; status: string; description: string };
+    playwright: { count: number; status: string; description: string };
+  };
+  total_active: number;
+  timestamp: string;
+  data_source: string;
+}
+
 interface HealthStatus {
   status: 'healthy' | 'unhealthy';
   version: string;
@@ -140,6 +151,22 @@ class CrawlingAPIClient {
       return null;
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 🏗️ 3-Tier 시스템 상태 조회
+   */
+  async get3TierStatus(): Promise<ThreeTierStatus | null> {
+    try {
+      const response = await fetch(`${this.baseURL}/api/3-tier-status`);
+      if (response.ok) {
+        return await response.json();
+      }
+      return null;
+    } catch (error) {
+      console.error('Failed to fetch 3-Tier status:', error);
       return null;
     }
   }
@@ -295,3 +322,11 @@ class CrawlingAPIClient {
 // 싱글톤 인스턴스 생성
 export const crawlingAPI = new CrawlingAPIClient();
 export default CrawlingAPIClient;
+
+// 타입 export
+export type { 
+  CrawlingService, 
+  CrawlingStats, 
+  ThreeTierStatus,
+  HealthStatus 
+};

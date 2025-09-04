@@ -19,10 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 class CrawlerType(Enum):
-    """크롤러 타입 정의"""
+    """크롤러 타입 정의 (3단계 간소화)"""
     HTTPX = "httpx"
     PLAYWRIGHT = "playwright"
-    SELENIUM = "selenium"
 
 
 class CrawlStatus(Enum):

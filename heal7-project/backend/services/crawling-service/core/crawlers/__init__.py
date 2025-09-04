@@ -1,14 +1,13 @@
 """
-🕷️ HEAL7 3-Tier 크롤링 시스템
-- Tier 1: httpx (정적 사이트, API)
-- Tier 2: Playwright (동적 콘텐츠, 스크린샷)  
-- Tier 3: Selenium + undetected (Anti-bot 우회)
+🕷️ HEAL7 3-단계 크롤링 시스템 (간소화)
+- 단계 1: httpx (단순 HTTP 요청)
+- 단계 2: httpx + BeautifulSoup (HTML 파싱 필요시)
+- 단계 3: Playwright (JavaScript 렌더링 필요시)
 """
 
 from .base_crawler import BaseCrawler, CrawlResult, CrawlerType, CrawlConfig
 from .httpx_crawler import HttpxCrawler
 from .playwright_crawler import PlaywrightCrawler
-from .selenium_crawler import SeleniumCrawler
 
 __all__ = [
     'BaseCrawler',
@@ -16,6 +15,5 @@ __all__ = [
     'CrawlerType',
     'CrawlConfig',
     'HttpxCrawler',
-    'PlaywrightCrawler',
-    'SeleniumCrawler'
+    'PlaywrightCrawler'
 ]

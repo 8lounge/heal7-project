@@ -88,13 +88,34 @@ class KasiCalculatorCore:
             return SajuResult(pillars, ilgan, calendar_info).to_dict()
             
         except Exception as e:
-            logger.error(f"사주 계산 오류: {e}")
-            return self._fallback_calculation(year, month, day, hour, minute, is_lunar)
+            logger.error(f"KASI API 사주 계산 오류: {e}")
+            # 폴백 제거: 오류 발생 시 구체적 정보와 함께 실패 반환
+            return {
+                'error': True,
+                'error_type': 'KASI_API_FAILURE',
+                'error_message': str(e),
+                'error_timestamp': datetime.now().isoformat(),
+                'calculation_method': 'failed',
+                'pillars': {
+                    'year': {'gapja': '❌오류', 'cheongan': '❌', 'jiji': '❌'},
+                    'month': {'gapja': '❌오류', 'cheongan': '❌', 'jiji': '❌'},
+                    'day': {'gapja': '❌오류', 'cheongan': '❌', 'jiji': '❌'},
+                    'hour': {'gapja': '❌오류', 'cheongan': '❌', 'jiji': '❌'}
+                },
+                'ilgan': '❌',
+                'calendar_info': {
+                    'input_type': 'error',
+                    'error_details': f"KASI API 호출 실패: {str(e)}"
+                }
+            }
     
     def _lunar_to_solar_kasi(self, lun_year: int, lun_month: int, lun_day: int, is_leap: bool) -> Optional[Dict]:
-        """음력 → 양력 변환 (KASI API)"""
-        if not self.api_key or not self._check_basic_usage_limit():
-            return self._approximate_lunar_to_solar(lun_year, lun_month, lun_day)
+        """음력 → 양력 변환 (KASI API 전용, 폴백 없음)"""
+        if not self.api_key:
+            raise ValueError("KASI API 키가 설정되지 않음")
+        
+        if not self._check_basic_usage_limit():
+            raise RuntimeError("KASI API 사용 한도 초과")
         
         try:
             url = f"{KasiApiConfig.BASE_URL}{KasiApiConfig.ENDPOINTS['lunar_to_solar']}"
@@ -106,32 +127,45 @@ class KasiCalculatorCore:
                 'lunLeapmonth': 'Y' if is_leap else 'N'
             }
             
+            logger.info(f"KASI API 호출: 음력→양력 변환 {lun_year}-{lun_month}-{lun_day}")
+            
             response = requests.get(url, params=params, timeout=KasiApiConfig.TIMEOUT_SECONDS)
             response.raise_for_status()
             
             root = ET.fromstring(response.content)
+            
+            # 응답 코드 확인
+            result_code = root.find('.//resultCode')
+            if result_code is not None and result_code.text != '00':
+                result_msg = root.find('.//resultMsg')
+                raise RuntimeError(f"KASI API 오류: {result_code.text} - {result_msg.text if result_msg is not None else 'Unknown'}")
+            
             sol_year = root.find('.//solYear')
             sol_month = root.find('.//solMonth')
             sol_day = root.find('.//solDay')
             
-            if sol_year is not None and sol_month is not None and sol_day is not None:
-                self.usage_count += 1
-                return {
-                    'year': int(sol_year.text),
-                    'month': int(sol_month.text),
-                    'day': int(sol_day.text),
-                    'date_string': f"{sol_year.text}년 {sol_month.text}월 {sol_day.text}일"
-                }
+            if sol_year is None or sol_month is None or sol_day is None:
+                raise ValueError("KASI API 응답에 필수 필드 누락 (solYear, solMonth, solDay)")
+            
+            self.usage_count += 1
+            return {
+                'year': int(sol_year.text),
+                'month': int(sol_month.text),
+                'day': int(sol_day.text),
+                'date_string': f"{sol_year.text}년 {sol_month.text}월 {sol_day.text}일"
+            }
             
         except Exception as e:
-            logger.warning(f"KASI 음력→양력 변환 실패: {e}")
-        
-        return self._approximate_lunar_to_solar(lun_year, lun_month, lun_day)
+            logger.error(f"KASI 음력→양력 변환 실패: {e}")
+            raise RuntimeError(f"KASI API 음력→양력 변환 실패: {str(e)}")
     
     def _solar_to_lunar_kasi(self, sol_year: int, sol_month: int, sol_day: int) -> Optional[Dict]:
-        """양력 → 음력 변환 (KASI API)"""
-        if not self.api_key or not self._check_basic_usage_limit():
-            return self._approximate_solar_to_lunar(sol_year, sol_month, sol_day)
+        """양력 → 음력 변환 (KASI API 전용, 폴백 없음)"""
+        if not self.api_key:
+            raise ValueError("KASI API 키가 설정되지 않음")
+        
+        if not self._check_basic_usage_limit():
+            raise RuntimeError("KASI API 사용 한도 초과")
         
         try:
             url = f"{KasiApiConfig.BASE_URL}{KasiApiConfig.ENDPOINTS['solar_to_lunar']}"
@@ -142,31 +176,41 @@ class KasiCalculatorCore:
                 'solDay': str(sol_day).zfill(2)
             }
             
+            logger.info(f"KASI API 호출: 양력→음력 변환 {sol_year}-{sol_month}-{sol_day}")
+            
             response = requests.get(url, params=params, timeout=KasiApiConfig.TIMEOUT_SECONDS)
             response.raise_for_status()
             
             root = ET.fromstring(response.content)
+            
+            # 응답 코드 확인
+            result_code = root.find('.//resultCode')
+            if result_code is not None and result_code.text != '00':
+                result_msg = root.find('.//resultMsg')
+                raise RuntimeError(f"KASI API 오류: {result_code.text} - {result_msg.text if result_msg is not None else 'Unknown'}")
+            
             lun_year = root.find('.//lunYear')
             lun_month = root.find('.//lunMonth') 
             lun_day = root.find('.//lunDay')
             leap_month = root.find('.//lunLeapmonth')
             
-            if lun_year is not None and lun_month is not None and lun_day is not None:
-                self.usage_count += 1
-                is_leap = leap_month is not None and leap_month.text == 'Y'
-                
-                return {
-                    'year': int(lun_year.text),
-                    'month': int(lun_month.text), 
-                    'day': int(lun_day.text),
-                    'is_leap': is_leap,
-                    'date_string': f"{lun_year.text}년 {lun_month.text}월 {lun_day.text}일" + (" (윤달)" if is_leap else "")
-                }
+            if lun_year is None or lun_month is None or lun_day is None:
+                raise ValueError("KASI API 응답에 필수 필드 누락 (lunYear, lunMonth, lunDay)")
+            
+            self.usage_count += 1
+            is_leap = leap_month is not None and leap_month.text == 'Y'
+            
+            return {
+                'year': int(lun_year.text),
+                'month': int(lun_month.text), 
+                'day': int(lun_day.text),
+                'is_leap': is_leap,
+                'date_string': f"{lun_year.text}년 {lun_month.text}월 {lun_day.text}일" + (" (윤달)" if is_leap else "")
+            }
             
         except Exception as e:
-            logger.warning(f"KASI 양력→음력 변환 실패: {e}")
-        
-        return self._approximate_solar_to_lunar(sol_year, sol_month, sol_day)
+            logger.error(f"KASI 양력→음력 변환 실패: {e}")
+            raise RuntimeError(f"KASI API 양력→음력 변환 실패: {str(e)}")
     
     def _calculate_pure_solar_time(self, birth_datetime: datetime) -> datetime:
         """진태양시 계산 (서울 기준 -32분 보정)"""

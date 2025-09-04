@@ -85,7 +85,7 @@ export const PersonalityProfile: React.FC = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent mb-4">
             🧠 통합 성격 프로파일
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-white text-lg">
             MBTI × 사주 오행의 만남, 진짜 나를 발견하는 입체적 진단
           </p>
         </div>

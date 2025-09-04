@@ -28,7 +28,7 @@ interface DataItem {
   title: string;
   content: string;
   sourceUrl: string;
-  crawlerTier: 'httpx' | 'playwright' | 'selenium';
+  crawlerTier: 'httpx' | 'httpx_bs' | 'playwright';
   dataType: 'text' | 'table' | 'image' | 'document';
   quality: 'high' | 'medium' | 'low';
   collectedAt: string;
@@ -55,7 +55,7 @@ interface DataStats {
 
 const DataManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTier, setSelectedTier] = useState<'all' | 'httpx' | 'playwright' | 'selenium'>('all');
+  const [selectedTier, setSelectedTier] = useState<'all' | 'httpx' | 'httpx_bs' | 'playwright'>('all');
   const [selectedType, setSelectedType] = useState<'all' | 'text' | 'table' | 'image' | 'document'>('all');
   const [selectedQuality, setSelectedQuality] = useState<'all' | 'high' | 'medium' | 'low'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'size' | 'quality' | 'title'>('date');
@@ -412,7 +412,7 @@ const DataManagement: React.FC = () => {
               <option value="all">모든 Tier</option>
               <option value="httpx">Tier 1 (httpx)</option>
               <option value="playwright">Tier 2 (Playwright)</option>
-              <option value="selenium">Tier 3 (Selenium)</option>
+              <option value="httpx_bs">Tier 2 (httpx + BeautifulSoup)</option>
             </select>
           </div>
 

@@ -15,10 +15,11 @@ import EnhancedDashboard from './components/dashboard/EnhancedDashboard'
 // EnhancedDashboard moved to cube-module-app
 import SajuCalculator from './components/fortune/SajuCalculator'
 import InteractiveTarotReader from './components/fortune/InteractiveTarotReader'
-import Magazine from './components/magazine/Magazine'
-import Consultation from './components/consultation/Consultation'
-import Store from './components/store/Store'
-import Notices from './components/notices/Notices'
+// Content Pages 그룹 - Lazy Loading으로 분할
+const Magazine = lazy(() => import('./components/magazine/Magazine'))
+const Consultation = lazy(() => import('./components/consultation/Consultation'))
+const Store = lazy(() => import('./components/store/Store'))
+const Notices = lazy(() => import('./components/notices/Notices'))
 
 // 새로운 운세 콘텐츠 컴포넌트들
 import FortuneCategories from './components/fortune/FortuneCategories'
@@ -26,8 +27,9 @@ import ZodiacAnalysis from './components/fortune/ZodiacAnalysis'
 import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
-import IntegratedAdminDashboard from './components/admin/IntegratedAdminDashboard'
-import AdminLogin from './components/admin/AdminLogin'
+// Lazy Loading으로 Admin 컴포넌트 분할
+const SajuAdminDashboard = lazy(() => import('./components/saju-admin/SajuAdminDashboard'))
+const AdminLogin = lazy(() => import('./components/saju-admin/AdminLogin'))
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
 
@@ -57,6 +59,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState<CurrentPage>('dashboard')
   const [currentBgImage, setCurrentBgImage] = useState(0)
   const [adminAuthenticated, setAdminAuthenticated] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   
   // 🚀 하이브리드 라우팅 모드 (테스트용 - 나중에 사용자 설정으로 변경 가능)
   const [useHybridNavigation] = useState(true)
@@ -207,20 +210,22 @@ function App() {
       {/* 전체 오버레이 */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-purple-900/40 to-black/70" />
       
-      {/* 배경 이미지 인디케이터 */}
-      <div className="fixed top-4 right-4 flex space-x-2 z-50 bg-black/20 backdrop-blur-sm rounded-full p-2">
-        {backgroundImages.map((_, index) => (
-          <motion.div
-            key={index}
-            className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
-              index === currentBgImage ? 'bg-white shadow-lg' : 'bg-white/50'
-            }`}
-            onClick={() => setCurrentBgImage(index)}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.8 }}
-          />
-        ))}
-      </div>
+      {/* 배경 이미지 인디케이터 - AuthModal이 열려있을 때 숨김 */}
+      {!isAuthModalOpen && (
+        <div className="fixed top-4 right-4 flex space-x-2 z-50 bg-black/20 backdrop-blur-sm rounded-full p-2">
+          {backgroundImages.map((_, index) => (
+            <motion.div
+              key={index}
+              className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
+                index === currentBgImage ? 'bg-white shadow-lg' : 'bg-white/50'
+              }`}
+              onClick={() => setCurrentBgImage(index)}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.8 }}
+            />
+          ))}
+        </div>
+      )}
       {/* 3D 배경 (사이버 판타지 모드) - 성능 최적화 */}
       {viewMode === 'cyber_fantasy' && (
         <div className="fixed inset-0 z-0">
@@ -273,6 +278,7 @@ function App() {
           apiStatus={apiHealth?.status || 'unknown'}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
+          onAuthModalStateChange={setIsAuthModalOpen}
         />
 
         {/* 네비게이션 - 하이브리드 모드 */}
@@ -312,19 +318,29 @@ function App() {
                 <InteractiveTarotReader viewMode={viewMode} />
               )}
               {currentPage === 'magazine' && (
-                <Magazine viewMode={viewMode} />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">매거진 로딩 중...</div></div>}>
+                  <Magazine viewMode={viewMode} />
+                </Suspense>
               )}
               {currentPage === 'consultation' && (
-                <Consultation viewMode={viewMode} />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">상담 페이지 로딩 중...</div></div>}>
+                  <Consultation viewMode={viewMode} />
+                </Suspense>
               )}
               {currentPage === 'store' && (
-                <Store viewMode={viewMode} />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">스토어 로딩 중...</div></div>}>
+                  <Store viewMode={viewMode} />
+                </Suspense>
               )}
               {currentPage === 'notices' && (
-                <Notices viewMode={viewMode} />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">공지사항 로딩 중...</div></div>}>
+                  <Notices viewMode={viewMode} />
+                </Suspense>
               )}
               {currentPage === 'subscription' && (
-                <Notices viewMode={viewMode} initialView="subscription" />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">구독 페이지 로딩 중...</div></div>}>
+                  <Notices viewMode={viewMode} initialView="subscription" />
+                </Suspense>
               )}
               {currentPage === 'profile' && (
                 <div className="text-center py-20">
@@ -371,11 +387,16 @@ function App() {
                 <FortuneCalendar viewMode={viewMode} />
               )}
               {currentPage === 'admin' && (
-                adminAuthenticated ? (
-                  <IntegratedAdminDashboard />
-                ) : (
-                  <AdminLogin onAuthenticated={() => setAdminAuthenticated(true)} />
-                )
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">관리자 페이지 로딩 중...</div></div>}>
+                  {adminAuthenticated ? (
+                    <SajuAdminDashboard />
+                  ) : (
+                    <AdminLogin onAuthenticated={() => {
+                      console.log('Admin authentication successful');
+                      setAdminAuthenticated(true);
+                    }} />
+                  )}
+                </Suspense>
               )}
             </motion.div>
           </AnimatePresence>
