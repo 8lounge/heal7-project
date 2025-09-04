@@ -22,6 +22,10 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onAuthenticated }) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (password === ADMIN_PASSWORD) {
+      // localStorage에 인증 상태 저장 (세션 유지를 위해)
+      localStorage.setItem('heal7_admin_authenticated', 'true');
+      localStorage.setItem('heal7_admin_login_time', Date.now().toString());
+      
       onAuthenticated();
     } else {
       setError('잘못된 비밀번호입니다.');

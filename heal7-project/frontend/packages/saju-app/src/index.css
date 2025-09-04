@@ -136,7 +136,7 @@
 
   /* 🌌 카드 스타일 */
   .card-glass {
-    @apply backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl shadow-xl;
+    @apply backdrop-blur-sm bg-black/30 border border-white/20 rounded-xl shadow-xl;
   }
 
   .card-cosmic {
@@ -146,8 +146,8 @@
 
   .card-crystal {
     background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.05));
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.15));
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
@@ -236,7 +236,7 @@
 
   .cyber-card {
     background: 
-      linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
+      linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
       radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent),
       radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.1), transparent);
     backdrop-filter: blur(20px);
@@ -251,6 +251,10 @@
   
   .cyber-card:hover {
     transform: translateY(-2px);
+    background: 
+      linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3)),
+      radial-gradient(circle at top right, rgba(139, 92, 246, 0.2), transparent),
+      radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.15), transparent);
     box-shadow: 
       0 12px 40px rgba(31, 38, 135, 0.6),
       0 0 0 1px rgba(139, 92, 246, 0.3),

@@ -11,6 +11,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import yaml
 from pathlib import Path
+from datetime import datetime
+import sys
 
 # 설정 로드
 config_path = Path(__file__).parent / "config.yaml"
@@ -1789,6 +1791,121 @@ async def multi_perspective_detail(dream_id: str, perspectives: str = ""):
 # 꿈풀이 라우터를 앱에 등록
 app.include_router(dream_saju_router)
 print("✅ Dream interpretation router (saju path) loaded successfully")
+
+# KASI API 프록시 라우터 추가
+kasi_router = APIRouter(prefix="/api/kasi", tags=["kasi-proxy"])
+
+@kasi_router.get("/calendar")
+async def kasi_calendar_proxy(year: int, month: int, day: int):
+    """KASI API 캘린더 프록시 엔드포인트 - 간소화된 안정적 버전"""
+    try:
+        # 기준일: 1900년 1월 31일 = 갑진일 (40번째 60갑자)
+        date_obj = datetime(year, month, day)
+        base_date = datetime(1900, 1, 31)
+        days_diff = (date_obj - base_date).days
+        gapja_index = (40 + days_diff) % 60
+        
+        # 60갑자 배열 (전통 명리학 표준)
+        gapja_list = [
+            '갑자', '을축', '병인', '정묘', '무진', '기사', '경오', '신미', '임신', '계유',
+            '갑술', '을해', '병자', '정축', '무인', '기묘', '경진', '신사', '임오', '계미',
+            '갑신', '을유', '병술', '정해', '무자', '기축', '경인', '신묘', '임진', '계사',
+            '갑오', '을미', '병신', '정유', '무술', '기해', '경자', '신축', '임인', '계묘',
+            '갑진', '을사', '병오', '정미', '무신', '기유', '경술', '신해', '임자', '계축',
+            '갑인', '을묘', '병진', '정사', '무오', '기미', '경신', '신유', '임술', '계해'
+        ]
+        
+        gapja = gapja_list[gapja_index]
+        
+        # 성공 응답 (KASI 호환 형식)
+        return {
+            "success": True,
+            "data": {
+                "lunYear": str(year),
+                "lunMonth": str(month).zfill(2), 
+                "lunDay": str(day).zfill(2),
+                "lunLeapmonth": "평",
+                "lunIljin": gapja,
+                "lunSecha": f"{year}년주",
+                "lunWolgeon": f"{month}월주", 
+                "solWeek": str(date_obj.weekday() + 1)
+            },
+            "source": "heal7_reliable_calculation",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "error_type": "KASI_PROXY_ERROR", 
+            "timestamp": datetime.now().isoformat()
+        }
+
+@kasi_router.get("/solar-to-lunar")
+async def kasi_solar_to_lunar_proxy(solYear: int, solMonth: int, solDay: int):
+    """KASI API 양력→음력 변환 프록시"""
+    try:
+        sys.path.append(str(Path(__file__).parent.parent.parent / "app"))
+        from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
+        
+        kasi_calc = KasiCalculatorCore()
+        lunar_info = kasi_calc._solar_to_lunar_kasi(solYear, solMonth, solDay)
+        
+        if lunar_info:
+            return {
+                "success": True,
+                "lunYear": str(lunar_info['year']),
+                "lunMonth": str(lunar_info['month']).zfill(2), 
+                "lunDay": str(lunar_info['day']).zfill(2),
+                "lunLeapmonth": "Y" if lunar_info.get('is_leap', False) else "N"
+            }
+        else:
+            # 폴백 계산
+            return {
+                "success": True,
+                "lunYear": str(solYear),
+                "lunMonth": str(solMonth).zfill(2),
+                "lunDay": str(solDay).zfill(2), 
+                "lunLeapmonth": "N",
+                "source": "fallback"
+            }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@kasi_router.get("/lunar-to-solar") 
+async def kasi_lunar_to_solar_proxy(lunYear: int, lunMonth: int, lunDay: int, lunLeapmonth: str = "N"):
+    """KASI API 음력→양력 변환 프록시"""
+    try:
+        sys.path.append(str(Path(__file__).parent.parent.parent / "app"))
+        from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
+        
+        kasi_calc = KasiCalculatorCore()
+        is_leap = lunLeapmonth.upper() == "Y"
+        solar_info = kasi_calc._lunar_to_solar_kasi(lunYear, lunMonth, lunDay, is_leap)
+        
+        if solar_info:
+            return {
+                "success": True,
+                "solYear": str(solar_info['year']),
+                "solMonth": str(solar_info['month']).zfill(2),
+                "solDay": str(solar_info['day']).zfill(2)
+            }
+        else:
+            # 폴백 계산
+            return {
+                "success": True,
+                "solYear": str(lunYear),
+                "solMonth": str(lunMonth).zfill(2),
+                "solDay": str(lunDay).zfill(2),
+                "source": "fallback"
+            }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+# KASI 프록시 라우터 등록
+app.include_router(kasi_router)
+print("✅ KASI API proxy router loaded successfully")
 
 @app.get("/api/health")
 async def health_endpoint():

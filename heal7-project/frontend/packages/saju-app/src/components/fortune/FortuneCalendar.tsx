@@ -45,8 +45,8 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
         // KASI API를 사용한 비동기 데이터 로딩
         const [data, fortune, today] = await Promise.all([
           generateCalendarMonth(year, month),
-          Promise.resolve(getMonthlyFortune(year, month)), // 동기 함수를 Promise로 래핑
-          Promise.resolve(getTodayFortune()) // 동기 함수를 Promise로 래핑
+          getMonthlyFortune(year, month), // 이제 비동기 함수
+          getTodayFortune() // 이제 비동기 함수
         ]);
         
         setMonthlyData(data);
@@ -129,12 +129,8 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
   // 이전 달 마지막 주 날짜들 (회색 처리)
   for (let i = firstDayOfMonth - 1; i >= 0; i--) {
     const prevDate = new Date(year, month - 2, daysInPrevMonth - i);
-    const prevMonthData = generateCalendarMonth(
-      month === 1 ? year - 1 : year, 
-      month === 1 ? 12 : month - 1
-    );
-    const prevDateData = prevMonthData.find(d => d.date.getDate() === prevDate.getDate());
-    calendarGrid.push(prevDateData || null);
+    // 이전/다음 달 데이터는 기본 데이터로 표시 (비동기 호출 제거)
+    calendarGrid.push(null);
   }
 
   // 현재 달 날짜들
@@ -144,12 +140,8 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
   const remainingCells = 42 - calendarGrid.length;
   for (let i = 1; i <= remainingCells; i++) {
     const nextDate = new Date(year, month, i);
-    const nextMonthData = generateCalendarMonth(
-      month === 12 ? year + 1 : year,
-      month === 12 ? 1 : month + 1
-    );
-    const nextDateData = nextMonthData.find(d => d.date.getDate() === nextDate.getDate());
-    calendarGrid.push(nextDateData || null);
+    // 이전/다음 달 데이터는 기본 데이터로 표시 (비동기 호출 제거)
+    calendarGrid.push(null);
   }
 
   return (

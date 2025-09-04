@@ -692,8 +692,8 @@ export const getKasiApiErrorSummary = () => {
 };
 
 // 월별 운세 메시지 생성
-export const getMonthlyFortune = (year: number, month: number): MonthlyFortune => {
-  const dates = generateCalendarMonth(year, month);
+export const getMonthlyFortune = async (year: number, month: number): Promise<MonthlyFortune> => {
+  const dates = await generateCalendarMonth(year, month);
   
   const bestDates = dates
     .filter(d => d.운세점수 >= 4)
@@ -735,13 +735,13 @@ export const getMonthlyFortune = (year: number, month: number): MonthlyFortune =
 };
 
 // 오늘의 운세 정보
-export const getTodayFortune = (): CalendarDate => {
+export const getTodayFortune = async (): Promise<CalendarDate> => {
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth() + 1;
   const day = today.getDate();
   
-  const monthData = generateCalendarMonth(year, month);
+  const monthData = await generateCalendarMonth(year, month);
   return monthData.find(d => d.date.getDate() === day) || monthData[0];
 };
 
@@ -751,17 +751,40 @@ export const getTodayFortune = (): CalendarDate => {
 const KASI_API_BASE = '/api/kasi'; // 프록시를 통해 CORS 문제 해결
 const KASI_SERVICE_KEY = 'AR2zMFQPIPEq1WK5i1YIrWJO1jzGpBGGJUxFLQN5TXXWqFgBhC6r9WjKNFa5zWQF'; // 실제 키
 
-// KASI API 전용 호출 함수 (오류 시 null 반환, 구체적 에러 로깅)
+// KASI API 전용 호출 함수 (백엔드 프록시 연동)
 export const fetchKasiCalendarInfo = async (year: number, month: number, day: number): Promise<any> => {
   const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   
-  // 🔥 현재 백엔드 프록시 미구현으로 인한 임시 대응: null 반환
-  // ⚠️  CORS 정책으로 인해 브라우저에서 직접 KASI API 호출 불가
-  
-  console.warn(`⚠️  KASI API 호출 스킵 (${dateStr}): 백엔드 프록시 미구현`);
-  
-  // 임시: 기본값 반환하여 find() 오류 방지
-  return null;
+  try {
+    // 백엔드 KASI 프록시를 통해 호출
+    const proxyUrl = `/api/kasi/calendar?year=${year}&month=${month}&day=${day}`;
+    
+    console.log(`🔮 KASI API 프록시 호출: ${dateStr}`);
+    
+    const response = await fetch(proxyUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      console.log(`✅ KASI API 프록시 성공 (${dateStr}):`, result.data);
+      return result.data; // lunYear, lunMonth, lunDay, lunIljin 등이 포함된 데이터
+    } else {
+      throw new Error(result.error || 'KASI API 프록시 응답 실패');
+    }
+    
+  } catch (error) {
+    console.warn(`⚠️  KASI API 프록시 호출 실패 (${dateStr}):`, error);
+    return null; // 실패 시 null 반환하여 폴백 로직 실행
+  }
 };
 
 // KASI XML 응답 파싱

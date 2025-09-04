@@ -148,6 +148,33 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [currentPage, useHybridNavigation])
 
+  // 🔐 관리자 인증 상태 복구 (페이지 새로고침 시 세션 유지)
+  useEffect(() => {
+    const checkAdminAuth = () => {
+      const isAuthenticated = localStorage.getItem('heal7_admin_authenticated')
+      const loginTime = localStorage.getItem('heal7_admin_login_time')
+      
+      if (isAuthenticated === 'true' && loginTime) {
+        const now = Date.now()
+        const authTime = parseInt(loginTime)
+        const hoursDiff = (now - authTime) / (1000 * 60 * 60)
+        
+        // 24시간 이내의 인증만 유효하다고 가정
+        if (hoursDiff < 24) {
+          setAdminAuthenticated(true)
+          console.log('Admin session restored from localStorage')
+        } else {
+          // 만료된 세션 정리
+          localStorage.removeItem('heal7_admin_authenticated')
+          localStorage.removeItem('heal7_admin_login_time')
+          console.log('Admin session expired, cleared localStorage')
+        }
+      }
+    }
+    
+    checkAdminAuth()
+  }, [])
+
   // 배경 이미지 자동 페이드 전환 (30초 간격)
   useEffect(() => {
     const bgTimer = setInterval(() => {
@@ -389,7 +416,15 @@ function App() {
               {currentPage === 'admin' && (
                 <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-white">관리자 페이지 로딩 중...</div></div>}>
                   {adminAuthenticated ? (
-                    <SajuAdminDashboard />
+                    <SajuAdminDashboard 
+                      onLogout={() => {
+                        // localStorage에서 인증 정보 제거
+                        localStorage.removeItem('heal7_admin_authenticated');
+                        localStorage.removeItem('heal7_admin_login_time');
+                        setAdminAuthenticated(false);
+                        console.log('Admin logged out');
+                      }} 
+                    />
                   ) : (
                     <AdminLogin onAuthenticated={() => {
                       console.log('Admin authentication successful');
