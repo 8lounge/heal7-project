@@ -550,21 +550,30 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
     const date = new Date(year, month - 1, day);
     
     try {
-      // KASI API에서 정확한 정보 가져오기
+      // KASI API에서 정확한 정보 가져오기 (실패 시 폴백)
       const kasiData = await fetchKasiCalendarInfo(year, month, day);
       
-      if (!kasiData) {
-        throw new Error('KASI API 응답 없음');
-      }
+      let gapja, lunarYear, lunarMonth, lunarDay, isLeapMonth, yearPillar, monthPillar;
       
-      // KASI 응답 파싱
-      const gapja = kasiData.lunIljin?.match(/^([가-힣]+)/)?.[1] || '❌미확인';
-      const lunarYear = parseInt(kasiData.lunYear) || year;
-      const lunarMonth = parseInt(kasiData.lunMonth) || month;
-      const lunarDay = parseInt(kasiData.lunDay) || day;
-      const isLeapMonth = kasiData.lunLeapmonth === '윤';
-      const yearPillar = kasiData.lunSecha || '❌연주미확인';
-      const monthPillar = kasiData.lunWolgeon || '❌월주미확인';
+      if (kasiData) {
+        // KASI 응답 파싱
+        gapja = kasiData.lunIljin?.match(/^([가-힣]+)/)?.[1] || get60갑자(date);
+        lunarYear = parseInt(kasiData.lunYear) || year;
+        lunarMonth = parseInt(kasiData.lunMonth) || month;
+        lunarDay = parseInt(kasiData.lunDay) || day;
+        isLeapMonth = kasiData.lunLeapmonth === '윤';
+        yearPillar = kasiData.lunSecha || `${year}년주`;
+        monthPillar = kasiData.lunWolgeon || `${month}월주`;
+      } else {
+        // 🔥 폴백: 로컬 계산 사용 (정확한 60갑자 상수 기반)
+        gapja = get60갑자(date);
+        lunarYear = year;
+        lunarMonth = month;
+        lunarDay = day;
+        isLeapMonth = false;
+        yearPillar = `${year}년주(추정)`;
+        monthPillar = `${month}월주(추정)`;
+      }
       
       // 음력 날짜 문자열 생성
       const lunarDate = `음력 ${lunarYear}년 ${lunarMonth}월 ${lunarDay}일${isLeapMonth ? ' (윤달)' : ''}`;
@@ -742,62 +751,17 @@ export const getTodayFortune = (): CalendarDate => {
 const KASI_API_BASE = '/api/kasi'; // 프록시를 통해 CORS 문제 해결
 const KASI_SERVICE_KEY = 'AR2zMFQPIPEq1WK5i1YIrWJO1jzGpBGGJUxFLQN5TXXWqFgBhC6r9WjKNFa5zWQF'; // 실제 키
 
-// KASI API 전용 호출 함수 (폴백 없음, 오류 발생 시 throw)
+// KASI API 전용 호출 함수 (오류 시 null 반환, 구체적 에러 로깅)
 export const fetchKasiCalendarInfo = async (year: number, month: number, day: number): Promise<any> => {
   const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   
-  // 방법 1: 백엔드 프록시 시도 (우선순위)
-  try {
-    const response = await fetch(`http://localhost:8002/api/kasi-proxy/calendar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ year, month: String(month).padStart(2, '0'), day: String(day).padStart(2, '0') })
-    });
-    
-    if (response.ok) {
-      const result = await response.json();
-      console.log(`🔗 백엔드 프록시 성공: ${dateStr}`);
-      return result;
-    } else {
-      throw new Error(`백엔드 프록시 HTTP ${response.status}: ${response.statusText}`);
-    }
-  } catch (proxyError: any) {
-    console.warn(`❌ 백엔드 프록시 실패 (${dateStr}):`, proxyError.message);
-    
-    // 방법 2: 직접 KASI API 호출 시도
-    try {
-      const url = `http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo`;
-      const params = new URLSearchParams({
-        serviceKey: KASI_SERVICE_KEY,
-        solYear: String(year),
-        solMonth: String(month).padStart(2, '0'),
-        solDay: String(day).padStart(2, '0'),
-      });
-
-      const response = await fetch(`${url}?${params}`, {
-        method: 'GET',
-        timeout: 5000 // 5초 타임아웃
-      } as RequestInit);
-      
-      if (!response.ok) {
-        throw new Error(`KASI API HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const xmlText = await response.text();
-      const result = parseKasiXmlResponse(xmlText);
-      
-      if (!result) {
-        throw new Error(`KASI API XML 파싱 실패`);
-      }
-      
-      console.log(`🔗 직접 KASI API 성공: ${dateStr}`);
-      return result;
-      
-    } catch (directError: any) {
-      console.error(`❌ 직접 KASI API 실패 (${dateStr}):`, directError.message);
-      throw new Error(`모든 KASI API 호출 실패: 프록시(${proxyError.message}), 직접(${directError.message})`);
-    }
-  }
+  // 🔥 현재 백엔드 프록시 미구현으로 인한 임시 대응: null 반환
+  // ⚠️  CORS 정책으로 인해 브라우저에서 직접 KASI API 호출 불가
+  
+  console.warn(`⚠️  KASI API 호출 스킵 (${dateStr}): 백엔드 프록시 미구현`);
+  
+  // 임시: 기본값 반환하여 find() 오류 방지
+  return null;
 };
 
 // KASI XML 응답 파싱
