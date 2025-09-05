@@ -35,32 +35,25 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
       const searchDreamAPI = async () => {
         try {
           const query = searchQuery.toLowerCase().trim();
-          const response = await fetch('/api/saju/dream-interpretation/search', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              keyword: query
-            })
-          });
+          const response = await fetch(`/api/dreams/search-simple/${encodeURIComponent(query)}?limit=10`);
 
           if (response.ok) {
             const apiResults = await response.json();
             
-            // API 응답 구조 확인: {success: true, results: [...]}
-            if (apiResults.success && Array.isArray(apiResults.results)) {
+            // API 응답 구조 확인: {keyword: string, total_results: number, interpretations: [...]}
+            if (apiResults.interpretations && Array.isArray(apiResults.interpretations)) {
               // API 응답을 프론트엔드 형식으로 변환
-              const formattedResults = apiResults.results.map((dream: any, index: number) => ({
+              const formattedResults = apiResults.interpretations.map((dream: any, index: number) => ({
                 id: (index + 1).toString(),
                 keyword: dream.keyword || '알 수 없는 꿈',
-                category: '꿈풀이',
-                emoji: dream.emoji || '🌙',
+                category: dream.category || '꿈풀이',
+                emoji: '🌙', // 기본 이모지, 추후 카테고리별로 매핑 가능
                 traditionInterpretation: dream.traditional_meaning || '',
                 modernInterpretation: dream.modern_meaning || dream.traditional_meaning || '',
                 psychologyInterpretation: dream.psychological_meaning || '',
-                mood: dream.fortune_aspect === '대길' ? 'positive' : dream.fortune_aspect === '길몽' ? 'positive' : 'neutral',
-                frequency: dream.confidence_score || Math.floor(Math.random() * 100) + 1,
+                mood: dream.fortune_aspect === '대길' || dream.fortune_aspect === '길몽' ? 'positive' : 
+                      dream.fortune_aspect === '흉몽' ? 'negative' : 'neutral',
+                frequency: Math.round(dream.confidence_score * 10) || Math.floor(Math.random() * 100) + 1,
                 keywords: Array.isArray(dream.related_keywords) ? dream.related_keywords : [dream.keyword].filter(Boolean),
                 variations: [dream.keyword].filter(Boolean),
                 luckyNumbers: Array.isArray(dream.lucky_numbers) ? dream.lucky_numbers : [],
@@ -72,17 +65,17 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               setSearchResults(formattedResults);
             } else {
               console.warn('API 응답 형식 오류:', apiResults);
-              // API 응답이 예상 형식이 아닐 경우 빈 결과 표시 (더미 데이터 사용하지 않음)
+              // API 응답이 예상 형식이 아닐 경우 빈 결과 표시
               setSearchResults([]);
             }
           } else {
-            // API 실패 시 빈 결과 표시 (더미 데이터 사용하지 않음)
-            console.warn('API 호출 실패, 빈 결과 표시');
+            // API 실패 시 빈 결과 표시
+            console.warn('API 호출 실패:', response.status, response.statusText);
             setSearchResults([]);
           }
         } catch (error) {
           console.error('API 호출 오류:', error);
-          // 오류 시 빈 결과 표시 (더미 데이터 사용하지 않음)
+          // 오류 시 빈 결과 표시
           setSearchResults([]);
         } finally {
           setIsSearching(false);
