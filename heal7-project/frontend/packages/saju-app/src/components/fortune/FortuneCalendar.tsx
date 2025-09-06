@@ -14,6 +14,8 @@ import {
   getMonthlyFortune, 
   getTodayFortune,
   getKasiApiErrorSummary,
+  get절기상세정보,
+  is절기날,
   type CalendarDate,
   type MonthlyFortune 
 } from '../../data/calendarData';
@@ -87,6 +89,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
   const getDayClass = (calendarDate: CalendarDate) => {
     const isToday = calendarDate.date.toDateString() === new Date().toDateString();
     const isSelected = selectedDate?.date.toDateString() === calendarDate.date.toDateString();
+    const is절기 = is절기날(calendarDate.date);
     
     let className = 'relative p-2 rounded-lg cursor-pointer transition-all hover:bg-white/20 ';
     
@@ -95,10 +98,27 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
     }
     
     if (isSelected) {
-      className += 'bg-purple-500/30 ring-2 ring-purple-400 ';
+      className += 'bg-[var(--theme-primary)]/30 ring-2 ring-[var(--theme-primary)] ';
     }
     
-    if (calendarDate.gilil) {
+    // 🔥 윤달 날짜 특별 강조 (절기보다 우선)
+    if (calendarDate.isLeapMonth && !isToday && !isSelected) {
+      className += 'bg-indigo-400/20 ring-2 ring-indigo-400/60 shadow-lg shadow-indigo-400/25 ';
+    }
+    // 🔥 절기 날짜 특별 강조 (윤달 다음 우선순위)
+    else if (is절기 && !isToday && !isSelected) {
+      const 절기정보 = get절기상세정보(calendarDate.date);
+      if (절기정보) {
+        // 계절별 배경색
+        const 계절배경색: Record<string, string> = {
+          '봄': 'bg-green-400/15 ring-1 ring-green-400/40 ',
+          '여름': 'bg-orange-400/15 ring-1 ring-orange-400/40 ',
+          '가을': 'bg-red-400/15 ring-1 ring-red-400/40 ',
+          '겨울': 'bg-blue-400/15 ring-1 ring-blue-400/40 '
+        };
+        className += 계절배경색[절기정보.season] || 'bg-yellow-400/10 ring-1 ring-yellow-400/30 ';
+      }
+    } else if (calendarDate.gilil) {
       className += 'bg-green-500/20 ';
     } else if (calendarDate.흉일) {
       className += 'bg-red-500/20 ';
@@ -233,6 +253,19 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                         {calendarDate.gapja}
                       </div>
 
+                      {/* 🔥 음력 날짜 표시 개선 */}
+                      <div className="text-xs text-white/60 mb-1 flex items-center justify-center gap-1">
+                        <span>{calendarDate.lunarMonth}/{calendarDate.lunarDay}</span>
+                        {calendarDate.isLeapMonth && (
+                          <span 
+                            className="text-indigo-300 animate-pulse" 
+                            title="윤달 (음력 특별한 달)"
+                          >
+                            🌙+
+                          </span>
+                        )}
+                      </div>
+
                       {/* 운세 점수 */}
                       <div className={`text-xs px-1 py-0.5 rounded ${getScoreBg(calendarDate.운세점수)} ${getScoreColor(calendarDate.운세점수)}`}>
                         ★{calendarDate.운세점수}
@@ -249,9 +282,25 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                         {calendarDate.흉일 && (
                           <span className="text-xs" title="흉일">⚠️</span>
                         )}
-                        {calendarDate.절기 && (
-                          <span className="text-xs" title={calendarDate.절기}>🌸</span>
-                        )}
+                        {/* 🔥 24절기 아이콘 강조 시스템 */}
+                        {(() => {
+                          const 절기정보 = get절기상세정보(calendarDate.date);
+                          if (절기정보) {
+                            return (
+                              <div className="flex flex-col items-center">
+                                <span 
+                                  className={`text-sm ${절기정보.color} drop-shadow-lg`} 
+                                  title={`${절기정보.name}: ${절기정보.description}`}
+                                >
+                                  {절기정보.icon}
+                                </span>
+                                {/* 절기 강조 링 */}
+                                <div className="w-1 h-1 bg-yellow-400 rounded-full opacity-75 animate-pulse"></div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
                     </div>
                   );
@@ -415,9 +464,21 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   <div className="w-4 h-4 bg-gray-500/20 rounded"></div>
                   <span className="text-white/80">손없는날</span>
                 </div>
+                {/* 🔥 윤달 범례 추가 */}
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-indigo-400/20 rounded ring-2 ring-indigo-400/60 shadow-sm shadow-indigo-400/25"></div>
+                  <span className="text-white/80 flex items-center gap-1">
+                    윤달 <span className="text-indigo-300">🌙+</span>
+                  </span>
+                </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-yellow-400/20 rounded ring-2 ring-yellow-400"></div>
                   <span className="text-white/80">오늘</span>
+                </div>
+                {/* 절기 범례 추가 */}
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gradient-to-r from-green-400/15 via-orange-400/15 to-blue-400/15 rounded ring-1 ring-yellow-400/40"></div>
+                  <span className="text-white/80">24절기</span>
                 </div>
                 <div className="mt-3 space-y-1">
                   <div className="text-white/80">★5: 매우 좋음</div>
@@ -425,6 +486,13 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   <div className="text-white/80">★3: 보통</div>
                   <div className="text-white/80">★2: 주의</div>
                   <div className="text-white/80">★1: 매우 주의</div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-white/10">
+                  <div className="text-white/60 text-xs">
+                    📅 M/D: 음력 월/일<br/>
+                    🌙+: 윤달 (특별한 음력 달)<br/>
+                    🌸: 24절기 (계절 변화)
+                  </div>
                 </div>
               </div>
             </div>

@@ -650,6 +650,30 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Dream Interpretation 라우터 임포트 실패: {e}")
 
+# Multi-Perspective Dream Interpretation 라우터 등록
+try:
+    from routers.dream_interpretation_multi_perspective import router as multi_dream_router
+    app.include_router(multi_dream_router, tags=["Multi-Perspective-Dreams"])
+    logger.info("✅ Multi-Perspective Dream 라우터 등록 완료")
+except ImportError as e:
+    logger.warning(f"⚠️ Multi-Perspective Dream 라우터 임포트 실패: {e}")
+
+# 날씨 API 라우터 등록
+try:
+    from routers.weather import router as weather_router
+    app.include_router(weather_router, tags=["Weather"])
+    logger.info("✅ 날씨 API 라우터 등록 완료")
+except ImportError as e:
+    logger.warning(f"⚠️ 날씨 API 라우터 임포트 실패: {e}")
+
+# KASI 캘린더 API 라우터 등록
+try:
+    from routers.kasi_calendar import router as kasi_calendar_router
+    app.include_router(kasi_calendar_router, tags=["KASI-Calendar"])
+    logger.info("✅ KASI 캘린더 API 라우터 등록 완료")
+except ImportError as e:
+    logger.warning(f"⚠️ KASI 캘린더 API 라우터 임포트 실패: {e}")
+
 if __name__ == "__main__":
     # 환경별 설정 (큐브모듈러 대시보드 - 포트 8000)
     port = int(os.getenv("PORT", 8000))

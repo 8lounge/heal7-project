@@ -78,8 +78,8 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
         <motion.button
           className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white ${
             viewMode === 'cyber_fantasy'
-              ? 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'
-              : 'bg-white/10 hover:bg-white/20'
+              ? 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+              : 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
           }`}
           onClick={() => setShowMore(!showMore)}
           whileHover={{ scale: 1.02 }}
@@ -100,8 +100,8 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
           <motion.button
             className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white min-w-[70px] ${
               viewMode === 'cyber_fantasy'
-                ? 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'
-                : 'bg-white/10 hover:bg-white/20'
+                ? 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+                : 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
             }`}
             onClick={() => setShowMore(!showMore)}
             whileHover={{ scale: 1.02 }}
@@ -177,11 +177,11 @@ const CompactNavButton: React.FC<CompactNavButtonProps> = ({
       mobile-touch
       ${isActive
         ? viewMode === 'cyber_fantasy'
-          ? 'bg-gradient-to-r from-purple-500/80 to-pink-500/80 shadow-lg'
-          : 'bg-gradient-to-r from-indigo-500/80 to-purple-500/80 shadow-lg'
+          ? 'bg-gradient-to-r from-[var(--theme-primary)]/80 to-[var(--theme-secondary)]/80 shadow-lg'
+          : 'bg-gradient-to-r from-[var(--theme-secondary)]/80 to-[var(--theme-primary)]/80 shadow-lg'
         : viewMode === 'cyber_fantasy'
-          ? 'bg-white/10 hover:bg-white/20 backdrop-blur-sm'
-          : 'bg-white/10 hover:bg-white/20'
+          ? 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+          : 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
       }
       ${!isPrimary ? 'text-sm' : ''}
     `}
@@ -204,8 +204,8 @@ const CompactNavButton: React.FC<CompactNavButtonProps> = ({
       <motion.div
         className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-6 h-0.5 rounded-full ${
           viewMode === 'cyber_fantasy'
-            ? 'bg-gradient-to-r from-purple-400 to-pink-400'
-            : 'bg-gradient-to-r from-indigo-400 to-purple-400'
+            ? 'bg-gradient-to-r from-[var(--theme-primary)] to-[var(--theme-secondary)]'
+            : 'bg-gradient-to-r from-[var(--theme-secondary)] to-[var(--theme-primary)]'
         }`}
         layoutId="activeCompactTab"
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}

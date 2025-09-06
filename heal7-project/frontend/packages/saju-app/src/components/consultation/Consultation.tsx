@@ -107,7 +107,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
 
           {/* 상담 정보 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white/5 p-4 rounded-lg">
+            <div className="bg-white/10 p-4 rounded-lg backdrop-blur-md border border-white/20">
               <h3 className={`font-bold ${textClass} mb-3`}>💰 상담 요금</h3>
               <div className={`text-2xl font-bold ${accentClass} mb-2`}>
                 {consultant.pricePerMinute.toLocaleString()}원/분
@@ -117,7 +117,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
               </p>
             </div>
             
-            <div className="bg-white/5 p-4 rounded-lg">
+            <div className="bg-white/10 p-4 rounded-lg backdrop-blur-md border border-white/20">
               <h3 className={`font-bold ${textClass} mb-3`}>📞 상담 방식</h3>
               <div className="flex flex-wrap gap-2">
                 {consultant.consultationMethods.map((method, index) => (
@@ -160,7 +160,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
               {consultantReviews.slice(0, 3).map((review) => (
                 <motion.div
                   key={review.id}
-                  className="bg-white/5 p-4 rounded-lg"
+                  className="bg-white/10 p-4 rounded-lg backdrop-blur-md border border-white/20"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                 >

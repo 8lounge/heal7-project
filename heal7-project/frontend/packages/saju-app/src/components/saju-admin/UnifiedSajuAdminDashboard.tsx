@@ -138,6 +138,12 @@ interface PointSystemData {
 }
 
 const UnifiedSajuAdminDashboard: React.FC = () => {
+  // 테마 관리 상태
+  const [themeMode, setThemeMode] = useState<'day' | 'night'>(() => {
+    const saved = localStorage.getItem('heal7_admin_theme');
+    return (saved as 'day' | 'night') || 'night';
+  });
+
   // 통합 상태 관리
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sajuEngine, setSajuEngine] = useState<SajuEngineStatus | null>(null);
@@ -267,12 +273,28 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
     }
   }, []);
 
+  // 테마 토글 핸들러
+  const handleThemeToggle = useCallback(() => {
+    const newTheme = themeMode === 'day' ? 'night' : 'day';
+    setThemeMode(newTheme);
+    localStorage.setItem('heal7_admin_theme', newTheme);
+  }, [themeMode]);
+
   // 데이터 새로고침
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     await initializeData();
     setRefreshing(false);
   }, [initializeData]);
+
+  // 테마 변경 시 body 클래스 업데이트
+  useEffect(() => {
+    document.body.className = document.body.className.replace(
+      /theme-(day|night)/g,
+      ''
+    );
+    document.body.classList.add(`theme-${themeMode}`);
+  }, [themeMode]);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -330,20 +352,76 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-blue-900 to-indigo-950">
+    <div className={`min-h-screen transition-all duration-500 ${
+      themeMode === 'day' 
+        ? 'bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100' 
+        : 'bg-gradient-to-br from-purple-950 via-blue-900 to-indigo-950'
+    }`}>
       {/* 헤더 */}
-      <header className="border-b border-white/10 bg-black/20 backdrop-blur-md">
+      <header className={`border-b backdrop-blur-md transition-all duration-500 ${
+        themeMode === 'day'
+          ? 'border-orange-200/30 bg-white/20'
+          : 'border-white/10 bg-black/20'
+      }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Sparkles className="w-8 h-8 text-purple-400" />
+              <Sparkles className={`w-8 h-8 transition-all duration-500 ${
+                themeMode === 'day' ? 'text-orange-500' : 'text-purple-400'
+              }`} />
               <div>
-                <h1 className="text-xl font-bold text-white">🔮 HEAL7 사주 관리자</h1>
-                <p className="text-sm text-white/60">통합 관리 대시보드 v2.0</p>
+                <h1 className={`text-xl font-bold transition-all duration-500 ${
+                  themeMode === 'day' ? 'text-orange-800 glow-text-orange' : 'text-white glow-text-purple'
+                }`}>
+                  🔮 HEAL7 사주 관리자
+                </h1>
+                <p className={`text-sm transition-all duration-500 ${
+                  themeMode === 'day' ? 'text-orange-600/70' : 'text-white/60'
+                }`}>
+                  통합 관리 대시보드 v2.0
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="text-green-400 border-green-400">
+              {/* 테마 토글 영역 */}
+              <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border transition-all duration-500 ${
+                themeMode === 'day'
+                  ? 'bg-orange-200/20 border-orange-300/30'
+                  : 'bg-purple-500/20 border-purple-400/30'
+              }`}>
+                <span className={`text-sm font-medium transition-all duration-500 ${
+                  themeMode === 'day' ? 'text-orange-200' : 'text-purple-200'
+                }`}>
+                  {themeMode === 'day' ? '☀️ 낮' : '🌙 밤'}
+                </span>
+                <button
+                  onClick={handleThemeToggle}
+                  className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 ${
+                    themeMode === 'day'
+                      ? 'bg-orange-400 focus:ring-orange-300'
+                      : 'bg-purple-600 focus:ring-purple-400'
+                  }`}
+                >
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-500 shadow-lg ${
+                    themeMode === 'day'
+                      ? 'left-6 bg-white border-orange-200'
+                      : 'left-0.5 bg-white border-purple-200'
+                  } border flex items-center justify-center text-xs`}>
+                    {themeMode === 'day' ? '☀️' : '🌙'}
+                  </div>
+                </button>
+                <span className={`text-sm font-medium transition-all duration-500 ${
+                  themeMode === 'day' ? 'text-orange-200/60' : 'text-purple-200/60'
+                }`}>
+                  {themeMode === 'day' ? '🌙 밤' : '☀️ 낮'}
+                </span>
+              </div>
+              
+              <Badge variant="outline" className={`transition-all duration-500 ${
+                themeMode === 'day' 
+                  ? 'text-green-600 border-green-500'
+                  : 'text-green-400 border-green-400'
+              }`}>
                 서비스 정상 운영 중
               </Badge>
               <Button 
@@ -351,7 +429,11 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                 size="sm" 
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="text-white border-white/20 hover:bg-white/10"
+                className={`transition-all duration-500 ${
+                  themeMode === 'day'
+                    ? 'text-orange-700 border-orange-300/50 hover:bg-orange-100/50'
+                    : 'text-white border-white/20 hover:bg-white/20'
+                }`}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 {refreshing ? '새로고침 중...' : '새로고침'}
@@ -542,7 +624,7 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
               <Button 
                 variant="outline" 
                 onClick={() => setActiveTab('dashboard')}
-                className="text-white border-white/20 hover:bg-white/10"
+                className="text-white border-white/20 hover:bg-white/20"
               >
                 대시보드로 돌아가기
               </Button>

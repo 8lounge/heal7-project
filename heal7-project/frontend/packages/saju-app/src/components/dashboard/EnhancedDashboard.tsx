@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
+import { useWeatherTheme } from '../../hooks/useWeatherTheme'
 import { 
   dailyFortuneData, 
   trendingTopics, 
@@ -18,6 +19,7 @@ interface EnhancedDashboardProps {
 const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const { theme } = useWeatherTheme()
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareContent, setShareContent] = useState('')
   const [animatedNumber, setAnimatedNumber] = useState(0)
@@ -112,7 +114,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
         transition={{ delay: 0.2 }}
       >
         {viewMode === 'cyber_fantasy' && (
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10" />
+          <div className="absolute inset-0 gradient-theme-primary-30 opacity-30" />
         )}
         
         <motion.div 
@@ -177,8 +179,8 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
               key={keyword}
               className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all
                 ${viewMode === 'cyber_fantasy' 
-                  ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-white hover:from-purple-500/50 hover:to-pink-500/50' 
-                  : 'bg-gradient-to-r from-indigo-500/30 to-purple-500/30 text-indigo-200 hover:from-indigo-500/50 hover:to-purple-500/50'
+                  ? 'gradient-theme-primary-30 text-theme-primary hover:opacity-80' 
+                  : 'gradient-theme-primary-30 text-theme-primary hover:opacity-80'
                 }`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -207,7 +209,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
               <button
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentSlide ? 'bg-purple-400' : 'bg-gray-600'
+                  index === currentSlide ? 'bg-theme-primary' : 'bg-gray-600'
                 }`}
                 onClick={() => setCurrentSlide(index)}
               />
@@ -278,7 +280,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                 </div>
                 
                 <motion.button
-                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full text-sm font-medium"
+                  className="flex items-center space-x-2 px-4 py-2 gradient-theme-primary text-theme-primary rounded-full text-sm font-medium"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleShare(dailyFortuneData[currentSlide].shareText)}
@@ -307,7 +309,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
           <button
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               selectedCategory === 'all'
-                ? 'bg-purple-500 text-white'
+                ? 'bg-theme-primary text-theme-primary'
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
             }`}
             onClick={() => setSelectedCategory('all')}
@@ -319,7 +321,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
               key={category.id}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 selectedCategory === category.id
-                  ? 'bg-purple-500 text-white'
+                  ? 'bg-theme-primary text-theme-primary'
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
               onClick={() => setSelectedCategory(category.id)}
@@ -404,7 +406,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                   <span className="text-sm text-gray-400">인기도</span>
                   <div className="w-16 h-2 bg-gray-700 rounded-full">
                     <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                      className="h-full gradient-theme-primary rounded-full"
                       style={{ width: `${topic.popularity}%` }}
                     />
                   </div>
@@ -423,7 +425,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                 {topic.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 bg-purple-500/20 text-white text-xs rounded"
+                    className="px-2 py-1 bg-theme-primary-20 text-theme-primary text-xs rounded"
                   >
                     #{tag}
                   </span>
@@ -464,7 +466,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
 
               <div className="flex space-x-4 mt-6">
                 <button
-                  className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium"
+                  className="flex-1 py-3 gradient-theme-primary text-theme-primary rounded-lg font-medium"
                   onClick={() => {
                     navigator.share && navigator.share({
                       title: '치유마녀 운세',

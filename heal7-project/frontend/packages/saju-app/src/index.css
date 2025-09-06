@@ -82,6 +82,74 @@
     --crystal-white: rgba(255, 255, 255, 0.1);
   }
 
+  /* 🌙 밤 테마 (어두운 테마) */
+  .theme-dark {
+    --theme-primary: #8B5CF6;      /* 보라색 */
+    --theme-secondary: #6366F1;    /* 인디고 */
+    --theme-accent: #EC4899;       /* 핑크 */
+    --theme-bg-primary: rgba(139, 92, 246, 0.2);
+    --theme-bg-secondary: rgba(99, 102, 241, 0.15);
+    --theme-bg-card: rgba(0, 0, 0, 0.4);
+    --theme-text-primary: #FFFFFF;
+    --theme-text-secondary: #D1D5DB;
+    --theme-border: rgba(255, 255, 255, 0.2);
+  }
+
+  /* ☀️ 낮 테마 (밝은 테마) */
+  .theme-light {
+    --theme-primary: #EC4899;      /* 핑크 */
+    --theme-secondary: #F97316;    /* 오렌지 */
+    --theme-accent: #8B5CF6;       /* 액센트 보라 */
+    --theme-bg-primary: rgba(236, 72, 153, 0.2);
+    --theme-bg-secondary: rgba(249, 115, 22, 0.15);
+    --theme-bg-card: rgba(255, 255, 255, 0.4);
+    --theme-text-primary: #1F2937;
+    --theme-text-secondary: #4B5563;
+    --theme-border: rgba(236, 72, 153, 0.3);
+  }
+
+  /* Theme-aware utility classes */
+  .bg-theme-primary {
+    background-color: var(--theme-primary);
+  }
+
+  .bg-theme-secondary {
+    background-color: var(--theme-secondary);
+  }
+
+  .bg-theme-primary-30 {
+    background-color: var(--theme-bg-primary);
+  }
+
+  .bg-theme-primary-20 {
+    background-color: var(--theme-bg-secondary);
+  }
+
+  .text-theme-primary {
+    color: var(--theme-text-primary);
+  }
+
+  .text-theme-secondary {
+    color: var(--theme-text-secondary);
+  }
+
+  .border-theme {
+    border-color: var(--theme-border);
+  }
+
+  .bg-theme-card {
+    background-color: var(--theme-bg-card);
+  }
+
+  /* Gradient utilities using CSS properties */
+  .gradient-theme-primary {
+    background: linear-gradient(to right, var(--theme-primary), var(--theme-secondary));
+  }
+
+  .gradient-theme-primary-30 {
+    background: linear-gradient(to right, var(--theme-bg-primary), var(--theme-bg-secondary));
+  }
+
   * {
     box-sizing: border-box;
   }

@@ -34,7 +34,7 @@ export const ContentManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 콘텐츠 타입 선택 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="card-cosmic p-6">
         <h3 className="text-white text-lg font-semibold mb-4">콘텐츠 관리</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {contentTypes.map(type => (
@@ -44,11 +44,11 @@ export const ContentManagementTab = () => {
               className={`p-4 rounded-lg border transition-all text-left ${
                 contentType === type.key
                   ? 'bg-purple-500/30 border-purple-400'
-                  : 'bg-white/5 border-white/20 hover:bg-white/10'
+                  : 'bg-white/5 border-gray-600/40 hover:bg-gray-900/80'
               }`}
             >
               <div className="text-white font-semibold">{type.count}</div>
-              <div className="text-gray-300 text-sm">{type.label}</div>
+              <div className="text-gray-200 text-sm">{type.label}</div>
             </button>
           ))}
         </div>
@@ -56,8 +56,8 @@ export const ContentManagementTab = () => {
 
       {/* 매거진 관리 */}
       {contentType === 'magazine' && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-          <div className="p-6 border-b border-white/20">
+        <div className="card-cosmic">
+          <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">매거진 관리</h4>
               <button className="px-4 py-2 bg-green-600/20 border border-green-400/30 rounded-lg text-green-400 hover:bg-green-600/30">
@@ -103,8 +103,8 @@ export const ContentManagementTab = () => {
 
       {/* 상품 관리 */}
       {contentType === 'products' && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-          <div className="p-6 border-b border-white/20">
+        <div className="card-cosmic">
+          <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">상품 관리</h4>
               <button className="px-4 py-2 bg-green-600/20 border border-green-400/30 rounded-lg text-green-400 hover:bg-green-600/30">
@@ -146,8 +146,8 @@ export const ContentManagementTab = () => {
 
       {/* 스토어 관리 */}
       {contentType === 'store' && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-          <div className="p-6 border-b border-white/20">
+        <div className="card-cosmic">
+          <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">스토어 관리</h4>
               <button className="px-4 py-2 bg-green-600/20 border border-green-400/30 rounded-lg text-green-400 hover:bg-green-600/30">

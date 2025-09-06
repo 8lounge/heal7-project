@@ -38,64 +38,64 @@ export const DashboardTab = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
+            className="bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-fuchsia-500/20 backdrop-blur-lg border border-purple-400/30 rounded-xl shadow-2xl shadow-purple-500/10 p-6 hover:shadow-purple-500/20 transition-all duration-300"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-300 text-sm">{stat.title}</p>
+                <p className="text-white/90 text-sm font-medium">{stat.title}</p>
                 <p className="text-white text-2xl font-bold">{stat.value}</p>
               </div>
-              <stat.icon className={`w-8 h-8 text-${stat.color}-400`} />
+              <stat.icon className="w-8 h-8 text-purple-400 drop-shadow-lg" />
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* 실시간 알림 영역 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-fuchsia-500/20 backdrop-blur-lg border border-purple-400/30 rounded-xl shadow-2xl shadow-purple-500/10 p-6 hover:shadow-purple-500/20 transition-all duration-300">
         <h3 className="text-white text-lg font-semibold mb-4 flex items-center">
-          <Bell className="w-5 h-5 mr-2 text-yellow-400" />
+          <Bell className="w-5 h-5 mr-2 text-purple-300 drop-shadow-lg" />
           긴급 알림 & 대기 중인 업무
         </h3>
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-red-500/20 rounded border border-red-400/30">
-            <span className="text-red-300">⚠️ 1:1 문의 {systemStats.pendingInquiries}건 답변 대기 중</span>
-            <button className="text-red-400 hover:text-red-300 text-sm underline">확인</button>
+          <div className="flex items-center justify-between p-3 bg-red-500/20 backdrop-blur-sm rounded-lg border border-red-400/40 shadow-lg">
+            <span className="text-red-200">⚠️ 1:1 문의 {systemStats.pendingInquiries}건 답변 대기 중</span>
+            <button className="text-red-300 hover:text-red-200 text-sm underline font-medium transition-colors">확인</button>
           </div>
-          <div className="flex items-center justify-between p-3 bg-blue-500/20 rounded border border-blue-400/30">
-            <span className="text-blue-300">📝 신규 리뷰 {systemStats.unreadReviews}건 검토 필요</span>
-            <button className="text-blue-400 hover:text-blue-300 text-sm underline">검토</button>
+          <div className="flex items-center justify-between p-3 bg-blue-500/20 backdrop-blur-sm rounded-lg border border-blue-400/40 shadow-lg">
+            <span className="text-blue-200">📝 신규 리뷰 {systemStats.unreadReviews}건 검토 필요</span>
+            <button className="text-blue-300 hover:text-blue-200 text-sm underline font-medium transition-colors">검토</button>
           </div>
         </div>
       </div>
 
       {/* 시스템 상태 모니터링 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+        <div className="bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-fuchsia-500/20 backdrop-blur-lg border border-purple-400/30 rounded-xl shadow-2xl shadow-purple-500/10 p-6 hover:shadow-purple-500/20 transition-all duration-300">
           <h3 className="text-white text-lg font-semibold mb-4">서버 상태</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-300">시스템 가동률</span>
-              <span className="text-green-400 font-semibold">{systemStats.systemUptime}</span>
+              <span className="text-purple-200 font-medium">시스템 가동률</span>
+              <span className="text-green-300 font-semibold drop-shadow-lg">{systemStats.systemUptime}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-300">사주 엔진 상태</span>
-              <span className="text-green-400">정상</span>
+              <span className="text-purple-200 font-medium">사주 엔진 상태</span>
+              <span className="text-green-300 drop-shadow-lg">정상</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-300">데이터베이스</span>
-              <span className="text-green-400">연결됨</span>
+              <span className="text-purple-200 font-medium">데이터베이스</span>
+              <span className="text-green-300 drop-shadow-lg">연결됨</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+        <div className="bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-fuchsia-500/20 backdrop-blur-lg border border-purple-400/30 rounded-xl shadow-2xl shadow-purple-500/10 p-6 hover:shadow-purple-500/20 transition-all duration-300">
           <h3 className="text-white text-lg font-semibold mb-4">최근 활동</h3>
           <div className="space-y-2 text-sm">
-            <div className="text-gray-300">• 신규 회원가입: 김○○님 (3분전)</div>
-            <div className="text-gray-300">• 사주풀이 결제: 이○○님 (5분전)</div>
-            <div className="text-gray-300">• 1:1 문의: 박○○님 (12분전)</div>
-            <div className="text-gray-300">• 리뷰 작성: 최○○님 (18분전)</div>
+            <div className="text-purple-200">• 신규 회원가입: 김○○님 (3분전)</div>
+            <div className="text-purple-200">• 사주풀이 결제: 이○○님 (5분전)</div>
+            <div className="text-purple-200">• 1:1 문의: 박○○님 (12분전)</div>
+            <div className="text-purple-200">• 리뷰 작성: 최○○님 (18분전)</div>
           </div>
         </div>
       </div>

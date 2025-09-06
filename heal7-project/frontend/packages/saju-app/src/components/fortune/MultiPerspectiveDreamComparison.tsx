@@ -126,11 +126,34 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
     
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/dream-interpretation/multi-perspective/search?q=${encodeURIComponent(query)}`);
+      const encodedQuery = encodeURIComponent(query.trim());
+      console.log(`Searching for: "${query}" (encoded: "${encodedQuery}")`);
+      
+      const response = await fetch(`/api/dream-interpretation/multi-perspective/search?q=${encodedQuery}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
-      setSearchResults(data.results || []);
+      console.log('Search response:', data);
+      
+      // API 응답 구조 확인: { query, total_results, results }
+      if (data.results && Array.isArray(data.results)) {
+        setSearchResults(data.results);
+      } else {
+        console.warn('Unexpected API response structure:', data);
+        setSearchResults([]);
+      }
     } catch (error) {
       console.error('꿈 검색 실패:', error);
+      setSearchResults([]);
     } finally {
       setIsLoading(false);
     }
@@ -242,7 +265,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
     const analysis = selectedDream.comparison_analysis;
 
     return (
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6">
+      <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 shadow-2xl shadow-purple-500/20">
         <div className="flex items-center gap-3 mb-6">
           <Scale className="w-6 h-6 text-amber-300" />
           <h3 className="text-xl font-bold text-white">종합 비교 분석</h3>
@@ -319,7 +342,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-slate-900 to-indigo-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 */}
         <div className="text-center mb-8">
@@ -334,7 +357,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
         </div>
 
         {/* 검색 및 관점 선택 */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 mb-8">
+        <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 mb-8 shadow-2xl shadow-purple-500/10">
           {/* 검색 입력 */}
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
@@ -411,7 +434,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
         )}
 
         {searchResults.length > 0 && !selectedDream && (
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 mb-8">
+          <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 mb-8 shadow-2xl shadow-purple-500/10">
             <h2 className="text-white text-xl font-bold mb-4">
               검색 결과 ({searchResults.length}개)
             </h2>
@@ -419,7 +442,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
               {searchResults.map((result) => (
                 <div
                   key={result.id}
-                  className="bg-white/10 border border-white/20 rounded-lg p-4 cursor-pointer hover:bg-white/15 transition-all"
+                  className="bg-purple-500/10 backdrop-blur-md border border-purple-400/30 rounded-lg p-4 cursor-pointer hover:bg-purple-500/20 hover:shadow-lg shadow-purple-500/10 transition-all"
                   onClick={() => loadDreamPerspectives(result.id)}
                 >
                   <div className="flex items-center gap-3 mb-2">
@@ -442,7 +465,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
         {selectedDream && (
           <div className="space-y-8">
             {/* 꿈 정보 헤더 */}
-            <div className="text-center bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+            <div className="text-center bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 shadow-2xl shadow-purple-500/20">
               <div className="text-6xl mb-3">{selectedDream.emoji}</div>
               <h2 className="text-3xl font-bold text-white mb-2">{selectedDream.keyword}</h2>
               <p className="text-white/60">
@@ -495,7 +518,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
                 <button
                   key={keyword}
                   onClick={() => setSearchQuery(keyword)}
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-4 text-white transition-all"
+                  className="bg-purple-500/10 hover:bg-purple-500/20 backdrop-blur-md border border-purple-400/30 rounded-lg p-4 text-white shadow-lg hover:shadow-purple-500/20 transition-all"
                 >
                   {keyword} 꿈 비교하기
                 </button>

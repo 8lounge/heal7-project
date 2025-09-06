@@ -29,7 +29,7 @@ export const SajuEngineTab = () => {
   return (
     <div className="space-y-6">
       {/* 카테고리 선택 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="card-cosmic p-6">
         <h3 className="text-white text-lg font-semibold mb-4">사주 해석 데이터 관리</h3>
         <div className="flex flex-wrap gap-2 mb-4">
           {categories.map(category => (
@@ -39,7 +39,7 @@ export const SajuEngineTab = () => {
               className={`px-4 py-2 rounded-lg border transition-all ${
                 selectedCategory === category
                   ? 'bg-purple-500/30 border-purple-400 text-purple-300'
-                  : 'bg-white/5 border-white/20 text-gray-300 hover:bg-white/10'
+                  : 'bg-white/10 border-white/20 text-white/90 hover:bg-white/20'
               }`}
             >
               {category}
@@ -56,7 +56,7 @@ export const SajuEngineTab = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="해석 데이터 검색..."
-              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+              className="w-full pl-10 pr-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white placeholder-white/60"
             />
           </div>
           <button className="px-4 py-2 bg-green-600/20 border border-green-400/30 rounded-lg text-green-400 hover:bg-green-600/30 flex items-center gap-2">
@@ -67,10 +67,10 @@ export const SajuEngineTab = () => {
       </div>
 
       {/* 데이터 표시 영역 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-        <div className="p-6 border-b border-white/20">
+      <div className="card-cosmic">
+        <div className="p-6 border-b border-gray-600/40">
           <h4 className="text-white font-semibold">{selectedCategory} 해석 데이터</h4>
-          <p className="text-gray-300 text-sm mt-1">총 {mockData[selectedCategory]?.length || 0}개의 해석 데이터</p>
+          <p className="text-gray-200 text-sm mt-1">총 {mockData[selectedCategory]?.length || 0}개의 해석 데이터</p>
         </div>
         
         <div className="p-6">
@@ -102,14 +102,14 @@ export const SajuEngineTab = () => {
                 {item.traditional && (
                   <div className="mb-2">
                     <span className="text-yellow-400 text-sm font-medium">전통적 해석:</span>
-                    <p className="text-gray-300 text-sm mt-1">{item.traditional}</p>
+                    <p className="text-gray-200 text-sm mt-1">{item.traditional}</p>
                   </div>
                 )}
                 
                 {item.modern && (
                   <div className="mb-2">
                     <span className="text-cyan-400 text-sm font-medium">현대적 해석:</span>
-                    <p className="text-gray-300 text-sm mt-1">{item.modern}</p>
+                    <p className="text-gray-200 text-sm mt-1">{item.modern}</p>
                   </div>
                 )}
                 

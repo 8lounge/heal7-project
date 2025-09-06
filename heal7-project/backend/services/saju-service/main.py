@@ -1404,11 +1404,11 @@ async def dream_search(request: dict):
             
         # PostgreSQL에서 정제된 꿈풀이 데이터 조회 (16개 고품질 카테고리별 데이터)
         query = f"""
-        SELECT keyword, category, subcategory, traditional_meaning, modern_meaning, 
+        SELECT keyword, category_id, subcategory_id, traditional_meaning, modern_meaning, 
                psychological_meaning, confidence_score, related_keywords, 
                lucky_numbers, fortune_aspect
-        FROM dream_service.clean_dream_interpretations 
-        WHERE keyword = '{keyword.replace("'", "''")}'
+        FROM dream_interpretations 
+        WHERE LOWER(keyword) LIKE LOWER('%{keyword.replace("'", "''")}%')
         ORDER BY confidence_score DESC
         LIMIT 3;
         """
@@ -1424,8 +1424,17 @@ async def dream_search(request: dict):
                 if line and '|' in line:
                     parts = line.split('|')
                     if len(parts) >= 10:  # 10개 필드: keyword, category, subcategory, traditional, modern, psychological, confidence, related_keywords, lucky_numbers, fortune_aspect
-                        # 카테고리 기반 이모지 설정 (실제 category 필드 활용)
-                        category = parts[1] if len(parts) > 1 else ""
+                        # 카테고리 기반 이모지 설정 (category_id 기반)
+                        category_id = parts[1] if len(parts) > 1 else "0"
+                        try:
+                            category_id = int(category_id) if category_id.isdigit() else 0
+                        except:
+                            category_id = 0
+                        
+                        # ID 기반 카테고리 매핑
+                        category_map = {1: "동물", 2: "자연", 3: "사물", 4: "사람", 5: "행동", 6: "감정", 7: "신체", 8: "영적/신비"}
+                        category = category_map.get(category_id, "기타")
+                        
                         if category == "동물":
                             emoji = "🐾"
                         elif category == "자연":
@@ -1433,15 +1442,17 @@ async def dream_search(request: dict):
                         elif category == "음식":
                             emoji = "🍎"
                         elif category == "사물":
-                            subcategory = parts[2] if len(parts) > 2 else ""
-                            if subcategory == "재물":
-                                emoji = "💰"
-                            elif subcategory == "건물":
-                                emoji = "🏠"
-                            elif subcategory == "색깔":
-                                emoji = "🎨"
-                            else:
-                                emoji = "🏺"
+                            emoji = "🏺"
+                        elif category == "사람":
+                            emoji = "👥"
+                        elif category == "행동":
+                            emoji = "🏃‍♂️"
+                        elif category == "감정":
+                            emoji = "😊"
+                        elif category == "신체":
+                            emoji = "👤"
+                        elif category == "영적/신비":
+                            emoji = "🔮"
                         else:
                             emoji = "🔮"
                         
@@ -1590,7 +1601,7 @@ async def multi_perspective_search(q: str):
         query = f"""
         SELECT keyword, category, subcategory, traditional_meaning, modern_meaning, 
                psychological_meaning, confidence_score
-        FROM dream_service.clean_dream_interpretations 
+        FROM dream_interpretations 
         WHERE keyword = '{keyword.replace("'", "''")}'
         ORDER BY confidence_score DESC
         LIMIT 5;
@@ -1665,7 +1676,7 @@ async def multi_perspective_detail(dream_id: str, perspectives: str = ""):
         query = f"""
         SELECT keyword, category, traditional_meaning, modern_meaning, 
                psychological_meaning, confidence_score
-        FROM dream_service.clean_dream_interpretations 
+        FROM dream_interpretations 
         WHERE keyword = '{keyword.replace("'", "''")}'
         LIMIT 1;
         """
@@ -1792,6 +1803,22 @@ async def multi_perspective_detail(dream_id: str, perspectives: str = ""):
 app.include_router(dream_saju_router)
 print("✅ Dream interpretation router (saju path) loaded successfully")
 
+# 다각도 꿈풀이 라우터 추가
+try:
+    import sys
+    import os
+    dream_cube_path = os.path.join(os.path.dirname(__file__), "dream-interpretation-cube", "modules")
+    if dream_cube_path not in sys.path:
+        sys.path.append(dream_cube_path)
+    
+    from multi_perspective_dream_api import router as multi_dream_router
+    app.include_router(multi_dream_router)
+    print("✅ Multi-perspective dream interpretation router loaded successfully")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import multi-perspective dream router: {e}")
+except Exception as e:
+    print(f"⚠️ WARNING: Error loading multi-perspective dream router: {e}")
+
 # KASI API 프록시 라우터 추가
 kasi_router = APIRouter(prefix="/api/kasi", tags=["kasi-proxy"])
 
@@ -1903,9 +1930,131 @@ async def kasi_lunar_to_solar_proxy(lunYear: int, lunMonth: int, lunDay: int, lu
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+# 🔥 KASI API 24절기 2년치 프리로드 시스템
+@kasi_router.get("/solar-terms/preload")
+async def preload_solar_terms():
+    """2년치 24절기 데이터 프리로드 (현재 연도 + 다음 연도)"""
+    try:
+        current_year = datetime.now().year
+        target_years = [current_year, current_year + 1]  # 2년치
+        
+        all_solar_terms = {}
+        
+        for year in target_years:
+            # 🔥 KASI API 호환 24절기 템플릿
+            solar_terms_template = [
+                {"name": "소한", "month": 1, "approx_day": 5, "season": "겨울"},
+                {"name": "대한", "month": 1, "approx_day": 20, "season": "겨울"},
+                {"name": "입춘", "month": 2, "approx_day": 4, "season": "봄"},
+                {"name": "우수", "month": 2, "approx_day": 19, "season": "봄"},
+                {"name": "경칩", "month": 3, "approx_day": 6, "season": "봄"},
+                {"name": "춘분", "month": 3, "approx_day": 21, "season": "봄"},
+                {"name": "청명", "month": 4, "approx_day": 5, "season": "봄"},
+                {"name": "곡우", "month": 4, "approx_day": 20, "season": "봄"},
+                {"name": "입하", "month": 5, "approx_day": 6, "season": "여름"},
+                {"name": "소만", "month": 5, "approx_day": 21, "season": "여름"},
+                {"name": "망종", "month": 6, "approx_day": 6, "season": "여름"},
+                {"name": "하지", "month": 6, "approx_day": 21, "season": "여름"},
+                {"name": "소서", "month": 7, "approx_day": 7, "season": "여름"},
+                {"name": "대서", "month": 7, "approx_day": 23, "season": "여름"},
+                {"name": "입추", "month": 8, "approx_day": 8, "season": "가을"},
+                {"name": "처서", "month": 8, "approx_day": 23, "season": "가을"},
+                {"name": "백로", "month": 9, "approx_day": 8, "season": "가을"},
+                {"name": "추분", "month": 9, "approx_day": 23, "season": "가을"},
+                {"name": "한로", "month": 10, "approx_day": 9, "season": "가을"},
+                {"name": "상강", "month": 10, "approx_day": 24, "season": "가을"},
+                {"name": "입동", "month": 11, "approx_day": 8, "season": "겨울"},
+                {"name": "소설", "month": 11, "approx_day": 23, "season": "겨울"},
+                {"name": "대설", "month": 12, "approx_day": 7, "season": "겨울"},
+                {"name": "동지", "month": 12, "approx_day": 22, "season": "겨울"}
+            ]
+            
+            # 연도별 24절기 동적 계산
+            year_solar_terms = []
+            for term in solar_terms_template:
+                # 윤년 보정 (2월 이후 절기는 윤년에 약간 변동)
+                leap_adjustment = 0
+                if year % 4 == 0 and term["month"] > 2:
+                    leap_adjustment = 1 if term["name"] in ["하지", "동지"] else 0
+                
+                # 장기 천문학적 변화 (100년당 약 1일씩 늦어짐)
+                century_adjustment = (year - 2000) // 100
+                
+                actual_day = term["approx_day"] + leap_adjustment + century_adjustment
+                
+                # 월 경계 보정
+                days_in_month = [31, 29 if year % 4 == 0 else 28, 31, 30, 31, 30, 
+                               31, 31, 30, 31, 30, 31][term["month"] - 1]
+                actual_day = min(max(1, actual_day), days_in_month)
+                
+                year_solar_terms.append({
+                    "name": term["name"],
+                    "date": f"{year}-{term['month']:02d}-{actual_day:02d}",
+                    "year": year,
+                    "month": term["month"],
+                    "day": actual_day,
+                    "season": term["season"],
+                    "source": "heal7_kasi_based_calculation"
+                })
+            
+            all_solar_terms[str(year)] = year_solar_terms
+        
+        return {
+            "success": True,
+            "preload_years": target_years,
+            "total_terms": len(target_years) * 24,
+            "data": all_solar_terms,
+            "source": "heal7_2year_preload_system",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "error_type": "SOLAR_TERMS_PRELOAD_ERROR",
+            "timestamp": datetime.now().isoformat()
+        }
+
+@kasi_router.get("/solar-terms/{year}")
+async def get_yearly_solar_terms(year: int):
+    """특정 연도의 24절기 정보 조회"""
+    try:
+        current_year = datetime.now().year
+        
+        # KASI API 지원 범위 확인 (현재년도 ~ 내년까지)
+        if year < current_year - 1 or year > current_year + 2:
+            return {
+                "success": False,
+                "error": f"Year {year} is outside KASI API support range ({current_year-1}~{current_year+2})",
+                "supported_range": [current_year - 1, current_year, current_year + 1, current_year + 2]
+            }
+        
+        # 프리로드 데이터에서 가져오기
+        preload_response = await preload_solar_terms()
+        if preload_response.get("success") and str(year) in preload_response.get("data", {}):
+            return {
+                "success": True,
+                "year": year,
+                "solar_terms": preload_response["data"][str(year)],
+                "source": "preload_cache"
+            }
+        else:
+            return {
+                "success": False,
+                "error": f"No solar terms data available for year {year}"
+            }
+            
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "error_type": "SOLAR_TERMS_QUERY_ERROR"
+        }
+
 # KASI 프록시 라우터 등록
 app.include_router(kasi_router)
-print("✅ KASI API proxy router loaded successfully")
+print("✅ KASI API proxy router (with 2-year solar terms preload) loaded successfully")
 
 @app.get("/api/health")
 async def health_endpoint():

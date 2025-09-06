@@ -38,10 +38,10 @@ export const AnalyticsTab = () => {
           { title: '댓글 수', value: '3,456', change: '+18%', color: 'purple' },
           { title: '대기 검토', value: '23', change: '-5', color: 'yellow' }
         ].map((stat, idx) => (
-          <div key={idx} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+          <div key={idx} className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-gray-600/40">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-300 text-sm">{stat.title}</p>
+                <p className="text-gray-200 text-sm">{stat.title}</p>
                 <p className="text-white text-xl font-bold">{stat.value}</p>
                 <p className={`text-xs text-${stat.color}-400`}>{stat.change}</p>
               </div>
@@ -52,7 +52,7 @@ export const AnalyticsTab = () => {
       </div>
 
       {/* 기간 선택 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="card-cosmic p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white text-lg font-semibold">리뷰 & 댓글 관리</h3>
           <div className="flex gap-2">
@@ -63,7 +63,7 @@ export const AnalyticsTab = () => {
                 className={`px-3 py-1 rounded text-sm ${
                   timeRange === range.key
                     ? 'bg-purple-500/30 text-purple-300'
-                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                    : 'bg-gray-900/80 text-gray-200 hover:bg-white/20'
                 }`}
               >
                 {range.label}
@@ -83,7 +83,7 @@ export const AnalyticsTab = () => {
               className={`px-4 py-2 rounded-lg border ${
                 activeTab === tab.key
                   ? 'bg-purple-500/30 border-purple-400 text-purple-300'
-                  : 'bg-white/5 border-white/20 text-gray-300 hover:bg-white/10'
+                  : 'bg-white/5 border-gray-600/40 text-gray-200 hover:bg-gray-900/80'
               }`}
             >
               {tab.label}
@@ -94,8 +94,8 @@ export const AnalyticsTab = () => {
 
       {/* 리뷰 관리 */}
       {activeTab === 'reviews' && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-          <div className="p-6 border-b border-white/20">
+        <div className="card-cosmic">
+          <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">리뷰 목록</h4>
               <div className="flex gap-2">
@@ -125,7 +125,7 @@ export const AnalyticsTab = () => {
                         </div>
                         <span className="text-gray-400 text-sm">{review.date}</span>
                       </div>
-                      <p className="text-gray-300 text-sm">{review.content}</p>
+                      <p className="text-gray-200 text-sm">{review.content}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-1 rounded text-xs ${
@@ -154,8 +154,8 @@ export const AnalyticsTab = () => {
 
       {/* 댓글 관리 */}
       {activeTab === 'comments' && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-          <div className="p-6 border-b border-white/20">
+        <div className="card-cosmic">
+          <div className="p-6 border-b border-gray-600/40">
             <h4 className="text-white font-semibold">댓글 목록</h4>
           </div>
           
@@ -170,7 +170,7 @@ export const AnalyticsTab = () => {
                         <span className="text-gray-400 text-sm">→ {comment.article}</span>
                         <span className="text-gray-400 text-sm">{comment.date}</span>
                       </div>
-                      <p className="text-gray-300 text-sm">{comment.content}</p>
+                      <p className="text-gray-200 text-sm">{comment.content}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-1 rounded text-xs ${

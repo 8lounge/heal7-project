@@ -413,44 +413,251 @@ export const get길흉 = (gapja: string, date: Date): { 길일: boolean; 흉일:
   };
 };
 
-// 절기 데이터 (2025년 기준)
-export const 절기2025 = [
-  { 이름: '소한', 날짜: new Date(2025, 0, 5) },
-  { 이름: '대한', 날짜: new Date(2025, 0, 20) },
-  { 이름: '입춘', 날짜: new Date(2025, 1, 3) },
-  { 이름: '우수', 날짜: new Date(2025, 1, 18) },
-  { 이름: '경칩', 날짜: new Date(2025, 2, 5) },
-  { 이름: '춘분', 날짜: new Date(2025, 2, 20) },
-  { 이름: '청명', 날짜: new Date(2025, 3, 4) },
-  { 이름: '곡우', 날짜: new Date(2025, 3, 19) },
-  { 이름: '입하', 날짜: new Date(2025, 4, 5) },
-  { 이름: '소만', 날짜: new Date(2025, 4, 20) },
-  { 이름: '망종', 날짜: new Date(2025, 5, 5) },
-  { 이름: '하지', 날짜: new Date(2025, 5, 21) },
-  { 이름: '소서', 날짜: new Date(2025, 6, 6) },
-  { 이름: '대서', 날짜: new Date(2025, 6, 22) },
-  { 이름: '입추', 날짜: new Date(2025, 7, 7) },
-  { 이름: '처서', 날짜: new Date(2025, 7, 22) },
-  { 이름: '백로', 날짜: new Date(2025, 8, 7) },
-  { 이름: '추분', 날짜: new Date(2025, 8, 22) },
-  { 이름: '한로', 날짜: new Date(2025, 9, 8) },
-  { 이름: '상강', 날짜: new Date(2025, 9, 23) },
-  { 이름: '입동', 날짜: new Date(2025, 10, 7) },
-  { 이름: '소설', 날짜: new Date(2025, 10, 22) },
-  { 이름: '대설', 날짜: new Date(2025, 11, 7) },
-  { 이름: '동지', 날짜: new Date(2025, 11, 21) }
-];
-
-// 절기 찾기
-export const get절기 = (date: Date): string | null => {
-  const 해당절기 = 절기2025.find(절기 => {
-    const diff = Math.abs(date.getTime() - 절기.날짜.getTime());
-    return diff < 24 * 60 * 60 * 1000; // 1일 이내
-  });
-  return 해당절기?.이름 || null;
+// 🔥 24절기 아이콘 매핑 시스템 (전통 명리학 + 현대적 시각화)
+export const 절기아이콘매핑: Record<string, { icon: string; color: string; description: string; season: string }> = {
+  // 🌸 봄 절기 (2-5월)
+  '입춘': { icon: '🌱', color: 'text-green-400', description: '봄의 시작, 생명 발아', season: '봄' },
+  '우수': { icon: '💧', color: 'text-blue-300', description: '눈이 비로 변함', season: '봄' },
+  '경칩': { icon: '🐛', color: 'text-lime-400', description: '동물들이 겨울잠에서 깸', season: '봄' },
+  '춘분': { icon: '🌸', color: 'text-pink-400', description: '낮과 밤의 길이가 같음', season: '봄' },
+  '청명': { icon: '💨', color: 'text-sky-400', description: '맑고 밝은 날씨', season: '봄' },
+  '곡우': { icon: '☔', color: 'text-blue-400', description: '곡식을 기르는 비', season: '봄' },
+  
+  // ☀️ 여름 절기 (6-8월)
+  '입하': { icon: '🌿', color: 'text-emerald-500', description: '여름의 시작', season: '여름' },
+  '소만': { icon: '🌾', color: 'text-yellow-500', description: '곡식이 차츰 익어감', season: '여름' },
+  '망종': { icon: '🌾', color: 'text-amber-500', description: '곡식의 씨를 뿌림', season: '여름' },
+  '하지': { icon: '☀️', color: 'text-orange-400', description: '일년 중 낮이 가장 긺', season: '여름' },
+  '소서': { icon: '🌡️', color: 'text-red-400', description: '작은 더위', season: '여름' },
+  '대서': { icon: '🔥', color: 'text-red-500', description: '큰 더위', season: '여름' },
+  
+  // 🍂 가을 절기 (9-11월)
+  '입추': { icon: '🍂', color: 'text-orange-500', description: '가을의 시작', season: '가을' },
+  '처서': { icon: '🌬️', color: 'text-slate-400', description: '더위가 물러감', season: '가을' },
+  '백로': { icon: '🪶', color: 'text-gray-300', description: '흰 이슬이 맺힘', season: '가을' },
+  '추분': { icon: '🍁', color: 'text-red-600', description: '낮과 밤의 길이가 같음', season: '가을' },
+  '한로': { icon: '❄️', color: 'text-blue-200', description: '찬 이슬', season: '가을' },
+  '상강': { icon: '💎', color: 'text-cyan-400', description: '서리가 내림', season: '가을' },
+  
+  // ❄️ 겨울 절기 (12-1월)
+  '입동': { icon: '🌨️', color: 'text-blue-100', description: '겨울의 시작', season: '겨울' },
+  '소설': { icon: '❄️', color: 'text-white', description: '작은 눈', season: '겨울' },
+  '대설': { icon: '🌨️', color: 'text-blue-50', description: '큰 눈', season: '겨울' },
+  '동지': { icon: '🌙', color: 'text-indigo-300', description: '일년 중 밤이 가장 긺', season: '겨울' },
+  '소한': { icon: '🧊', color: 'text-cyan-200', description: '작은 추위', season: '겨울' },
+  '대한': { icon: '⛄', color: 'text-blue-50', description: '큰 추위', season: '겨울' }
 };
 
-// 운세 점수 계산 (1-5)
+// 🔥 동적 24절기 데이터 시스템 (KASI API 기반)
+interface SolarTermData {
+  이름: string;
+  날짜: Date;
+  icon: string;
+  color: string; 
+  description: string;
+  season: string;
+}
+
+// 메모리 캐시: 2년치 24절기 데이터 저장
+let cachedSolarTerms: Record<number, SolarTermData[]> = {};
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24시간 캐시
+
+// 🔥 KASI API를 통한 2년치 24절기 프리로드
+export const preloadSolarTermsData = async (): Promise<boolean> => {
+  try {
+    const now = Date.now();
+    const currentYear = new Date().getFullYear();
+    
+    // 캐시가 유효한 경우 스킵
+    if (cacheTimestamp > 0 && (now - cacheTimestamp) < CACHE_DURATION && 
+        cachedSolarTerms[currentYear] && cachedSolarTerms[currentYear + 1]) {
+      console.log('✅ 24절기 캐시 유효 - 로드 스킵');
+      return true;
+    }
+    
+    console.log('🔮 2년치 24절기 데이터 프리로드 시작...');
+    
+    // 백엔드 KASI API 호출
+    const response = await fetch('/api/kasi/solar-terms/preload');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    
+    if (!result.success || !result.data) {
+      throw new Error(result.error || '24절기 데이터 로드 실패');
+    }
+    
+    // 캐시에 저장 (아이콘 정보와 함께)
+    cachedSolarTerms = {};
+    
+    for (const [yearStr, termsList] of Object.entries(result.data)) {
+      const year = parseInt(yearStr);
+      const processedTerms: SolarTermData[] = [];
+      
+      for (const term of termsList as any[]) {
+        const iconInfo = 절기아이콘매핑[term.name];
+        
+        if (iconInfo) {
+          processedTerms.push({
+            이름: term.name,
+            날짜: new Date(term.date),
+            icon: iconInfo.icon,
+            color: iconInfo.color,
+            description: iconInfo.description,
+            season: iconInfo.season
+          });
+        }
+      }
+      
+      cachedSolarTerms[year] = processedTerms;
+    }
+    
+    cacheTimestamp = now;
+    
+    console.log(`✅ 2년치 24절기 프리로드 완료: ${result.preload_years.join(', ')}년`);
+    console.log(`📊 총 ${result.total_terms}개 절기 로드됨`);
+    
+    return true;
+    
+  } catch (error) {
+    console.error('❌ 24절기 프리로드 실패:', error);
+    return false;
+  }
+};
+
+// 🔥 연도별 24절기 데이터 조회 (동적)
+export const get연도별절기 = async (year: number): Promise<SolarTermData[]> => {
+  // 프리로드 시도
+  await preloadSolarTermsData();
+  
+  // 캐시에서 조회
+  if (cachedSolarTerms[year]) {
+    return cachedSolarTerms[year];
+  }
+  
+  // 캐시 미스 시 개별 조회
+  try {
+    const response = await fetch(`/api/kasi/solar-terms/${year}`);
+    const result = await response.json();
+    
+    if (result.success && result.solar_terms) {
+      const processedTerms: SolarTermData[] = [];
+      
+      for (const term of result.solar_terms) {
+        const iconInfo = 절기아이콘매핑[term.name];
+        
+        if (iconInfo) {
+          processedTerms.push({
+            이름: term.name,
+            날짜: new Date(term.date),
+            icon: iconInfo.icon,
+            color: iconInfo.color,
+            description: iconInfo.description,
+            season: iconInfo.season
+          });
+        }
+      }
+      
+      // 캐시에 저장
+      cachedSolarTerms[year] = processedTerms;
+      return processedTerms;
+    }
+  } catch (error) {
+    console.error(`❌ ${year}년 24절기 조회 실패:`, error);
+  }
+  
+  // 폴백: 빈 배열 반환
+  console.warn(`⚠️  ${year}년 24절기 데이터 없음 - 빈 배열 반환`);
+  return [];
+};
+
+// 🔥 앱 시작시 자동 프리로드 (백그라운드 실행)
+// 이 함수는 앱이 로드될 때 자동으로 실행됩니다
+setTimeout(() => {
+  preloadSolarTermsData().then(success => {
+    if (success) {
+      console.log('🚀 24절기 프리로드 시스템 초기화 완료');
+    } else {
+      console.warn('⚠️  24절기 프리로드 실패 - 폴백 모드로 동작');
+    }
+  });
+}, 1000); // 1초 후 백그라운드 프리로드
+
+// 🔥 동적 절기 찾기 - KASI API 기반
+export const get절기 = (date: Date): string | null => {
+  const year = date.getFullYear();
+  
+  // 캐시된 절기 데이터에서 찾기
+  if (cachedSolarTerms[year]) {
+    const 해당절기 = cachedSolarTerms[year].find(절기 => {
+      const diff = Math.abs(date.getTime() - 절기.날짜.getTime());
+      return diff < 24 * 60 * 60 * 1000; // 1일 이내
+    });
+    return 해당절기?.이름 || null;
+  }
+  
+  // 캐시가 없으면 null 반환 (프리로드 대기 중)
+  return null;
+};
+
+// 🔥 동적 절기 상세 정보 반환 - KASI API 기반
+export const get절기상세정보 = (date: Date): { 
+  name: string; 
+  icon: string; 
+  color: string; 
+  description: string; 
+  season: string; 
+} | null => {
+  const year = date.getFullYear();
+  
+  // 캐시된 절기 데이터에서 직접 찾기
+  if (cachedSolarTerms[year]) {
+    const 해당절기 = cachedSolarTerms[year].find(절기 => {
+      const diff = Math.abs(date.getTime() - 절기.날짜.getTime());
+      return diff < 24 * 60 * 60 * 1000; // 1일 이내
+    });
+    
+    if (해당절기) {
+      return {
+        name: 해당절기.이름,
+        icon: 해당절기.icon,
+        color: 해당절기.color,
+        description: 해당절기.description,
+        season: 해당절기.season
+      };
+    }
+  }
+  
+  // 캐시가 없으면 null 반환
+  return null;
+};
+
+// 🌟 절기 강조 표시용 함수 (달력에서 절기 날짜 하이라이트)
+export const is절기날 = (date: Date): boolean => {
+  return get절기(date) !== null;
+};
+
+// 🔥 절기 기반 특별한 운세 보정 (절기는 운세 점수에 긍정적 영향)
+export const get절기운세보정 = (절기이름: string | null): number => {
+  if (!절기이름) return 0;
+  
+  // 계절별 운세 보정값
+  const 계절보정: Record<string, number> = {
+    '봄': 1,    // 새로운 시작, 생명력
+    '여름': 0.5, // 활기, 성장
+    '가을': 1,   // 수확, 결실
+    '겨울': 0.5  // 정화, 준비
+  };
+  
+  const 절기정보 = 절기아이콘매핑[절기이름];
+  return 절기정보 ? (계절보정[절기정보.season] || 0) : 0;
+};
+
+// 운세 점수 계산 (1-5) - 절기 보정 포함
 export const get운세점수 = (gapja: string, date: Date): number => {
   const 천간 = gapja[0];
   const 지지 = gapja[1];
@@ -488,16 +695,26 @@ export const get운세점수 = (gapja: string, date: Date): number => {
     점수 += 지지보정[띠] || 0;
   }
   
+  // 🔥 절기 보정 추가 (절기일은 특별한 날이므로 운세 점수 상승)
+  const 절기이름 = get절기(date);
+  const 절기보정 = get절기운세보정(절기이름);
+  점수 += 절기보정;
+  
   return Math.max(1, Math.min(5, 점수));
 };
 
-// 특이사항 생성
-export const get특이사항 = (date: Date, gapja: string): string[] => {
+// 특이사항 생성 (윤달 정보 포함)
+export const get특이사항 = (date: Date, gapja: string, isLeapMonth?: boolean): string[] => {
   const 특이사항: string[] = [];
   const 천간 = gapja[0];
   const 지지 = gapja[1];
   const 띠 = 띠동물[지지];
   const dayOfWeek = date.getDay();
+  
+  // 🔥 윤달 정보 최우선 표시
+  if (isLeapMonth) {
+    특이사항.push('🌙+ 윤달 (음력 특별한 달)');
+  }
   
   if (is손없는날(date)) {
     특이사항.push('👻 손없는날');
@@ -508,7 +725,14 @@ export const get특이사항 = (date: Date, gapja: string): string[] => {
   if (흉일) 특이사항.push('⚠️ 흉일');
   
   const 절기 = get절기(date);
-  if (절기) 특이사항.push(`🌸 ${절기}`);
+  if (절기) {
+    const 절기정보 = get절기상세정보(date);
+    if (절기정보) {
+      특이사항.push(`${절기정보.icon} ${절기} (${절기정보.description})`);
+    } else {
+      특이사항.push(`🌸 ${절기}`);
+    }
+  }
   
   // 특별한 조합
   if (천간 === '갑' && 지지 === '자') {
@@ -585,9 +809,9 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
       const 오행 = 오행매핑[천간] || '미지';
       const { 길일, 흉일 } = get길흉(gapja, date);
       const 손없는날 = is손없는날(date);
-      const 절기 = getKasi절기(date); // KASI 기반 24절기
+      const 절기 = get절기(date); // 🔥 동적 KASI 기반 24절기
       const 운세점수 = get운세점수(gapja, date);
-      const 특이사항 = get특이사항(date, gapja);
+      const 특이사항 = get특이사항(date, gapja, isLeapMonth); // 🔥 윤달 정보 포함
       
       // KASI API 성공 표시
       if (day === 3) {

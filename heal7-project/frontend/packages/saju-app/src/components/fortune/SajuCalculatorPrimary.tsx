@@ -167,12 +167,12 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
   };
 
   const cardClass = viewMode === 'cyber_fantasy' 
-    ? 'bg-gradient-to-br from-purple-900/30 to-blue-900/30 backdrop-blur-md border border-cyan-500/30' 
-    : 'bg-white/10 backdrop-blur-md border border-white/20';
+    ? 'bg-gradient-to-br from-[var(--theme-primary)]/30 to-[var(--theme-secondary)]/30 backdrop-blur-md border border-cyan-500/30' 
+    : 'bg-[var(--theme-bg-card)] backdrop-blur-md border border-white/20';
 
   const buttonClass = viewMode === 'cyber_fantasy'
-    ? 'bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
-    : 'bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300';
+    ? 'bg-gradient-to-r from-cyan-500 to-[var(--theme-primary)] hover:from-cyan-400 hover:to-[var(--theme-primary)]/80 text-white font-bold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg'
+    : 'bg-[var(--theme-primary)] hover:bg-[var(--theme-primary)]/80 text-[var(--theme-text-primary)] font-bold py-3 px-8 rounded-xl transition-all duration-300';
 
   return (
     <div className="min-h-screen p-6">
@@ -347,7 +347,7 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
                 >
                   <div className="mb-6">
                     <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl
-                      ${viewMode === 'cyber_fantasy' ? 'bg-gradient-to-br from-cyan-500 to-purple-600' : 'bg-purple-600'}`}>
+                      ${viewMode === 'cyber_fantasy' ? 'bg-gradient-to-br from-cyan-500 to-[var(--theme-primary)]' : 'bg-[var(--theme-primary)]'}`}>
                       {loadingSteps[loadingStep]?.icon}
                     </div>
                     <p className="text-white font-medium">{loadingSteps[loadingStep]?.message}</p>
@@ -358,8 +358,8 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
                     <motion.div
                       className={`h-3 rounded-full ${
                         viewMode === 'cyber_fantasy' 
-                          ? 'bg-gradient-to-r from-cyan-500 to-purple-600' 
-                          : 'bg-purple-600'
+                          ? 'bg-gradient-to-r from-cyan-500 to-[var(--theme-primary)]' 
+                          : 'bg-[var(--theme-primary)]'
                       }`}
                       initial={{ width: 0 }}
                       animate={{ width: `${loadingProgress}%` }}
@@ -370,7 +370,7 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
                   
                   {/* 🎯 마케팅 목적의 교육적 정보 */}
                   <motion.div 
-                    className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10"
+                    className="mt-6 p-4 bg-white/10 rounded-lg border border-white/20 backdrop-blur-md"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1 }}

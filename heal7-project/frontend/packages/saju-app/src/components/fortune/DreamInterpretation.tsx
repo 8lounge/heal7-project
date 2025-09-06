@@ -10,6 +10,8 @@ import {
 } from '../../data/dreamData';
 // import dreamInterpretations from '../../data/enhanced_dreamData'; // 하드코딩 제거
 import MultiPerspectiveDreamComparison from './MultiPerspectiveDreamComparison';
+import { useWeatherTheme } from '../../hooks/useWeatherTheme';
+import { getThemeTextClasses, themeTransitions } from '../../utils/themeStyles';
 
 type ViewMode = 'basic' | 'cyber_fantasy'
 
@@ -26,6 +28,9 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
   const [, setIsSearching] = useState(false);
   const [currentMonth] = useState(new Date().getMonth() + 1);
   const [dreamViewMode, setDreamViewMode] = useState<'regular' | 'multi-perspective'>('regular');
+  
+  // 테마 훅 추가
+  const { theme } = useWeatherTheme();
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -35,30 +40,36 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
       const searchDreamAPI = async () => {
         try {
           const query = searchQuery.toLowerCase().trim();
-          const response = await fetch(`/api/dreams/search-simple/${encodeURIComponent(query)}?limit=10`);
+          const response = await fetch('/api/saju/dream-interpretation/search', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ keyword: query, limit: 10 })
+          });
 
           if (response.ok) {
             const apiResults = await response.json();
             
-            // API 응답 구조 확인: {keyword: string, total_results: number, interpretations: [...]}
-            if (apiResults.interpretations && Array.isArray(apiResults.interpretations)) {
+            // API 응답 구조 확인: {success: boolean, results: [...], total_count: number}
+            if (apiResults.success && apiResults.results && Array.isArray(apiResults.results)) {
               // API 응답을 프론트엔드 형식으로 변환
-              const formattedResults = apiResults.interpretations.map((dream: any, index: number) => ({
+              const formattedResults = apiResults.results.map((dream: any, index: number) => ({
                 id: (index + 1).toString(),
                 keyword: dream.keyword || '알 수 없는 꿈',
                 category: dream.category || '꿈풀이',
                 emoji: '🌙', // 기본 이모지, 추후 카테고리별로 매핑 가능
-                traditionInterpretation: dream.traditional_meaning || '',
-                modernInterpretation: dream.modern_meaning || dream.traditional_meaning || '',
-                psychologyInterpretation: dream.psychological_meaning || '',
-                mood: dream.fortune_aspect === '대길' || dream.fortune_aspect === '길몽' ? 'positive' : 
-                      dream.fortune_aspect === '흉몽' ? 'negative' : 'neutral',
-                frequency: Math.round(dream.confidence_score * 10) || Math.floor(Math.random() * 100) + 1,
-                keywords: Array.isArray(dream.related_keywords) ? dream.related_keywords : [dream.keyword].filter(Boolean),
+                traditionInterpretation: dream.tradition_interpretation || '',
+                modernInterpretation: dream.modern_interpretation || dream.tradition_interpretation || '',
+                psychologyInterpretation: dream.psychology_interpretation || '',
+                mood: dream.mood === 'positive' || dream.mood === '길몽' ? 'positive' : 
+                      dream.mood === 'negative' || dream.mood === '흉몽' ? 'negative' : 'neutral',
+                frequency: Math.round(dream.frequency * 10) || Math.floor(Math.random() * 100) + 1,
+                keywords: Array.isArray(dream.keywords) ? dream.keywords : [dream.keyword].filter(Boolean),
                 variations: [dream.keyword].filter(Boolean),
-                luckyNumbers: Array.isArray(dream.lucky_numbers) ? dream.lucky_numbers : [],
+                luckyNumbers: Array.isArray(dream.luckyNumbers) ? dream.luckyNumbers : [],
                 tags: ['꿈풀이'],
-                relatedDreams: []
+                relatedDreams: Array.isArray(dream.relatedDreams) ? dream.relatedDreams : []
               }));
               
               console.log('Formatted Results:', formattedResults);
@@ -136,11 +147,11 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
         {/* 헤더 */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Moon className="w-8 h-8 text-white" />
-            <h1 className="text-4xl font-bold text-white">🔮 AI 꿈해몽 센터</h1>
+            <Moon className={`w-8 h-8 ${getThemeTextClasses.primary(theme)}`} />
+            <h1 className={`text-4xl font-bold ${getThemeTextClasses.primary(theme)}`}>🔮 AI 꿈해몽 센터</h1>
             <Star className="w-8 h-8 text-yellow-300" />
           </div>
-          <p className="text-white/80 text-lg mb-4">
+          <p className={`${getThemeTextClasses.secondary(theme)} text-lg mb-4`}>
             당신의 꿈이 전하는 메시지를 AI와 전통 명리학으로 해석해드립니다
           </p>
           
@@ -148,14 +159,14 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={() => setDreamViewMode('multi-perspective')}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 hover:from-purple-500/50 hover:to-pink-500/50 border border-purple-400/50 text-white px-4 py-2 rounded-lg font-medium transition-all"
+              className={`flex items-center gap-2 bg-gradient-to-r from-[var(--theme-primary)]/30 to-[var(--theme-secondary)]/30 hover:from-[var(--theme-primary)]/50 hover:to-[var(--theme-secondary)]/50 border border-[var(--theme-primary)]/50 ${getThemeTextClasses.primary(theme)} px-4 py-2 rounded-lg font-medium transition-all`}
             >
               <Eye className="w-4 h-4" />
               <Globe className="w-4 h-4" />
               다각도 문화 비교
             </button>
-            <span className="text-white/40">|</span>
-            <span className="text-white/60 text-sm">
+            <span className={getThemeTextClasses.subtle(theme)}>|</span>
+            <span className={`${getThemeTextClasses.muted(theme)} text-sm`}>
               같은 꿈도 문화권마다 다르게 해석됩니다
             </span>
           </div>
@@ -166,20 +177,20 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
           viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
         }`}>
           <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+            <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${getThemeTextClasses.icon(theme)} w-5 h-5`} />
             <input
               type="text"
               placeholder="꿈에서 본 것을 검색해보세요 (예: 뱀, 물, 돈, 날아가기)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/20 border border-white/30 rounded-lg pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className={`w-full bg-white/10 border border-white/20 rounded-lg pl-12 pr-4 py-3 ${getThemeTextClasses.primary(theme)} ${getThemeTextClasses.placeholder(theme)} focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-md`}
             />
           </div>
 
           {/* 선택된 키워드 */}
           {selectedKeywords.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+              <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-3 flex items-center gap-2`}>
                 <Tags className="w-4 h-4" />
                 선택된 꿈 키워드
               </h3>
@@ -187,7 +198,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                 {selectedKeywords.map((keyword) => (
                   <span
                     key={keyword}
-                    className="bg-purple-500/30 text-white px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-purple-500/40 transition-colors"
+                    className={`bg-[var(--theme-primary)]/30 ${getThemeTextClasses.primary(theme)} px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-[var(--theme-primary)]/40 transition-colors`}
                     onClick={() => removeKeyword(keyword)}
                   >
                     {keyword} ×
@@ -198,11 +209,11 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               {/* 조합 해석 */}
               {combinationInterpretation && (
                 <div className="mt-4 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
-                  <h4 className="text-amber-200 font-medium mb-2 flex items-center gap-2">
+                  <h4 className={`${getThemeTextClasses.combination(theme)} font-medium mb-2 flex items-center gap-2`}>
                     <Sparkles className="w-4 h-4" />
                     조합 해석
                   </h4>
-                  <p className="text-amber-200/80 text-sm">{combinationInterpretation}</p>
+                  <p className={`${getThemeTextClasses.combinationSecondary(theme)} text-sm`}>{combinationInterpretation}</p>
                 </div>
               )}
             </div>
@@ -211,7 +222,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
           {/* 인기 키워드 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+              <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-3 flex items-center gap-2`}>
                 <TrendingUp className="w-4 h-4" />
                 인기 꿈 키워드
               </h3>
@@ -220,7 +231,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                   <button
                     key={keyword}
                     onClick={() => handleSearch(keyword)}
-                    className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-sm transition-colors"
+                    className={`bg-white/10 hover:bg-white/20 ${getThemeTextClasses.interactive(theme)} px-3 py-1 rounded-full text-sm transition-colors backdrop-blur-md border border-white/20`}
                   >
                     {keyword}
                   </button>
@@ -229,7 +240,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
             </div>
 
             <div>
-              <h3 className="text-white font-medium mb-3 flex items-center gap-2">
+              <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-3 flex items-center gap-2`}>
                 <Star className="w-4 h-4" />
                 이달의 꿈 키워드
               </h3>
@@ -238,7 +249,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                   <button
                     key={keyword}
                     onClick={() => handleSearch(keyword)}
-                    className="bg-gradient-to-r from-pink-500/30 to-purple-500/30 hover:from-pink-500/40 hover:to-purple-500/40 text-white px-3 py-1 rounded-full text-sm transition-colors"
+                    className={`bg-gradient-to-r from-[var(--theme-secondary)]/30 to-[var(--theme-primary)]/30 hover:from-[var(--theme-secondary)]/40 hover:to-[var(--theme-primary)]/40 ${getThemeTextClasses.primary(theme)} px-3 py-1 rounded-full text-sm transition-colors`}
                   >
                     {keyword}
                   </button>
@@ -253,33 +264,33 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
           <div className="lg:col-span-2">
             {searchResults.length > 0 ? (
               <div className="space-y-4">
-                <h2 className="text-white text-xl font-bold mb-4">
+                <h2 className={`${getThemeTextClasses.primary(theme)} text-xl font-bold mb-4`}>
                   검색 결과 ({searchResults.length}개)
                 </h2>
                 {searchResults.map((dream) => (
                   <div
                     key={dream.id}
-                    className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/15 transition-all ${selectedDream?.id === dream.id ? 'ring-2 ring-purple-400' : ''}`}
+                    className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/20 transition-all ${selectedDream?.id === dream.id ? 'ring-2 ring-[var(--theme-primary)] bg-[var(--theme-primary)]/20' : ''}`}
                     onClick={() => setSelectedDream(dream)}
                   >
                     <div className="flex items-start gap-4">
                       <div className="text-3xl">{dream.emoji}</div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-white font-bold text-lg">{dream.keyword}</h3>
+                          <h3 className={`${getThemeTextClasses.primary(theme)} font-bold text-lg`}>{dream.keyword}</h3>
                           <span className={`text-xs px-2 py-1 rounded-full ${getMoodBg(dream.mood)} ${getMoodColor(dream.mood)}`}>
                             {dream.mood === 'positive' ? '길몽' : dream.mood === 'negative' ? '흉몽' : dream.mood === 'warning' ? '주의' : '중성'}
                           </span>
-                          <span className="text-white/60 text-sm">검색 {dream.frequency}회</span>
+                          <span className={`${getThemeTextClasses.muted(theme)} text-sm`}>검색 {dream.frequency}회</span>
                         </div>
-                        <p className="text-white/80 text-sm mb-2 line-clamp-2">
+                        <p className={`${getThemeTextClasses.secondary(theme)} text-sm mb-2 line-clamp-2`}>
                           {dream.modernInterpretation}
                         </p>
                         <div className="flex flex-wrap gap-1">
                           {dream.keywords.slice(0, 4).map((keyword) => (
                             <span
                               key={keyword}
-                              className="bg-purple-500/20 text-white px-2 py-1 rounded text-xs cursor-pointer hover:bg-purple-500/30"
+                              className={`${getThemeTextClasses.hashtagContainer(theme)} ${getThemeTextClasses.hashtag(theme)} px-2 py-1 rounded text-xs cursor-pointer transition-colors`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleKeywordClick(keyword);
@@ -296,17 +307,17 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               </div>
             ) : (
               <div className="space-y-6">
-                <h2 className="text-white text-xl font-bold mb-4">꿈 카테고리</h2>
+                <h2 className={`${getThemeTextClasses.primary(theme)} text-xl font-bold mb-4`}>꿈 카테고리</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {dreamCategories.map((category) => (
                     <div
                       key={category.id}
-                      className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-center cursor-pointer hover:bg-white/15 transition-all"
+                      className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-center cursor-pointer hover:bg-white/20 transition-all"
                       onClick={() => handleSearch(category.name)}
                     >
                       <div className="text-3xl mb-2">{category.emoji}</div>
-                      <h3 className="text-white font-medium">{category.name}</h3>
-                      <p className="text-white/60 text-xs mt-1">{category.description}</p>
+                      <h3 className={`${getThemeTextClasses.primary(theme)} font-medium`}>{category.name}</h3>
+                      <p className={`${getThemeTextClasses.muted(theme)} text-xs mt-1`}>{category.description}</p>
                     </div>
                   ))}
                 </div>
@@ -320,7 +331,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 sticky top-6">
                 <div className="text-center mb-6">
                   <div className="text-6xl mb-3">{selectedDream.emoji}</div>
-                  <h2 className="text-2xl font-bold text-white mb-2">{selectedDream.keyword}</h2>
+                  <h2 className={`text-2xl font-bold ${getThemeTextClasses.primary(theme)} mb-2`}>{selectedDream.keyword}</h2>
                   <span className={`text-sm px-3 py-1 rounded-full ${getMoodBg(selectedDream.mood)} ${getMoodColor(selectedDream.mood)}`}>
                     {selectedDream.mood === 'positive' ? '길몽' : selectedDream.mood === 'negative' ? '흉몽' : selectedDream.mood === 'warning' ? '주의' : '중성'}
                   </span>
@@ -329,40 +340,40 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                 <div className="space-y-6">
                   {/* 전통 해석 */}
                   <div>
-                    <h3 className="text-white font-medium mb-2 flex items-center gap-2">
+                    <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2 flex items-center gap-2`}>
                       <BookOpen className="w-4 h-4" />
                       전통적 해석
                     </h3>
-                    <p className="text-white/80 text-sm">{selectedDream.traditionInterpretation}</p>
+                    <p className={`${getThemeTextClasses.secondary(theme)} text-sm`}>{selectedDream.traditionInterpretation}</p>
                   </div>
 
                   {/* 현대적 해석 */}
                   <div>
-                    <h3 className="text-white font-medium mb-2 flex items-center gap-2">
+                    <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2 flex items-center gap-2`}>
                       <Lightbulb className="w-4 h-4" />
                       현대적 해석
                     </h3>
-                    <p className="text-white/80 text-sm">{selectedDream.modernInterpretation}</p>
+                    <p className={`${getThemeTextClasses.secondary(theme)} text-sm`}>{selectedDream.modernInterpretation}</p>
                   </div>
 
                   {/* 심리학적 해석 */}
                   {selectedDream.psychologyInterpretation && (
                     <div>
-                      <h3 className="text-white font-medium mb-2 flex items-center gap-2">
-                        <span className="text-white">🧠</span>
+                      <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2 flex items-center gap-2`}>
+                        <span className={getThemeTextClasses.primary(theme)}>🧠</span>
                         심리학적 해석
                       </h3>
-                      <p className="text-white/80 text-sm">{selectedDream.psychologyInterpretation}</p>
+                      <p className={`${getThemeTextClasses.secondary(theme)} text-sm`}>{selectedDream.psychologyInterpretation}</p>
                     </div>
                   )}
 
                   {/* 행운의 숫자 */}
                   {selectedDream.luckyNumbers && selectedDream.luckyNumbers.length > 0 && (
                     <div>
-                      <h3 className="text-white font-medium mb-2">🎰 행운의 숫자</h3>
+                      <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2`}>🎰 행운의 숫자</h3>
                       <div className="flex gap-2">
                         {selectedDream.luckyNumbers.map((num) => (
-                          <span key={num} className="bg-gradient-to-r from-yellow-500/30 to-orange-500/30 text-yellow-200 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+                          <span key={num} className={`bg-gradient-to-r from-yellow-500/30 to-orange-500/30 ${getThemeTextClasses.luckyNumber(theme)} w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold`}>
                             {num}
                           </span>
                         ))}
@@ -372,12 +383,12 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
 
                   {/* 키워드 */}
                   <div>
-                    <h3 className="text-white font-medium mb-2">🏷️ 연관 키워드</h3>
+                    <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2`}>🏷️ 연관 키워드</h3>
                     <div className="flex flex-wrap gap-1">
                       {selectedDream.keywords.map((keyword) => (
                         <span
                           key={keyword}
-                          className="bg-purple-500/20 text-white px-2 py-1 rounded text-xs cursor-pointer hover:bg-purple-500/30"
+                          className={`${getThemeTextClasses.hashtagContainer(theme)} ${getThemeTextClasses.hashtag(theme)} px-2 py-1 rounded text-xs cursor-pointer transition-colors`}
                           onClick={() => handleKeywordClick(keyword)}
                         >
                           #{keyword}
@@ -389,13 +400,13 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                   {/* 관련 꿈 */}
                   {selectedDream.relatedDreams.length > 0 && (
                     <div>
-                      <h3 className="text-white font-medium mb-2">🔗 관련 꿈</h3>
+                      <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2`}>🔗 관련 꿈</h3>
                       <div className="flex flex-wrap gap-2">
                         {selectedDream.relatedDreams.map((related) => (
                           <button
                             key={related}
                             onClick={() => handleSearch(related)}
-                            className="bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded text-xs transition-colors"
+                            className={`bg-white/10 hover:bg-white/20 ${getThemeTextClasses.interactive(theme)} px-2 py-1 rounded text-xs transition-colors backdrop-blur-md border border-white/20`}
                           >
                             {related}
                           </button>
@@ -407,9 +418,9 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               </div>
             ) : (
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
-                <Moon className="w-16 h-16 text-white mx-auto mb-4" />
-                <h3 className="text-white font-medium mb-2">꿈을 선택해주세요</h3>
-                <p className="text-white/60 text-sm">
+                <Moon className={`w-16 h-16 ${getThemeTextClasses.primary(theme)} mx-auto mb-4`} />
+                <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2`}>꿈을 선택해주세요</h3>
+                <p className={`${getThemeTextClasses.muted(theme)} text-sm`}>
                   왼쪽에서 꿈을 검색하거나 카테고리를 선택하면
                   <br />
                   상세한 해석을 볼 수 있습니다

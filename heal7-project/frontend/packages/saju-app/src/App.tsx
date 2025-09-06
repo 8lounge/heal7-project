@@ -32,6 +32,8 @@ const SajuAdminDashboard = lazy(() => import('./components/saju-admin/SajuAdminD
 const AdminLogin = lazy(() => import('./components/saju-admin/AdminLogin'))
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
+import { useWeatherTheme } from './hooks/useWeatherTheme'
+import { getThemeClasses, themeTransitions } from './utils/themeStyles'
 
 // 3D 컴포넌트 Lazy Loading (from shared package)
 const OptimizedCyberCrystal = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedCyberCrystal })))
@@ -60,6 +62,7 @@ function App() {
   const [currentBgImage, setCurrentBgImage] = useState(0)
   const [adminAuthenticated, setAdminAuthenticated] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const { theme } = useWeatherTheme()
   
   // 🚀 하이브리드 라우팅 모드 (테스트용 - 나중에 사용자 설정으로 변경 가능)
   const [useHybridNavigation] = useState(true)
@@ -153,20 +156,22 @@ function App() {
     const checkAdminAuth = () => {
       const isAuthenticated = localStorage.getItem('heal7_admin_authenticated')
       const loginTime = localStorage.getItem('heal7_admin_login_time')
+      const sessionId = localStorage.getItem('heal7_admin_session_id')
       
-      if (isAuthenticated === 'true' && loginTime) {
+      if (isAuthenticated === 'true' && loginTime && sessionId) {
         const now = Date.now()
         const authTime = parseInt(loginTime)
         const hoursDiff = (now - authTime) / (1000 * 60 * 60)
         
-        // 24시간 이내의 인증만 유효하다고 가정
-        if (hoursDiff < 24) {
+        // 7일 이내의 인증만 유효하다고 가정 (168시간)
+        if (hoursDiff < 168) {
           setAdminAuthenticated(true)
           console.log('Admin session restored from localStorage')
         } else {
           // 만료된 세션 정리
           localStorage.removeItem('heal7_admin_authenticated')
           localStorage.removeItem('heal7_admin_login_time')
+          localStorage.removeItem('heal7_admin_session_id')
           console.log('Admin session expired, cleared localStorage')
         }
       }
@@ -219,7 +224,7 @@ function App() {
   })
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className={`min-h-screen relative overflow-hidden theme-${theme}`} data-theme={theme}>
       {/* 배경 이미지들 (페이드 전환) */}
       {backgroundImages.map((image, index) => (
         <div
@@ -234,12 +239,12 @@ function App() {
         />
       ))}
       
-      {/* 전체 오버레이 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-purple-900/40 to-black/70" />
+      {/* 테마에 따른 전체 오버레이 */}
+      <div className={`absolute inset-0 ${themeTransitions.slow} ${getThemeClasses.pageOverlay(theme)}`} />
       
-      {/* 배경 이미지 인디케이터 - AuthModal이 열려있을 때 숨김 */}
+      {/* 배경 이미지 인디케이터 - 헤더와 겹치지 않도록 위치 조정 */}
       {!isAuthModalOpen && (
-        <div className="fixed top-4 right-4 flex space-x-2 z-50 bg-black/20 backdrop-blur-sm rounded-full p-2">
+        <div className="fixed top-20 right-4 flex space-x-2 z-40 bg-black/20 backdrop-blur-sm rounded-full p-2">
           {backgroundImages.map((_, index) => (
             <motion.div
               key={index}
@@ -326,7 +331,7 @@ function App() {
         )}
 
         {/* 메인 콘텐츠 영역 */}
-        <main className="container mx-auto px-4 py-8">
+        <main className={currentPage === 'admin' ? '' : 'container mx-auto px-4 py-8'}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPage}
@@ -421,8 +426,9 @@ function App() {
                         // localStorage에서 인증 정보 제거
                         localStorage.removeItem('heal7_admin_authenticated');
                         localStorage.removeItem('heal7_admin_login_time');
+                        localStorage.removeItem('heal7_admin_session_id');
                         setAdminAuthenticated(false);
-                        console.log('Admin logged out');
+                        console.log('Admin logged out - all session data cleared');
                       }} 
                     />
                   ) : (

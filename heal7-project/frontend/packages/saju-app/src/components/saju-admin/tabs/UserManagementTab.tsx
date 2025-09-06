@@ -28,7 +28,7 @@ export const UserManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 회원 통계 및 필터 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="card-cosmic p-6">
         <h3 className="text-white text-lg font-semibold mb-4">회원 관리</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
@@ -39,11 +39,11 @@ export const UserManagementTab = () => {
               className={`p-4 rounded-lg border transition-all text-left ${
                 userFilter === filter.key
                   ? 'bg-purple-500/30 border-purple-400'
-                  : 'bg-white/5 border-white/20 hover:bg-white/10'
+                  : 'bg-white/5 border-gray-600/40 hover:bg-gray-900/80'
               }`}
             >
               <div className="text-white font-semibold">{filter.count.toLocaleString()}</div>
-              <div className="text-gray-300 text-sm">{filter.label}</div>
+              <div className="text-gray-200 text-sm">{filter.label}</div>
             </button>
           ))}
         </div>
@@ -54,7 +54,7 @@ export const UserManagementTab = () => {
             <input
               type="text"
               placeholder="이름, 이메일로 회원 검색..."
-              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+              className="w-full pl-10 pr-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white placeholder-gray-400"
             />
           </div>
           <button className="px-4 py-2 bg-blue-600/20 border border-blue-400/30 rounded-lg text-blue-400 hover:bg-blue-600/30">
@@ -65,8 +65,8 @@ export const UserManagementTab = () => {
       </div>
 
       {/* 회원 목록 테이블 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-        <div className="p-6 border-b border-white/20">
+      <div className="card-cosmic">
+        <div className="p-6 border-b border-gray-600/40">
           <div className="flex items-center justify-between">
             <h4 className="text-white font-semibold">회원 목록</h4>
             <div className="flex gap-2">
@@ -84,17 +84,17 @@ export const UserManagementTab = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/20">
-                  <th className="text-left text-gray-300 py-3 px-2">
+                <tr className="border-b border-gray-600/40">
+                  <th className="text-left text-gray-200 py-3 px-2">
                     <input type="checkbox" className="rounded" />
                   </th>
-                  <th className="text-left text-gray-300 py-3">회원명</th>
-                  <th className="text-left text-gray-300 py-3">이메일</th>
-                  <th className="text-left text-gray-300 py-3">등급</th>
-                  <th className="text-left text-gray-300 py-3">포인트</th>
-                  <th className="text-left text-gray-300 py-3">가입일</th>
-                  <th className="text-left text-gray-300 py-3">상태</th>
-                  <th className="text-left text-gray-300 py-3">관리</th>
+                  <th className="text-left text-gray-200 py-3">회원명</th>
+                  <th className="text-left text-gray-200 py-3">이메일</th>
+                  <th className="text-left text-gray-200 py-3">등급</th>
+                  <th className="text-left text-gray-200 py-3">포인트</th>
+                  <th className="text-left text-gray-200 py-3">가입일</th>
+                  <th className="text-left text-gray-200 py-3">상태</th>
+                  <th className="text-left text-gray-200 py-3">관리</th>
                 </tr>
               </thead>
               <tbody>
@@ -107,7 +107,7 @@ export const UserManagementTab = () => {
                       <div className="text-white">{user.name}</div>
                       <div className="text-gray-400 text-xs">최근 접속: {user.lastLogin}</div>
                     </td>
-                    <td className="py-3 text-gray-300">{user.email}</td>
+                    <td className="py-3 text-gray-200">{user.email}</td>
                     <td className="py-3">
                       <span className={`px-2 py-1 rounded text-xs ${
                         user.grade === 'VIP' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -118,7 +118,7 @@ export const UserManagementTab = () => {
                       </span>
                     </td>
                     <td className="py-3 text-green-400">{user.points.toLocaleString()}P</td>
-                    <td className="py-3 text-gray-300">{user.joinDate}</td>
+                    <td className="py-3 text-gray-200">{user.joinDate}</td>
                     <td className="py-3">
                       <span className={`px-2 py-1 rounded text-xs ${
                         user.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
@@ -148,7 +148,7 @@ export const UserManagementTab = () => {
       </div>
 
       {/* 회원 등급 관리 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="card-cosmic p-6">
         <h4 className="text-white font-semibold mb-4">회원 등급 설정</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
@@ -163,7 +163,7 @@ export const UserManagementTab = () => {
                   <Edit className="w-4 h-4" />
                 </button>
               </div>
-              <div className="text-sm text-gray-300 mb-2">
+              <div className="text-sm text-gray-200 mb-2">
                 최소 포인트: {tier.minPoints.toLocaleString()}P
               </div>
               <div className="text-xs text-gray-400">

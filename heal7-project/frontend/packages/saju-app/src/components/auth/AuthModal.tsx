@@ -46,9 +46,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             bottom: 0
           }}
         >
-          {/* 배경 오버레이 - 강화된 반투명 효과 */}
+          {/* 배경 오버레이 - 보라색 테마에 맞는 반투명 효과 */}
           <motion.div 
-            className="absolute inset-0 bg-black/90 backdrop-blur-lg"
+            className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-slate-900/90 to-indigo-900/80 backdrop-blur-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -84,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               position: 'relative'
             }}
           >
-            <div className="bg-black/30 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl overflow-hidden">
+            <div className="bg-purple-500/10 backdrop-blur-xl rounded-2xl border border-purple-400/30 shadow-2xl shadow-purple-500/20 overflow-hidden">
               {/* 닫기 버튼 */}
               <div className="absolute top-4 right-4 z-[60]">
                 <motion.button

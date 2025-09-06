@@ -25,7 +25,7 @@ export const PointManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 섹션 선택 */}
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+      <div className="card-cosmic p-6">
         <h3 className="text-white text-lg font-semibold mb-4">포인트 & 결제 관리</h3>
         <div className="flex gap-2">
           {sections.map(section => (
@@ -35,7 +35,7 @@ export const PointManagementTab = () => {
               className={`px-4 py-2 rounded-lg border flex items-center gap-2 ${
                 activeSection === section.key
                   ? 'bg-purple-500/30 border-purple-400 text-purple-300'
-                  : 'bg-white/5 border-white/20 text-gray-300 hover:bg-white/10'
+                  : 'bg-white/5 border-gray-600/40 text-gray-200 hover:bg-gray-900/80'
               }`}
             >
               <section.icon className="w-4 h-4" />
@@ -55,9 +55,9 @@ export const PointManagementTab = () => {
               { title: '잔여 포인트', value: '₩26,220,000', color: 'purple', change: '+18.9%' },
               { title: '일일 거래액', value: '₩2,450,000', color: 'yellow', change: '+5.2%' }
             ].map((stat, idx) => (
-              <div key={idx} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+              <div key={idx} className="bg-gray-900/80 backdrop-blur-sm rounded-lg p-4 border border-gray-600/40">
                 <div className="mb-2">
-                  <p className="text-gray-300 text-sm">{stat.title}</p>
+                  <p className="text-gray-200 text-sm">{stat.title}</p>
                   <p className="text-white text-xl font-bold">{stat.value}</p>
                 </div>
                 <p className={`text-xs text-${stat.color}-400`}>전월 대비 {stat.change}</p>
@@ -67,7 +67,7 @@ export const PointManagementTab = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 결제 수단별 통계 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+            <div className="card-cosmic p-6">
               <h4 className="text-white font-semibold mb-4">결제 수단별 현황</h4>
               <div className="space-y-3">
                 {[
@@ -78,7 +78,7 @@ export const PointManagementTab = () => {
                   <div key={idx} className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex justify-between mb-1">
-                        <span className="text-gray-300 text-sm">{payment.method}</span>
+                        <span className="text-gray-200 text-sm">{payment.method}</span>
                         <span className="text-white text-sm">{payment.amount}</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
@@ -95,7 +95,7 @@ export const PointManagementTab = () => {
             </div>
 
             {/* 포인트 사용 패턴 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+            <div className="card-cosmic p-6">
               <h4 className="text-white font-semibold mb-4">포인트 사용 패턴</h4>
               <div className="space-y-3">
                 {[
@@ -105,7 +105,7 @@ export const PointManagementTab = () => {
                   { service: '기타 서비스', usage: '₩2,200,000', percentage: 11 }
                 ].map((usage, idx) => (
                   <div key={idx} className="flex items-center justify-between">
-                    <span className="text-gray-300 text-sm">{usage.service}</span>
+                    <span className="text-gray-200 text-sm">{usage.service}</span>
                     <div className="flex items-center gap-3">
                       <span className="text-white text-sm">{usage.usage}</span>
                       <span className="text-purple-400 text-xs">{usage.percentage}%</span>
@@ -120,15 +120,15 @@ export const PointManagementTab = () => {
 
       {/* 거래 내역 */}
       {activeSection === 'transactions' && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-          <div className="p-6 border-b border-white/20">
+        <div className="card-cosmic">
+          <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">거래 내역</h4>
               <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder="회원명 또는 거래ID 검색..."
-                  className="px-3 py-1 bg-white/10 border border-white/20 rounded text-white placeholder-gray-400 text-sm"
+                  className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white placeholder-gray-400 text-sm"
                 />
                 <button className="px-3 py-1 bg-blue-600/20 border border-blue-400/30 rounded text-blue-400 text-sm">
                   <Download className="w-4 h-4 mr-1 inline" />
@@ -142,21 +142,21 @@ export const PointManagementTab = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/20">
-                    <th className="text-left text-gray-300 py-3">회원</th>
-                    <th className="text-left text-gray-300 py-3">거래 유형</th>
-                    <th className="text-left text-gray-300 py-3">결제 금액</th>
-                    <th className="text-left text-gray-300 py-3">포인트 변동</th>
-                    <th className="text-left text-gray-300 py-3">결제 방법</th>
-                    <th className="text-left text-gray-300 py-3">상태</th>
-                    <th className="text-left text-gray-300 py-3">일시</th>
+                  <tr className="border-b border-gray-600/40">
+                    <th className="text-left text-gray-200 py-3">회원</th>
+                    <th className="text-left text-gray-200 py-3">거래 유형</th>
+                    <th className="text-left text-gray-200 py-3">결제 금액</th>
+                    <th className="text-left text-gray-200 py-3">포인트 변동</th>
+                    <th className="text-left text-gray-200 py-3">결제 방법</th>
+                    <th className="text-left text-gray-200 py-3">상태</th>
+                    <th className="text-left text-gray-200 py-3">일시</th>
                   </tr>
                 </thead>
                 <tbody>
                   {mockTransactions.map(transaction => (
                     <tr key={transaction.id} className="border-b border-white/10 hover:bg-white/5">
                       <td className="py-3 text-white">{transaction.user}</td>
-                      <td className="py-3 text-gray-300">
+                      <td className="py-3 text-gray-200">
                         <span className={`px-2 py-1 rounded text-xs ${
                           transaction.type === 'purchase' ? 'bg-blue-500/20 text-blue-400' :
                           transaction.type === 'refund' ? 'bg-red-500/20 text-red-400' :
@@ -171,11 +171,11 @@ export const PointManagementTab = () => {
                           {transaction.points >= 0 ? '+' : ''}{transaction.points.toLocaleString()}P
                         </span>
                       </td>
-                      <td className="py-3 text-gray-300">{transaction.method}</td>
+                      <td className="py-3 text-gray-200">{transaction.method}</td>
                       <td className="py-3">
                         <span className="px-2 py-1 rounded text-xs bg-green-500/20 text-green-400">완료</span>
                       </td>
-                      <td className="py-3 text-gray-300 text-sm">{transaction.date}</td>
+                      <td className="py-3 text-gray-200 text-sm">{transaction.date}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -190,27 +190,27 @@ export const PointManagementTab = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 포인트 정책 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+            <div className="card-cosmic p-6">
               <h4 className="text-white font-semibold mb-4">포인트 적립/사용 정책</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
-                  <span className="text-gray-300">기본 적립률</span>
+                  <span className="text-gray-200">기본 적립률</span>
                   <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="1" className="w-16 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-center" />
+                    <input type="number" defaultValue="1" className="w-16 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
                     <span className="text-gray-400">%</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
-                  <span className="text-gray-300">VIP 적립률</span>
+                  <span className="text-gray-200">VIP 적립률</span>
                   <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="3" className="w-16 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-center" />
+                    <input type="number" defaultValue="3" className="w-16 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
                     <span className="text-gray-400">%</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
-                  <span className="text-gray-300">포인트 유효기간</span>
+                  <span className="text-gray-200">포인트 유효기간</span>
                   <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="12" className="w-16 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-center" />
+                    <input type="number" defaultValue="12" className="w-16 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
                     <span className="text-gray-400">개월</span>
                   </div>
                 </div>
@@ -218,27 +218,27 @@ export const PointManagementTab = () => {
             </div>
 
             {/* 결제 수수료 설정 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+            <div className="card-cosmic p-6">
               <h4 className="text-white font-semibold mb-4">결제 수수료 설정</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
-                  <span className="text-gray-300">카드 결제</span>
+                  <span className="text-gray-200">카드 결제</span>
                   <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="2.9" step="0.1" className="w-20 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-center" />
+                    <input type="number" defaultValue="2.9" step="0.1" className="w-20 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
                     <span className="text-gray-400">%</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
-                  <span className="text-gray-300">계좌이체</span>
+                  <span className="text-gray-200">계좌이체</span>
                   <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="500" className="w-20 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-center" />
+                    <input type="number" defaultValue="500" className="w-20 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
                     <span className="text-gray-400">원</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
-                  <span className="text-gray-300">무통장입금</span>
+                  <span className="text-gray-200">무통장입금</span>
                   <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="0" className="w-20 px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-center" />
+                    <input type="number" defaultValue="0" className="w-20 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
                     <span className="text-gray-400">원</span>
                   </div>
                 </div>
