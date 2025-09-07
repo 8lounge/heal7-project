@@ -78,16 +78,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty('--theme-accent', '#8B5CF6');
       root.className = 'theme-dark';
     } else {
-      // ☀️ Dawn Light - 신비로운 보라색 새벽 (톤앤매너 통일)
-      root.style.setProperty('--theme-text-primary', '#1e1b4b');
-      root.style.setProperty('--theme-text-secondary', '#4c1d95');
-      root.style.setProperty('--theme-text-muted', '#7c3aed');
-      root.style.setProperty('--theme-bg-primary', 'linear-gradient(135deg, #f8f7ff 0%, #f3f4f6 30%, #e5e7eb 70%, #f1f5f9 100%)');
-      root.style.setProperty('--theme-bg-surface', 'rgba(139, 92, 246, 0.08)');
-      root.style.setProperty('--theme-bg-card', 'linear-gradient(135deg, rgba(248, 247, 255, 0.8) 0%, rgba(243, 244, 246, 0.6) 100%)');
-      root.style.setProperty('--theme-bg-card-alt', 'linear-gradient(135deg, rgba(250, 245, 255, 0.8) 0%, rgba(243, 232, 255, 0.6) 50%, rgba(229, 231, 235, 0.4) 100%)');
-      root.style.setProperty('--theme-border', 'rgba(139, 92, 246, 0.2)');
-      root.style.setProperty('--theme-accent', '#8B5CF6');
+      // ☀️ Sunny Light - 청춘 활력 오렌지/핑크 (보라색 완전 제거)
+      root.style.setProperty('--theme-text-primary', '#1f2937');
+      root.style.setProperty('--theme-text-secondary', '#374151');
+      root.style.setProperty('--theme-text-muted', '#6b7280');
+      root.style.setProperty('--theme-bg-primary', 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 30%, #fed7aa 70%, #fdba74 100%)');
+      root.style.setProperty('--theme-bg-surface', 'rgba(249, 115, 22, 0.08)');
+      root.style.setProperty('--theme-bg-card', 'linear-gradient(135deg, rgba(255, 247, 237, 0.8) 0%, rgba(254, 237, 213, 0.6) 100%)');
+      root.style.setProperty('--theme-bg-card-alt', 'linear-gradient(135deg, rgba(254, 240, 240, 0.8) 0%, rgba(254, 215, 215, 0.6) 50%, rgba(252, 165, 165, 0.4) 100%)');
+      root.style.setProperty('--theme-border', 'rgba(249, 115, 22, 0.25)');
+      root.style.setProperty('--theme-accent', '#f97316');
       root.className = 'theme-light';
     }
   }, [currentTheme]);
