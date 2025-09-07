@@ -53,17 +53,17 @@ type ViewMode = 'basic' | 'cyber_fantasy'
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
                   'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
-// 테마별 배경 이미지 (미드저니 생성 이미지 + 그라디언트 폴백)
+// 테마별 배경 이미지 (로컬 최적화 WebP 이미지 + 그라디언트 폴백)
 const getBackgroundForTheme = (theme: 'light' | 'dark') => {
   if (theme === 'light') {
     return [
-      'url("https://cdn.midjourney.com/styles/0_3979596130/street_scene_640_N.webp") center/cover, linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // 미드저니 거리 장면 배경
+      'url("/images/backgrounds/light-theme.webp") center/cover, linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // 라이트 테마 최적화 배경
       'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffecd2 100%)', // 오랜지 그라디언트
     ]
   } else {
     return [
-      'url("https://cdn.midjourney.com/6169ce40-f23a-46d0-9c92-d6fbb4d976a4/0_1.png") center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // 미드저니 신비로운 배경
-      'url("https://cdn.midjourney.com/styles/0_3979596130/night_mystic_640_N.webp") center/cover, linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', // 미드저니 신비로운 밤 배경
+      'url("/images/backgrounds/dark-theme.webp") center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // 다크 테마 최적화 배경
+      'url("/images/backgrounds/dark-mystic.webp") center/cover, linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', // 신비로운 밤 배경
       'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%)', // 진보라 우주적 신비 그라디언트
     ]
   }
