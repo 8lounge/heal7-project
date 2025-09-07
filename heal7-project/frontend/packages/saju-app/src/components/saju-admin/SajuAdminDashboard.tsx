@@ -9,6 +9,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@heal7/shared';
 import { Button } from '@heal7/shared';
 import { Badge } from '@heal7/shared';
@@ -147,11 +148,8 @@ interface InterpretationCategory {
 }
 
 const SajuAdminDashboard: React.FC = () => {
-  // 테마 관리 상태 (새로 추가)
-  const [themeMode, setThemeMode] = useState<'day' | 'night'>(() => {
-    const saved = localStorage.getItem('heal7_admin_theme');
-    return (saved as 'day' | 'night') || 'night';
-  });
+  // 전역 테마 컨텍스트 사용 (독립적인 테마 상태 제거)
+  const { theme } = useTheme();
   
   // 상태 관리 - 개별 로딩 상태로 세분화
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -393,21 +391,9 @@ const SajuAdminDashboard: React.FC = () => {
     });
   }, []);
 
-  // 테마 변경 함수
-  const handleThemeToggle = useCallback(() => {
-    const newTheme = themeMode === 'day' ? 'night' : 'day';
-    setThemeMode(newTheme);
-    localStorage.setItem('heal7_admin_theme', newTheme);
-  }, [themeMode]);
+  // 독립적인 테마 토글 제거됨 - 전역 테마 시스템 사용
 
-  // 테마 변경 시 body 클래스 업데이트
-  useEffect(() => {
-    document.body.className = document.body.className.replace(
-      /theme-(day|night)/g,
-      ''
-    );
-    document.body.classList.add(`theme-${themeMode}`);
-  }, [themeMode]);
+  // body 클래스 업데이트 제거됨 - 전역 테마 시스템에서 처리
 
   // 초기 데이터 로딩 - 한 번만 실행
   useEffect(() => {
@@ -516,67 +502,38 @@ const SajuAdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-slate-900 to-indigo-900">
+    <div className={`min-h-screen theme-transition ${
+      theme === 'light' 
+        ? 'bg-gradient-to-br from-orange-100 via-pink-100 to-yellow-100' 
+        : 'bg-gradient-to-br from-purple-900 via-slate-900 to-indigo-900'
+    }`}>
       {/* 사이버 판타지 글래스모피즘 컨테이너 */}
       <div className="container mx-auto p-6">
         {/* 헤더 */}
         <div className={`backdrop-blur-xl rounded-2xl p-6 mb-6 shadow-2xl border transition-all duration-500 ${
-          themeMode === 'day' 
+          theme === 'light' 
             ? 'bg-pink-200/20 border-orange-300/30 glow-border-orange' 
             : 'bg-white/10 border-white/20 glow-border-purple'
         }`}>
           <div className="flex justify-between items-center">
             <div>
               <h1 className={`text-3xl font-bold mb-2 transition-all duration-500 ${
-                themeMode === 'day' 
+                theme === 'light' 
                   ? 'text-orange-800 glow-text-orange' 
                   : 'text-white glow-text-purple'
               }`}>
                 🔮 사주 관리자 대시보드
               </h1>
               <p className={`transition-all duration-500 ${
-                themeMode === 'day' ? 'text-orange-700/80' : 'text-white/80'
+                theme === 'light' ? 'text-orange-700/80' : 'text-white/80'
               }`}>
                 마지막 업데이트: {lastUpdate.toLocaleTimeString('ko-KR')} | 
                 시스템 상태: <StatusBadge status="healthy">정상</StatusBadge>
               </p>
             </div>
             
-            {/* 테마 토글 영역 */}
+            {/* 중복 토글 제거됨 - 헤더의 전역 토글 사용 */}
             <div className="flex items-center gap-4">
-              {/* 테마 토글 버튼 */}
-              <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border transition-all duration-500 ${
-                themeMode === 'day'
-                  ? 'bg-orange-200/20 border-orange-300/30'
-                  : 'bg-purple-500/20 border-purple-400/30'
-              }`}>
-                <span className={`text-sm font-medium transition-all duration-500 ${
-                  themeMode === 'day' ? 'text-orange-700' : 'text-purple-200'
-                }`}>
-                  {themeMode === 'day' ? '☀️ 낮' : '🌙 밤'}
-                </span>
-                <button
-                  onClick={handleThemeToggle}
-                  className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 ${
-                    themeMode === 'day'
-                      ? 'bg-orange-400 focus:ring-orange-300'
-                      : 'bg-purple-600 focus:ring-purple-400'
-                  }`}
-                >
-                  <div className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-500 shadow-lg ${
-                    themeMode === 'day'
-                      ? 'left-6 bg-white border-orange-200'
-                      : 'left-0.5 bg-white border-purple-200'
-                  } border flex items-center justify-center text-xs`}>
-                    {themeMode === 'day' ? '☀️' : '🌙'}
-                  </div>
-                </button>
-                <span className={`text-sm font-medium transition-all duration-500 ${
-                  themeMode === 'day' ? 'text-orange-700/60' : 'text-purple-200/60'
-                }`}>
-                  {themeMode === 'day' ? '🌙 밤' : '☀️ 낮'}
-                </span>
-              </div>
             <Button 
               onClick={() => {
                 // 현재 탭에 따라 해당 데이터만 새로고침

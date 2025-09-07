@@ -2,40 +2,441 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 관리자 페이지 select 옵션 다크 테마 */
+/* =================================================================== */
+/* 🎨 HEAL7 DESIGN SYSTEM - UNIFIED THEME ARCHITECTURE 
+/* =================================================================== */
+
+/* 전역 기본 변수 (다크 테마 기본값) */
+:root {
+  /* 🌙 다크 테마 기본 색상 */
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #e5e7eb;
+  --theme-text-muted: #9ca3af;
+  --theme-bg-primary: #000000;
+  --theme-bg-surface: rgba(255, 255, 255, 0.1);
+  --theme-border: rgba(255, 255, 255, 0.1);
+  --theme-accent: #a855f7;
+  
+  /* 글로벌 애니메이션 */
+  --theme-transition: all 0.5s ease-in-out;
+  --theme-transition-fast: all 0.3s ease-out;
+  --theme-transition-slow: all 0.8s ease-in-out;
+  
+  /* 글래스모피즘 기본값 */
+  --glass-blur: blur(15px);
+  --glass-border-radius: 16px;
+  --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* 🌙 다크 테마 - 신비로운 보라색 우주 */
+.theme-dark {
+  /* 텍스트 계층 (고대비율) */
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #e2e8f0;
+  --theme-text-muted: #94a3b8;
+  --theme-text-inverse: #1e1b4b;
+  
+  /* 배경 색상 */
+  --theme-bg-primary: #0f0a1a;
+  --theme-bg-secondary: #1a1229;
+  --theme-bg-overlay: rgba(0, 0, 0, 0.85);
+  
+  /* 액센트 색상 (보라색 계열) */
+  --theme-accent: #a855f7;
+  --theme-accent-hover: #9333ea;
+  --theme-accent-light: #c084fc;
+  --theme-accent-dark: #7c3aed;
+  
+  /* 보조 색상 */
+  --theme-secondary: #6366f1;
+  --theme-secondary-hover: #4f46e5;
+  
+  /* 글래스모피즘 5단계 투명도 시스템 */
+  --glass-level-1: rgba(255, 255, 255, 0.05); /* 최소 투명도 */
+  --glass-level-2: rgba(255, 255, 255, 0.08); /* 배경 영역 */
+  --glass-level-3: rgba(255, 255, 255, 0.12); /* 카드 기본 */
+  --glass-level-4: rgba(255, 255, 255, 0.18); /* 버튼/입력 */
+  --glass-level-5: rgba(255, 255, 255, 0.25); /* 강조 요소 */
+  
+  /* 테두리 시스템 */
+  --theme-border: rgba(168, 85, 247, 0.2);
+  --theme-border-light: rgba(255, 255, 255, 0.1);
+  --theme-border-strong: rgba(168, 85, 247, 0.4);
+  
+  /* 그림자 시스템 */
+  --shadow-soft: 0 8px 32px 0 rgba(139, 92, 246, 0.3);
+  --shadow-medium: 0 12px 40px 0 rgba(139, 92, 246, 0.4);
+  --shadow-strong: 0 16px 48px 0 rgba(139, 92, 246, 0.5);
+  --shadow-glow: 0 0 30px rgba(168, 85, 247, 0.6);
+}
+
+/* ☀️ 라이트 테마 - 따뜻한 핑크+오렌지 일몰 */
+.theme-light {
+  /* 텍스트 계층 (고대비율) */
+  --theme-text-primary: #1a202c;
+  --theme-text-secondary: #2d3748;
+  --theme-text-muted: #4a5568;
+  --theme-text-inverse: #ffffff;
+  
+  /* 배경 색상 */
+  --theme-bg-primary: #fff8f5;
+  --theme-bg-secondary: #fef2f2;
+  --theme-bg-overlay: rgba(255, 247, 237, 0.95);
+  
+  /* 액센트 색상 (핑크+코랄 계열) */
+  --theme-accent: #f56565;
+  --theme-accent-hover: #e53e3e;
+  --theme-accent-light: #feb2b2;
+  --theme-accent-dark: #c53030;
+  
+  /* 보조 색상 (오렌지 계열) */
+  --theme-secondary: #fd9853;
+  --theme-secondary-hover: #ea580c;
+  
+  /* 글래스모피즘 5단계 투명도 시스템 (밝은 배경용) */
+  --glass-level-1: rgba(255, 255, 255, 0.15); /* 최소 투명도 */
+  --glass-level-2: rgba(255, 255, 255, 0.25); /* 배경 영역 */
+  --glass-level-3: rgba(255, 255, 255, 0.40); /* 카드 기본 */
+  --glass-level-4: rgba(255, 255, 255, 0.55); /* 버튼/입력 */
+  --glass-level-5: rgba(255, 255, 255, 0.70); /* 강조 요소 */
+  
+  /* 테두리 시스템 */
+  --theme-border: rgba(251, 146, 60, 0.25);
+  --theme-border-light: rgba(245, 101, 101, 0.15);
+  --theme-border-strong: rgba(251, 146, 60, 0.4);
+  
+  /* 그림자 시스템 (따뜻한 색조) */
+  --shadow-soft: 0 8px 32px 0 rgba(251, 146, 60, 0.15);
+  --shadow-medium: 0 12px 40px 0 rgba(245, 101, 101, 0.2);
+  --shadow-strong: 0 16px 48px 0 rgba(245, 101, 101, 0.25);
+  --shadow-glow: 0 0 30px rgba(253, 152, 83, 0.4);
+}
+
+/* =================================================================== */
+/* 🔧 전역 유틸리티 클래스 - 테마 적응형
+/* =================================================================== */
+
+/* 텍스트 색상 - WCAG AA 준수 고대비율 시스템 */
+.theme-text-primary { 
+  color: var(--theme-text-primary); 
+  font-weight: 500;
+}
+.theme-text-secondary { 
+  color: var(--theme-text-secondary); 
+  font-weight: 400;
+}
+.theme-text-muted { 
+  color: var(--theme-text-muted); 
+  font-weight: 400;
+}
+.theme-text-inverse { 
+  color: var(--theme-text-inverse); 
+  font-weight: 500;
+}
+.theme-accent { 
+  color: var(--theme-accent);
+  font-weight: 600;
+}
+
+/* 추가 텍스트 계층 - 접근성 강화 */
+.theme-text-heading {
+  color: var(--theme-text-primary);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.theme-text-body {
+  color: var(--theme-text-secondary);
+  font-weight: 400;
+  line-height: 1.6;
+}
+.theme-text-caption {
+  color: var(--theme-text-muted);
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.theme-text-interactive {
+  color: var(--theme-accent);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--theme-transition-fast);
+}
+.theme-text-interactive:hover {
+  color: var(--theme-accent-hover);
+  text-shadow: 0 0 8px var(--theme-accent);
+}
+
+/* 기본 전환 효과 */
+.theme-transition { transition: var(--theme-transition); }
+.theme-transition-fast { transition: var(--theme-transition-fast); }
+.theme-transition-slow { transition: var(--theme-transition-slow); }
+
+/* =================================================================== */
+/* 🌟 5단계 글래스모피즘 시스템
+/* =================================================================== */
+
+/* Level 1: 최소 투명도 - 배경 보조 요소 */
+.glass-1 {
+  background: var(--glass-level-1);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--theme-border-light);
+  border-radius: var(--glass-border-radius);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Level 2: 배경 영역 - 섹션 구분용 */
+.glass-2 {
+  background: var(--glass-level-2);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--theme-border-light);
+  border-radius: var(--glass-border-radius);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Level 3: 카드 기본 - 가장 많이 사용 */
+.glass-3 {
+  background: var(--glass-level-3);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--glass-border-radius);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Level 4: 버튼/입력 - 인터랙티브 요소 */
+.glass-4 {
+  background: var(--glass-level-4);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--theme-border);
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Level 5: 강조 요소 - 최고 투명도 */
+.glass-5 {
+  background: var(--glass-level-5);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--theme-border-strong);
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  box-shadow: var(--shadow-strong);
+}
+
+/* =================================================================== */
+/* 🎯 버튼 시스템 - 4단계 계층
+/* =================================================================== */
+
+/* Primary Button - 주요 액션 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-accent-hover) 100%);
+  color: var(--theme-text-inverse);
+  border: 2px solid var(--theme-accent);
+  padding: 0.75rem 1.5rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  font-weight: 600;
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-glow);
+  transition: var(--theme-transition-fast);
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow), var(--shadow-strong);
+  background: linear-gradient(135deg, var(--theme-accent-hover) 0%, var(--theme-accent-dark) 100%);
+}
+
+/* Secondary Button - 보조 액션 */
+.btn-secondary {
+  background: linear-gradient(135deg, var(--theme-secondary) 0%, var(--theme-secondary-hover) 100%);
+  color: var(--theme-text-inverse);
+  border: 2px solid var(--theme-secondary);
+  padding: 0.75rem 1.5rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  font-weight: 500;
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-medium);
+  transition: var(--theme-transition-fast);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-strong);
+}
+
+/* Ghost Button - 투명 버튼 */
+.btn-ghost {
+  background: var(--glass-level-3);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  padding: 0.75rem 1.5rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  font-weight: 500;
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-soft);
+  transition: var(--theme-transition-fast);
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  background: var(--glass-level-4);
+  border-color: var(--theme-border-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Outlined Button - 테두리만 있는 버튼 */
+.btn-outlined {
+  background: transparent;
+  color: var(--theme-accent);
+  border: 2px solid var(--theme-accent);
+  padding: 0.75rem 1.5rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  font-weight: 500;
+  backdrop-filter: var(--glass-blur);
+  transition: var(--theme-transition-fast);
+  cursor: pointer;
+}
+
+.btn-outlined:hover {
+  background: var(--theme-accent);
+  color: var(--theme-text-inverse);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* =================================================================== */
+/* 📦 카드 & 컨테이너 시스템
+/* =================================================================== */
+
+/* 기본 카드 - 가장 일반적인 카드 */
+.card-base {
+  @apply glass-3 theme-transition;
+  color: var(--theme-text-primary);
+  padding: 1.5rem;
+}
+
+/* 강조 카드 - 중요한 내용용 */
+.card-featured {
+  @apply glass-4 theme-transition;
+  color: var(--theme-text-primary);
+  padding: 2rem;
+  border: 2px solid var(--theme-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* 컴팩트 카드 - 작은 정보용 */
+.card-compact {
+  @apply glass-2 theme-transition;
+  color: var(--theme-text-primary);
+  padding: 1rem;
+}
+
+/* 네비게이션 카드 - 메뉴/네비게이션용 */
+.card-nav {
+  @apply glass-3 theme-transition;
+  color: var(--theme-text-primary);
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+}
+
+.card-nav:hover {
+  @apply glass-4;
+  transform: translateY(-1px);
+  border-color: var(--theme-border-strong);
+}
+
+.card-nav.active {
+  background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-accent-hover) 100%);
+  color: var(--theme-text-inverse);
+  border-color: var(--theme-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* =================================================================== */
+/* 📝 관리자/입력 폼 시스템 - 새 디자인 시스템 적용
+/* =================================================================== */
+
+/* Select 드롭다운 */
 .admin-select {
-  @apply bg-white/10 border border-white/20 rounded backdrop-blur-sm text-white focus:bg-white/15 transition-all;
+  background: var(--glass-level-4);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  backdrop-filter: var(--glass-blur);
+  transition: var(--theme-transition-fast);
+}
+
+.admin-select:focus {
+  background: var(--glass-level-5);
+  border-color: var(--theme-accent);
+  box-shadow: var(--shadow-glow);
 }
 
 .admin-select option {
-  background-color: rgba(15, 23, 42, 0.95) !important; /* slate-900 with opacity */
-  color: white !important;
+  background: var(--glass-level-5) !important;
+  color: var(--theme-text-primary) !important;
   padding: 8px 12px;
 }
 
-.admin-select option:hover,
-.admin-select option:focus,
 .admin-select option:checked {
-  background-color: rgba(59, 130, 246, 0.8) !important; /* blue-500 with opacity */
-  color: white !important;
+  background: var(--theme-accent) !important;
+  color: var(--theme-text-inverse) !important;
 }
 
-/* 관리자 페이지 입력 필드 공통 스타일 */
+/* 입력 필드 */
 .admin-input {
-  @apply bg-white/10 border border-white/20 rounded backdrop-blur-sm text-white placeholder-white/60 focus:bg-white/15 transition-all;
+  background: var(--glass-level-4);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  backdrop-filter: var(--glass-blur);
+  transition: var(--theme-transition-fast);
 }
 
+.admin-input::placeholder {
+  color: var(--theme-text-muted);
+}
+
+.admin-input:focus {
+  background: var(--glass-level-5);
+  border-color: var(--theme-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* 텍스트 영역 */
 .admin-textarea {
-  @apply bg-white/10 border border-white/20 rounded backdrop-blur-sm text-white placeholder-white/60 focus:bg-white/15 transition-all resize-none;
+  background: var(--glass-level-4);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: calc(var(--glass-border-radius) * 0.75);
+  backdrop-filter: var(--glass-blur);
+  transition: var(--theme-transition-fast);
+  resize: vertical;
+  min-height: 120px;
+}
+
+.admin-textarea::placeholder {
+  color: var(--theme-text-muted);
+}
+
+.admin-textarea:focus {
+  background: var(--glass-level-5);
+  border-color: var(--theme-accent);
+  box-shadow: var(--shadow-glow);
 }
 
 /* 사주 해석 에디터 전용 스타일 */
 .interpretation-editor {
-  @apply bg-white/10 border border-purple-400/30 rounded-lg backdrop-blur-sm text-white placeholder-white/40 focus:border-purple-400/50 focus:bg-white/15 transition-all duration-300;
+  @apply bg-white/10 rounded-lg backdrop-blur-sm text-white placeholder-white/40 focus:bg-white/15 transition-all duration-300;
+  border: 1px solid var(--theme-border);
 }
 
 .interpretation-editor:focus {
-  box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 20px var(--theme-bg-primary);
 }
 
 /* 카테고리 버튼 애니메이션 */
@@ -99,7 +500,7 @@
   .theme-light {
     --theme-primary: #EC4899;      /* 핑크 */
     --theme-secondary: #F97316;    /* 오렌지 */
-    --theme-accent: #8B5CF6;       /* 액센트 보라 */
+    --theme-accent: #F59E0B;       /* 액센트 황금색 (기존 보라색에서 변경) */
     --theme-bg-primary: rgba(236, 72, 153, 0.2);
     --theme-bg-secondary: rgba(249, 115, 22, 0.15);
     --theme-bg-card: rgba(255, 255, 255, 0.4);
@@ -187,9 +588,11 @@
 @layer components {
   /* 🔮 메인 버튼 스타일 */
   .btn-cosmic {
-    @apply px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-lg
+    @apply px-6 py-3 text-white font-medium rounded-lg
            shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
+           focus:outline-none focus:ring-2 focus:ring-offset-2;
+    background: linear-gradient(135deg, var(--theme-secondary), var(--theme-primary));
+    border: 1px solid var(--theme-border);
   }
 
   .btn-mystic {
@@ -198,8 +601,14 @@
   }
 
   .btn-outline {
-    @apply px-6 py-3 border-2 border-purple-500 text-purple-500 font-medium rounded-lg
-           hover:bg-purple-500 hover:text-white transition-all duration-200;
+    @apply px-6 py-3 font-medium rounded-lg transition-all duration-200;
+    border: 2px solid var(--theme-primary);
+    color: var(--theme-primary);
+  }
+  
+  .btn-outline:hover {
+    background-color: var(--theme-primary);
+    color: white;
   }
 
   /* 🌌 카드 스타일 */

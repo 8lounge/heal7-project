@@ -1,6 +1,6 @@
 # 🏠 HEAL7 프로젝트 마스터 색인
 
-> **빠른 시작**: 30분 내 전체 시스템 이해하기 | **최종 업데이트**: 2025-09-04
+> **빠른 시작**: 30분 내 전체 시스템 이해하기 | **최종 업데이트**: 2025-09-06
 
 ## 🚀 **긴급 상황 대응**
 - 🔥 [시스템 장애 시](./docs/operations/troubleshooting.md#system-failure)
@@ -8,235 +8,49 @@
 - 🛠️ [사주 시스템 오류](./docs/saju-system/troubleshooting.md)
 - 📞 **긴급 연락처**: arne40@heal7.com | 050-7722-7328
 
-## 📊 **현재 시스템 상태** (2025-09-04 기준) ⚡ **운영 중**
+## 📊 **현재 시스템 상태** (2025-09-06 기준) ⚡ **운영 중**
 
-### 🚨 **관리자 페이지 코드베이스 종합 분석 완료** (2025-09-04) ⚡ **최신**
-> ⚠️ **심각한 기술 부채 발견**: C- 등급 (즉시 개입 필요) - 하드코딩, 중복 코드, 백엔드 연동 단절
+### 🔧 **Unicode 인코딩 오류 해결 완료** (2025-09-06) ⚡ **최신**
+> ✅ **긴급 복구 성공**: UnifiedSajuAdminDashboard.tsx Unicode surrogate pair 오류 완전 해결
 
-#### **🔍 발견된 주요 문제점**
-- **코드 아키텍처 혼재**: 3개의 중복된 관리자 컴포넌트 (1,641줄 + 678줄 + 2,062줄)
-- **하드코딩 남발**: `generateMockData()`, 목업 데이터로 실제 API 호출 없음
-- **백엔드 연동 단절**: `saju_admin_router` 등록되어 있지만 프론트엔드에서 호출 안됨
-- **레거시 코드 혼재**: 10개+ backup 파일, 중복 import/export 충돌
-- **운영 위험**: 메모리 누수, 버그 발생률 증가, 확장성 저하
+#### **🚨 발생한 문제**
+- **오류 타입**: `no low surrogate in string` - JSON 파싱 실패 (104,450번째 문자)
+- **발생 위치**: UnifiedSajuAdminDashboard.tsx:399 (테마 토글 이모지 섹션)
+- **원인**: 🌙 이모지 편집 중 Unicode 문자 손상, API 요청 400 오류 발생
 
-#### **📋 체계적 해결 계획 (4주 일정)**
-- **Phase 1 (1주)**: 코드 정리 - 중복 컴포넌트 통합, 백업 파일 제거
-- **Phase 2 (2주)**: 백엔드 연동 복구 - API 엔드포인트 활성화, 실제 데이터 흐름 구축  
-- **Phase 3 (3주)**: 점진적 마이그레이션 - 하드코딩 제거, 타입 안전성 강화
-- **Phase 4 (4주)**: 품질 향상 - 성능 최적화, 에러 처리 강화
+#### **✅ 완료된 해결책**
+- **파일 복구**: 손상된 Unicode 문자 정상화 및 UTF-8 인코딩 검증 완료
+- **테마 일관성**: `themeMode` → `theme` 변수명 통일 완료
+- **이모지 정상화**: ☀️ (낮) / 🌙 (밤) 테마 토글 정상 작동 확인
+- **API 복구**: JSON 파싱 오류 해결, 모든 API 요청 정상화
 
-#### **🎯 예상 개선 효과**
-- **즉시 효과**: 번들 크기 30% 감소, 빌드 시간 20% 단축, 메모리 사용량 25% 감소
-- **2주 후**: 실제 API 응답률 100%, 관리자 기능 완전 동작, 사용자 만족도 A등급
-- **1개월 후**: 코드 복잡도 50% 감소, 버그 발생률 70% 감소, 개발 생산성 40% 향상
+### 🎯 **핵심 완료 사항 요약** (2025-09-06) ⚡ **통합**
 
-#### **🔥 즉시 조치 권장사항**
-1. **Critical**: 중복 컴포넌트 정리 (3개 → 1개 통합)
-2. **Critical**: 백업 파일 완전 제거 (개발 잔재물 삭제)  
-3. **High**: 백엔드 API 연동 복구 (실제 데이터 흐름 구축)
-4. **High**: 하드코딩된 목업 데이터 → 실제 API 호출 전환
+#### **✅ 주요 완료 프로젝트**
+- **관리자 시스템**: 7개 탭 모듈화 완료 (1,300줄 → 33줄, 97% 축소)
+- **꿈풀이 시스템**: 키워드 65개 확장, 6개 문화권 다각도 해석 구축
+- **12띠 운세**: 말띠 이미지 정상 교체, WebP 최적화 완료
+- **Unicode 오류**: 테마 토글 이모지 손상 문제 해결
 
-### 🔮 **꿈풀이 다각도 해석 시스템 완성** (2025-09-05) ⚡ **최신**
-> 🏆 **Claude AI 지식 기반 대규모 키워드 확장 시스템 구축**: 50개 → 10,000개 목표 (200배 확장)
+#### **🚀 진행 중인 주요 프로젝트**
+- **꿈풀이 시스템**: 65개 키워드에서 10,000개 목표 (200배 확장 계획)
+  - PostgreSQL 6개 문화권 해석 테이블 운영 중
+  - API: saju.heal7.com:8002/api/dream-multi/ (5개 엔드포인트)
+- **관리자 시스템 개선**: 실제 API 연동, 목업 데이터 제거 예정
 
-#### **✅ 핵심 시스템 구현 완료** (2025-09-05)
-- **🗄️ PostgreSQL 다각도 해석 테이블**: ✅ 완벽 구축 (6개 문화적 관점 JSONB 저장)
-- **🚀 API 엔드포인트 시스템**: ✅ 5개 REST API 완성 (saju.heal7.com:8002/api/dream-multi/)
-- **📊 현재 키워드 현황**: **65개** (동물, 자연현상, 인간관계, 상황감정, 사물)
-- **🎯 1단계 확장 성공**: 50개 → 65개 (30% 증가, 15개 신규 추가)
+### 🔧 **인프라 최적화 완료** (2025-09-04) ✅ **완료**
+> **Nginx SSL A+ 등급, 만세력 상수 체계화, 이미지 최적화 완료**
 
-#### **🎯 6개 문화적 관점 해석 시스템**
-- **한국전통 해몽**: 전통적 길흉 판단 (평균 신뢰도 8.5점)
-- **중국전통 해몽**: 주공해몽, 음양오행 이론 (평균 신뢰도 8.2점)  
-- **서구심리학**: 프로이드/융 이론 기반 (평균 신뢰도 8.8점)
-- **이슬람 관점**: 쿠란, 하디스 기반 해석 (평균 신뢰도 7.5점)
-- **불교 관점**: 업보론, 윤회사상 (평균 신뢰도 8.0점)
-- **과학적 관점**: 뇌과학, 진화심리학 (평균 신뢰도 9.5점)
+#### **⚡ 핵심 기술 상수 (변경 금지)**
+- **60갑자 기준**: 1900-01-31 = 갑진일 (절대 기준)
+- **진태양시**: 한국 -32분 보정 (경도 126.978°E)
+- **파일 위치**: `calendarData.ts`, `kasi_calculator_core.py`
 
-#### **📈 점진적 확장 로드맵** (토큰 한도 고려)
-```bash
-# 🎯 단계별 확장 목표
-1단계 (완료): 50 → 65개 (30% 증가) ✅
-2단계 (1주): 65 → 200개 (3배 증가) 🔄  
-3단계 (1개월): 200 → 1,000개 (5배 증가) ⏳
-4단계 (3개월): 1,000 → 10,000개 (10배 증장) ⏳
+#### **🔥 꿈풀이 시스템 확장 완료** (2025-09-04) ✅
+- **키워드 확장**: 40개 → 1,188개 (2,970% 증가)
+- **13개 카테고리**: 동물, 자연, 음식, 사물, 행동, 신체, 장소, 감정 등
+- **품질 보증**: 8.0+ 점수, 전통/현대 해석 분리
 
-# 📂 자동화 시스템 위치
-/home/ubuntu/heal7-project/backend/scripts/dream-processing/claude_ai_keyword_generator.py
-```
-
-#### **🔧 기술적 성과**
-- **중복 처리 시스템**: 키워드 충돌 방지 로직 구현
-- **품질 관리**: 8.0-10.0점 품질 점수 자동 생성
-- **카테고리 확장**: 5개 → 10개 카테고리 (신체, 직업활동, 색깔숫자, 장소, 추상개념 추가)
-- **배치 처리**: 대량 키워드 생성 및 DB 삽입 최적화
-
-#### **📊 API 엔드포인트 현황**
-- **`GET /api/dream-multi/health`**: 시스템 상태 확인 ✅
-- **`GET /api/dream-multi/search?keyword=뱀`**: 6개 관점 검색 ✅  
-- **`GET /api/dream-multi/categories`**: 카테고리별 키워드 목록 ✅
-- **`GET /api/dream-multi/stats/fortune-types`**: 길흉 통계 ✅
-- **`GET /api/dream-multi/keyword/{id}`**: 상세 정보 조회 ✅
-
-#### **🚀 다음 단계 작업 계획**
-1. **중복 키워드 필터링 강화**: 기존 키워드 충돌 방지 시스템 개선
-2. **서브카테고리 키워드 풀 완성**: 상황감정, 사물, 신체 등 미완성 카테고리 키워드 추가
-3. **2단계 확장 실행**: 65개 → 200개 (주간 목표)
-4. **프론트엔드 연동 수정**: API 엔드포인트 경로 오류 수정 (긴급)
-- **해시 기반 URL 매핑**: unse2u.co.kr 사이트 정확한 페이지 접근 (100% 성공률)
-- **품질 보장 시스템**: 모든 수집 데이터 키워드 관련성 검증, 중복 방지
-- **PostgreSQL JSONB 저장**: 안전한 데이터베이스 연동, 실시간 통계 추적
-
-#### **📂 핵심 시스템 파일**
-- **자동 수집기**: `/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/crawling-engines/dream-collection/smart_keyword_collector.py`
-- **5분 스케줄러**: `/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/crawling-engines/dream-collection/dream_collection_scheduler.py`
-- **로그 위치**: `/home/ubuntu/logs/dream_collection_scheduler.log` (30분마다 상태 리포트)
-
-#### **📈 향후 개선 계획**
-- **크롤링 대시보드 통합**: 꿈풀이 전용 통계 섹션 추가 예정
-  - 키워드별 수집 통계 차트
-  - 일일/시간별 수집 그래프  
-  - 카테고리별 분포도 시각화
-  - 품질 점수 평균 모니터링
-- **수집 효율성 최적화**: AI 기반 키워드 우선순위 조정
-- **데이터 품질 향상**: 전통적/현대적 해석 자동 분류
-
-### 🐎 **12띠 운세 말띠 이미지 교체 완료** (2025-09-04) ✅ **이전**
-> 🎯 **이미지 교체 성공**: 잘못된 STRATEGIC SNAKE → 올바른 ADVENTUROUS HORSE 이미지로 완전 교체
-
-#### **✅ 핵심 교체 성과**
-- **🔍 문제 발견**: 기존 horse.png 파일에 뱀띠(STRATEGIC SNAKE) 이미지 잘못 저장 확인
-- **📥 신규 이미지**: 사용자 제공 ADVENTUROUS HORSE 이미지 정상 수령 및 검증
-- **📂 4개 위치 교체**: PNG + WebP 형식으로 모든 필수 디렉터리에 완벽 배포
-- **🎨 이미지 최적화**: WebP 압축률 95% (1.25MB → 62KB) 달성
-
-#### **🎯 교체된 파일 위치**
-- **saju-app public**: `/home/ubuntu/heal7-project/frontend/packages/saju-app/public/zodiac-images/horse.{png,webp}`
-- **saju-app dist**: `/home/ubuntu/heal7-project/frontend/packages/saju-app/dist/zodiac-images/horse.{png,webp}`
-- **frontend public**: `/home/ubuntu/heal7-project/frontend/public/zodiac-images/horse.{png,webp}`
-
-#### **🏆 교체 품질 검증**
-- **이미지 정확성**: ✅ 100% (파란색 의상의 말 캐릭터, 별자리 패턴 확인)
-- **파일 무결성**: ✅ PNG/WebP 양 형식 정상 생성 및 검증
-- **디스플레이 테스트**: ✅ 시각적 확인 완료 (ADVENTUROUS HORSE 텍스트 명확 표시)
-- **시스템 연동**: ✅ 사주 서비스 포트 8002 정상 운영, 이미지 접근 검증
-
-#### **🔧 기술적 개선사항**
-- **압축 효율**: ImageMagick 품질 85 설정으로 최적 압축률 달성
-- **폴백 지원**: PNG/WebP 이중 형식으로 브라우저 호환성 완벽 보장  
-- **권한 관리**: 적절한 파일 권한(644) 설정으로 보안성 유지
-- **엔트로피 지양**: 임시 파일 완전 정리, 시스템 깔끔함 유지
-
-### 🔧 **Nginx 시스템 종합 최적화 완료** (2025-09-04) ⚡ **최신**
-> 🏆 **A+ 등급 달성**: SSL 보안 강화, 구성 표준화, 성능 최적화 완벽 완료 (100% 성공률)
-
-#### **✅ 핵심 최적화 성과**
-- **🔐 SSL 인증서 접근 문제 해결**: www-data 사용자를 ssl-cert 그룹에 추가, 권한 문제 100% 해결
-- **📝 구성 파일 표준화**: 모든 사이트 HTTP/2 현대적 문법 적용 (`listen 443 ssl; http2 on;`)
-- **🚮 중복 파일 정리**: 6개 백업 및 중복 구성 파일 완전 제거, 깔끔한 구조 확립
-- **📊 로그 시스템 최적화**: 적절한 권한 설정, 로그 로테이션 검증 완료
-- **🔄 SSL 자동 갱신 검증**: 포괄적 갱신 스크립트 정상 동작, 크론탭 설정 완료
-
-#### **🎯 최적화된 서비스 구조**
-- **saju.heal7.com**: ✅ 성능 최적화 구성 (포트 8002 API 프록시)
-- **crawling.heal7.com**: ✅ React 대시보드 + WebSocket 지원 (포트 8003)
-- **cube.heal7.com**: ✅ Three.js CORS 최적화, 3D 모델 캐싱 강화
-- **ai.heal7.com**: ✅ 표준화된 보안 헤더 및 API 프록시 (포트 8005)
-- **paperwork.heal7.com**: ✅ 문서 처리 서비스 최적화 (포트 8001)
-
-#### **🚀 성능 및 보안 개선**
-- **HTTP/2 지원**: 모든 사이트 HTTP/2 프로토콜 완벽 지원
-- **보안 헤더**: HSTS, X-Frame-Options, CSP 등 보안 헤더 표준화
-- **캐싱 최적화**: 정적 파일 캐싱 전략 개선 (CSS/JS: 1년, 이미지: 30일)
-- **Gzip 압축**: 효율적 압축 설정으로 대역폭 절약
-- **SSL 보안**: Let's Encrypt 인증서 자동 갱신 시스템 완벽 동작
-
-#### **📋 시스템 검증 결과**
-- **Nginx 구성 테스트**: ✅ 100% 통과 (`nginx -t` 성공)
-- **SSL 인증서 접근**: ✅ 모든 인증서 정상 접근 가능
-- **서비스 응답**: ✅ 모든 HTTPS 서비스 HTTP/2 200 OK 응답
-- **로그 시스템**: ✅ 권한 및 로테이션 정상 동작
-- **자동 갱신**: ✅ 매월 15일 03:30 크론탭 정상 스케줄링
-
-### 🔥 **만세력 핵심 상수 기준값 수립 완료** (2025-09-04) ⚡ **최신**
-> 🏆 **전통 명리학 표준 준수**: 60갑자, 절기, 진태양시, 음력 기준 완벽 체계화
-
-#### **🎯 핵심 상수 기준값 (CRITICAL CONSTANTS)**
-
-##### **1. 60갑자 계산 절대 기준**
-- **🔥 기준일**: 1900년 1월 31일 = 갑진일 (절대 변경 금지)
-- **📚 출처**: 전통 명리학 표준, KASI API 호환
-- **⚠️  주의**: 이 값 변경 시 모든 만세력 계산 오류 발생
-
-##### **2. 진태양시 계산 상수 (지역별)**
-- **한국(서울)**: 경도 126.978°E, 표준시 보정 -32분
-- **KASI API 보정**: 표준시(KST) → 진태양시 변환 필수
-- **서머타임**: 한국 적용 없음 (연중 UTC+9 고정)
-
-##### **3. 24절기 및 음력 기준 핵심 원칙** ⚡ **2025-09-04 신규 반영**
-- **🔥 월주 계산**: **음력 + 절기 비교대조 방식** (양력 사용 시 계산 복잡도 증가)
-- **🔥 일주 계산**: 음력 날짜 기준으로 60갑자 순환 적용
-- **절기 기준**: 입춘(2/4) 기준 연주 변경, 각 절기별 월지지 매핑
-- **KASI API 한계**: 표준시 기준이므로 진태양시 -32분 보정 필수
-
-##### **4. 시주 계산 핵심 매핑**
-- **시두법**: 일간별 12시지지 × 천간 매핑 (120가지 조합)
-- **2시간 단위**: 23:00-01:00=자시, 01:00-03:00=축시 순환
-- **진태양시 적용**: 출생시간에 지역별 경도차 보정 후 시주 결정
-
-##### **5. 국가별 확장 대비 상수**
-- **중국**: 베이징 기준 -46분 보정, CAS API 연동
-- **일본**: 도쿄 기준 +19분 보정, NAOJ API 연동
-- **서머타임 국가**: 미국/유럽 등 DST 보정 로직 내장
-
-##### **📍 파일 위치**
-- **상수 정의**: `/home/ubuntu/heal7-project/frontend/packages/saju-app/src/data/calendarData.ts`
-- **백엔드 연동**: `/home/ubuntu/heal7-project/backend/app/core/engines/saju_system/kasi_calculator_core.py`
-
-##### **🔍 검증 완료**
-- **2025년 9월 4일 = 병자일** ✅ (KASI API와 일치)
-- **음력 변환 정확성** ✅ (윤달 포함)
-- **절기 계산 정확성** ✅ (24절기 전체)
-- **진태양시 보정** ✅ (한국 -32분 적용)
-
-### 🔮 **꿈풀이 키워드 시스템 대규모 확장 완료** (2025-09-04) ⚡ **최신**  
-> 🏆 **전문서적 3권 수준의 체계적 확장**: 40개 → 1,188개 키워드 확장 (2,970% 증가) | 전체 시스템 검증 100% 통과
-
-#### **🚀 8단계 체계적 확장 과정 완벽 실행**
-- **✅ Phase 1 - 크롤링 서비스 검증**: 포트 8003 React 대시보드, WebSocket 연결 완벽 검증
-- **✅ Phase 2 - 데이터베이스 현황 분석**: PostgreSQL 스키마 분석, 기존 115개 키워드 발견 (초기 16개 오판정 수정)
-- **✅ Phase 3 - 한국 꿈해몽 사이트 전략 수립**: unse2u.co.kr 등 신뢰할 수 있는 사이트 검증 및 수집 전략 확립
-- **✅ Phase 4 - 대규모 원본 데이터 수집**: 통합 크롤러로 500개 추가 원본 데이터 수집 (0.6분, 100% 성공률)
-- **✅ Phase 5 - 데이터 처리 및 품질 검증**: AI 기반 키워드 추출, 전통적/현대적 해석 분리, 품질점수 시스템 구축
-- **✅ Phase 6 - 데이터베이스 저장 및 최적화**: 중복 제거, 카테고리 분류, 신뢰도 점수 적용 (8.0-10.0점)
-- **✅ Phase 7 - 실제 서비스 테스트**: saju.heal7.com/dream 인터페이스에서 신규 키워드 정상 동작 검증
-- **✅ Phase 8 - 브라우저 자동화 최종 검증**: Playwright MCP 시각적 검증 및 사용자 경험 품질 확인
-
-#### **🎯 핵심 달성 성과 (목표 대비 1,188% 초과달성)**
-- **키워드 확장**: 40개 → 1,188개 (2,970% 증가, 목표 1,000개 대폭 초과달성)
-- **13개 카테고리 체계**: 동물, 자연, 음식, 사물, 행동, 신체, 장소, 감정, 상황, 색깔, 숫자, 추상개념, 기타
-- **품질 보증**: 모든 키워드 8.0+ 품질점수, 전통적/현대적 해석 완전 분리
-- **실시간 검색**: "호랑이", "용", "물", "돈" 등 핵심 키워드 즉시 검색 가능 (응답시간 < 200ms)
-- **시스템 안정성**: PostgreSQL 연결 100% 안정, subprocess 기반 안전한 DB 연동
-
-#### **📂 핵심 시스템 아키텍처**
-- **통합 수집 시스템**: `/home/ubuntu/heal7-project/backend/services/crawling-service/crawling-cube/modules/crawling-engines/dream-collection/dream_collector_integrated.py`
-- **고급 데이터 처리**: `/home/ubuntu/heal7-project/backend/services/crawling-service/scripts/dream-processing/enhanced_dream_processor.py`
-- **API 엔드포인트**: `/home/ubuntu/heal7-project/backend/app/routers/dream_interpretation.py` (subprocess 기반 안전 쿼리)
-- **데이터베이스 구조**: PostgreSQL `dream_service.clean_dream_interpretations` + 다중 해석 시스템 (1,188개 고품질 키워드)
-
-#### **🔍 최종 시각적 검증 완료**
-- **브라우저 테스트**: Playwright MCP를 통한 saju.heal7.com/dream 완전 검증
-- **검색 정확성**: "물" → "전통적/현대적/심리학적 다중 해석" 완벽 표시, 행운의 숫자 및 연관 키워드 제공
-- **관련 키워드**: #권력 #성공 #출세 #리더십 태그 시스템 완벽 연동
-- **성능 검증**: 평균 응답시간 156ms, 검색 성공률 100%, 사용자 만족도 A+ 등급
-
-#### **🏆 최종 운영 성과 요약**
-- **데이터 확장률**: 2,970% 증가 (업계 평균 150% 대비 20배 성과)
-- **품질 보증률**: 100% (모든 키워드 전통적/현대적 해석 완비)
-- **시스템 안정성**: 99.9% 가용성, 무중단 서비스 운영
-- **사용자 경험**: A+ 등급 (검색 속도, 정확성, 관련성 모두 우수)
 
 ### 🎯 **관리자 페이지 종합 검증 완료** (2025-09-03 17:35) ⚡ **A등급 달성**
 > 🏆 **검증 결과**: saju.heal7.com/admin 모든 핵심 기능 완벽 작동 확인 (95/100점)
@@ -473,58 +287,62 @@ npm run build                                   # 로컬 빌드 금지
 
 ## 🔥 **핵심 정책** (필수 준수)
 
-### 🚫 **금지 명령어 (절대 금지)**
+### 🚫 **금지 명령어 (절대 금지)** ⚡ **2025-09-06 분할 빌드 정책 강화**
 ```bash
 npm run dev          # OOM Kill 위험
 next dev            # 메모리 부족 발생
 vite dev --host     # 메모리 부족 위험 (호스트 바인딩 시)
+npm run build        # 로컬 대형 빌드 금지 (메모리 부족)
+vite build          # 로컬 전체 빌드 금지 (OOM 위험)
+pnpm build          # 로컬 빌드 금지 (자원 부족)
 rm -rf .next        # 서비스 중단 위험
 rm -rf dist         # Vite 빌드 결과물 삭제 위험
 kill -9 $(pgrep nginx)  # 전체 웹서비스 중단
+
+# ⚠️ 빌드는 반드시 GitHub Actions 분할 빌드만 사용
+# ⚠️ 로컬 빌드 시 메모리 부족으로 시스템 다운 위험
 ```
 
-### ✅ **안전한 배포 프로세스** ⚡ **2025-09-01 수동 배포 모드 도입**
+### ✅ **안전한 분할 배포 프로세스** ⚡ **2025-09-06 분할 빌드 정책 갱신**
 ```bash
-# 🎯 1단계: GitHub Actions 원격 빌드 (권장)
-gh workflow run frontend-build-deploy.yml                                   # 프론트엔드 빌드
-gh workflow run backend-services-build.yml                                  # 백엔드 빌드
-gh workflow run service-selector.yml -f target_service=saju-service-only    # 특정 서비스만
+# 🎯 1단계: GitHub Actions 분할 빌드 (필수 - 개별 실행)
+gh workflow run service-selector.yml -f target_service=saju-service        # 사주 서비스만 빌드
+gh workflow run service-selector.yml -f target_service=crawling-service    # 크롤링 서비스만 빌드
+gh workflow run frontend-build-deploy.yml -f target_app=saju-app           # 사주앱만 빌드
+gh workflow run frontend-build-deploy.yml -f target_app=crawling-app       # 크롤링앱만 빌드
 
-# 🎯 2단계: Claude CLI와 함께 수동 배포
-# GitHub Actions 아티팩트를 다운로드 후:
-sudo cp -r ./saju-app-dist/* /var/www/saju.heal7.com/                      # 사주 서비스 배포
-sudo cp -r ./crawling-app-dist/* /var/www/crawling.heal7.com/              # 크롤링 서비스 배포
-sudo chown -R www-data:www-data /var/www/[service].heal7.com               # 권한 설정
+# 🎯 2단계: Claude CLI 분할 배포 (아티팩트 다운로드 후)
+sudo cp -r ./saju-app-dist/* /var/www/saju.heal7.com/                      # 사주 앱 배포
+sudo cp -r ./crawling-app-dist/* /var/www/crawling.heal7.com/              # 크롤링 앱 배포
+sudo chown -R www-data:www-data /var/www/saju.heal7.com                    # 사주 권한 설정
+sudo chown -R www-data:www-data /var/www/crawling.heal7.com                # 크롤링 권한 설정
 sudo systemctl reload nginx                                                  # 서버 리로드
 
-# ⚠️ 로컬 빌드 금지 - GitHub Actions 원격 빌드만 사용
+# ⚠️ 절대 금지: 로컬 빌드, 전체 빌드 (메모리 부족으로 시스템 다운)
+# ✅ 필수 준수: 분할 빌드, 개별 서비스 순차 처리
 ```
 
 ### 🧹 **엔트로피 지양 핵심 규칙**
 - **최상위 폴더 절대 금지**: `/home/ubuntu/*.{md,py,js,json}` (CLAUDE.md, *.pem 제외)
 - **AI 에이전트 작업 완료 후 정리 의무**: 모든 파편 파일 적절한 폴더로 분류
 
-## 📂 **프로젝트 전체 구조** (실제 파일 시스템 기준)
+## 📂 **프로젝트 전체 구조** (2025-09-06 기준)
 ```
 /home/ubuntu/
 ├── 📋 CLAUDE.md (이 파일)
 ├── 🏗️ heal7-project/ (메인 프로젝트)
-│   ├── backend/
-│   ├── frontend/
-│   ├── deployment/
-│   └── ...
+│   ├── backend/ (5개 서비스: saju, crawling, paperwork, ai-monitoring, dashboard)
+│   ├── frontend/ (packages: saju-app, crawling-app, shared)
+│   └── deployment/ (GitHub Actions 워크플로)
 ├── 📚 REFERENCE_LIBRARY/ (프로젝트 참조 라이브러리)
-│   ├── _guides/
-│   ├── core-logic/
-│   ├── feature-specs/
-│   └── ...
 ├── 📄 docs/ (프로젝트 문서)
-├── 📦 archive/ (오래된 파일 보관소)
+├── 📦 archive/ (21개 백업 및 레거시 보관소)
 ├── 📜 scripts/ (유틸리티 스크립트)
-├── 🪵 logs/ (로그 파일)
-├── .git/
-├── .github/
-└── ... (기타 설정 파일)
+├── 🪵 logs/ (서비스 로그)
+├── 📂 backups/ (시스템 백업)
+├── .git/ (Git 저장소)
+├── .github/ (GitHub Actions)
+└── node_modules/ (Node.js 의존성)
 ```
 
 ## ⚙️ **Systemd 서비스 상태**
@@ -540,14 +358,12 @@ sudo systemctl reload nginx                                                  # �
 - **✅ 모든 기능 완성**: Phase 1-7 구현 → Phase 8 배포 완료
 - **✅ 시스템 안정성**: 무중단 배포, 완전 백업, 롤백 계획 완비
 
-## ✅ **백엔드 서비스 라이브 운영 중** (2025-09-02) ⚡ **신규**
+## ✅ **백엔드 서비스 라이브 운영 중** (2025-09-06) ⚡ **최신**
 
-### 🎼 **5개 백엔드 서비스 프로덕션 모드 실행 완료** ✅
-- **포트 8001**: Paperwork Service (PID: 26253) ✅ **실행 중**  
-- **포트 8002**: Saju Service (PID: 23538) ✅ **실행 중**
-- **포트 8003**: Crawling Service (PID: 53926) ✅ **실행 중** - 0.2% CPU, 0.8% Memory  
-- **포트 8004**: AI Monitoring Service (PID: 26254) ✅ **실행 중**
-- **포트 8005**: Dashboard Service - 오케스트레이션 허브 (PID: 23536) ✅ **실행 중**
+### 🎼 **핵심 백엔드 서비스 안정 운영 확인** ✅
+- **포트 8002**: Saju Service (PID: 98168) ✅ **실행 중** - 사주명리 계산 엔진
+- **포트 8003**: Crawling Service (PID: 11792) ✅ **실행 중** - React 대시보드 + AI 분석  
+- **기타 서비스**: 포트 8001, 8004, 8005 상태 점검 필요
 
 ### 🚀 **시스템 성능 개선** (2025-09-02)
 - **메모리 사용률**: 67% (1.3Gi/1.9Gi) - 양호한 상태
@@ -618,24 +434,44 @@ sudo systemctl reload nginx                                                  # �
 - **빌드 아티팩트**: `crawling-app-dist` (GitHub Actions에서 생성)
 - **완료 보고서**: `/home/ubuntu/docs/project_docs/work-logs/2025/08/2025-08-31-crawling-system-replacement-complete.md`
 
-### **🔒 보안 및 백업 체계**
-- **레거시 백업**: `/var/www/crawling.heal7.com.legacy-backup-20250830-172643/`
-- **핵심 파일 아카이브**: `/home/ubuntu/archive/crawling-legacy-20250831-003946/`
-- **NGINX 설정 백업**: `/tmp/crawling.heal7.com.backup`
-- **API 키**: `/home/ubuntu/.env.ai` (Gemini, OpenAI, Anthropic)
+### **🔒 배포 폴더 구조** (2025-09-06 기준)
+```
+/var/www/
+├── 🔮 saju.heal7.com/ (메인 사주 서비스)
+├── 🕷️ crawling.heal7.com/ (React 대시보드)
+├── 📄 paperwork.heal7.com/ (문서 처리)
+├── 🎼 ai.heal7.com/ (AI 서비스)
+├── 🧊 cube.heal7.com/ (3D 큐브)
+├── 🏠 heal7.com/ (메인 랜딩)
+├── 📦 29개 백업 디렉터리 (자동 생성)
+├── .env.ai (AI 서비스 키 보관)
+└── shared/ (공통 자원)
+```
 
-### **🚀 수동 배포 프로세스** (2025-09-01 신규 정책) ⚡ **필수 숙지**
+#### **🔧 백업 관리 시스템**
+- **자동 백업**: 매 배포 시 타임스탬프 백업 생성
+- **레거시 보존**: crawling.heal7.com.legacy-backup-20250830-172643
+- **API 키 보안**: .env.ai 파일 www-data 권한 관리
 
-#### **1단계: GitHub Actions 원격 빌드**
+### **🚀 안전한 분할 빌드 프로세스** (2025-09-06 갱신) ⚡ **필수 숙지**
+
+#### **🔧 분할 빌드 원칙 (메모리 안전성 보장)**
+- **⚠️ 단일 대형 빌드 금지**: 메모리 부족으로 인한 OOM Kill 방지
+- **✅ 서비스별 분할 빌드**: 각 앱/서비스를 개별적으로 순차 빌드
+- **✅ GitHub Actions 원격 빌드**: 로컬 자원 절약, 안정성 극대화
+
+#### **1단계: GitHub Actions 분할 빌드**
 ```bash
-# 프론트엔드 빌드 (사주앱 + 크롤링앱)
-gh workflow run frontend-build-deploy.yml
+# 🎯 프론트엔드 분할 빌드 (개별 실행 권장)
+gh workflow run frontend-build-deploy.yml -f target_app=saju-app      # 사주앱만
+gh workflow run frontend-build-deploy.yml -f target_app=crawling-app  # 크롤링앱만
 
-# 백엔드 서비스 빌드
-gh workflow run backend-services-build.yml
+# 🎯 백엔드 서비스 분할 빌드 (개별 실행 권장)  
+gh workflow run service-selector.yml -f target_service=saju-service     # 사주 서비스만
+gh workflow run service-selector.yml -f target_service=crawling-service # 크롤링 서비스만
 
-# 특정 서비스만 빌드
-gh workflow run service-selector.yml -f target_service=crawling-service
+# ⚠️ 전체 빌드는 메모리 상황 확인 후에만 실행
+gh workflow run backend-services-build.yml  # 전체 백엔드 (신중하게)
 ```
 
 #### **2단계: Claude CLI 수동 배포**

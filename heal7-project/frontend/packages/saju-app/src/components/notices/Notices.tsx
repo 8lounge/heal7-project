@@ -15,7 +15,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
   const [showSubscription, setShowSubscription] = useState(initialView === 'subscription')
   const [showProfile, setShowProfile] = useState(initialView === 'profile')
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
   const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
@@ -115,7 +115,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
                   className={`w-full py-4 rounded-lg font-bold text-lg ${
                     plan.id === sampleUser.subscriptionType
                       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                      : viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                   }`}
                   disabled={plan.id === sampleUser.subscriptionType}
                   whileHover={plan.id !== sampleUser.subscriptionType ? { scale: 1.05 } : {}}
@@ -142,7 +142,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
         <motion.button
           onClick={() => setShowProfile(false)}
           className={`mb-6 px-4 py-2 rounded-lg ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+            viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -260,7 +260,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
             <motion.button
               onClick={() => setShowSubscription(true)}
               className={`px-6 py-3 rounded-lg font-medium ${
-                viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -287,7 +287,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
         <motion.button
           onClick={() => setSelectedNotice(null)}
           className={`mb-6 px-4 py-2 rounded-lg ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+            viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -341,7 +341,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
           {notice.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-6">
               {notice.tags.map((tag, index) => (
-                <span key={index} className="px-3 py-1 rounded-full text-sm bg-white/10 text-gray-300">
+                <span key={index} className="px-3 py-1 rounded-full text-sm card-base text-gray-300">
                   {tag}
                 </span>
               ))}
@@ -353,12 +353,12 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
               <h3 className={`font-bold ${textClass} mb-3`}>📎 첨부파일</h3>
               <div className="space-y-2">
                 {notice.attachments.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 card-base rounded-lg">
                     <span className={`${textClass}`}>{file.name}</span>
                     <div className="flex items-center gap-3">
                       <span className={`${textClass} opacity-75 text-sm`}>{file.size}</span>
                       <button className={`px-3 py-1 rounded ${
-                        viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                        viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                       } text-sm`}>
                         다운로드
                       </button>
@@ -377,7 +377,7 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
                   <motion.a
                     key={index}
                     href={link.url}
-                    className={`block p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors ${accentClass}`}
+                    className={`block p-3 card-base rounded-lg hover:card-base transition-colors ${accentClass}`}
                     whileHover={{ scale: 1.02 }}
                   >
                     {link.title} →
@@ -430,8 +430,8 @@ const Notices: React.FC<NoticesProps> = ({ viewMode, initialView = 'notices' }) 
             onClick={() => setSelectedType(type.key)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               selectedType === type.key
-                ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
+                : 'card-base hover:opacity-80 text-gray-300'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

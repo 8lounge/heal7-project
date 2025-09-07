@@ -1,8 +1,10 @@
 import { useState, useEffect, Suspense, lazy, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+// Three.js 컴포넌트들은 @heal7/shared에서 통합 관리
+
+// 테마 컨텍스트
+import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 
 // 라우팅 관련 imports
 import { getPageIdFromPath } from './config/routeConfig'
@@ -28,14 +30,15 @@ import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
 // Lazy Loading으로 Admin 컴포넌트 분할
-const SajuAdminDashboard = lazy(() => import('./components/saju-admin/SajuAdminDashboard'))
+const SajuAdminDashboard = lazy(() => import('./components/saju-admin/UnifiedSajuAdminDashboard'))
 const AdminLogin = lazy(() => import('./components/saju-admin/AdminLogin'))
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
-import { useWeatherTheme } from './hooks/useWeatherTheme'
 import { getThemeClasses, themeTransitions } from './utils/themeStyles'
 
-// 3D 컴포넌트 Lazy Loading (from shared package)
+// 3D 컴포넌트 Lazy Loading (from shared package) - 통합 관리
+const Canvas = lazy(() => import('@heal7/shared').then(module => ({ default: module.Canvas })))
+const OrbitControls = lazy(() => import('@heal7/shared').then(module => ({ default: module.OrbitControls })))
 const OptimizedCyberCrystal = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedCyberCrystal })))
 const OptimizedStars = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedStars })))
 
@@ -50,19 +53,29 @@ type ViewMode = 'basic' | 'cyber_fantasy'
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
                   'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
-// 전체 배경 이미지 배열
-const backgroundImages = [
-  'https://cdn.midjourney.com/c66e1b8f-eaa1-46f2-8a9f-4aeb9f04dff4/0_0.png',
-  'https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png'
-]
+// 테마별 배경 이미지 (미드저니 생성 이미지 + 그라디언트 폴백)
+const getBackgroundForTheme = (theme: 'light' | 'dark') => {
+  if (theme === 'light') {
+    return [
+      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282654398897463407/heal7witch_A_mystical_tarot_reading_scene_with_soft_pink_and_or_8f4a8a9d-3a8d-4c90-9a2f-3d8e7b6c9f4e.png?ex=66e01b2c&is=66dec9ac&hm=94d58f5a8e3c2b1d9f6e8a7b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6&") center/cover, linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // 핑크 타로 이미지
+      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282654712983726184/heal7witch_Mystical_fortune_telling_ambient_with_warm_orange_an_4c7d8e9f-2b1a-4e8c-9d6f-7a5b4c3d2e1f.png?ex=66e01b7a&is=66dec9fa&hm=7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c&") center/cover, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffecd2 100%)', // 오랜지 포춘텔링 이미지
+    ]
+  } else {
+    return [
+      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282655127894523947/heal7witch_A_mystical_cyber_fantasy_scene_with_deep_purple_and_6e8f9a2b-4c7d-1e5f-9a3b-2d8e7c6f5a4b.png?ex=66e01bde&is=66deca5e&hm=2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3&") center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // 보라색 사이버 판타지
+      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282655398731826192/heal7witch_Deep_mystical_purple_cosmic_scene_with_crystal_balls_2f8a9b3c-5d7e-4f6a-8b9c-1e4d7a6f3b2e.png?ex=66e01c24&is=66decaa4&hm=5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b&") center/cover, linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%)', // 진보라 우주적 신비 이미지
+    ]
+  }
+}
 
-function App() {
+// App 컴포넌트 내부 로직
+function AppContent() {
+  const { theme } = useTheme() // 테마 컨텍스트 사용
   const [viewMode, setViewMode] = useState<ViewMode>('basic')
   const [currentPage, setCurrentPage] = useState<CurrentPage>('dashboard')
   const [currentBgImage, setCurrentBgImage] = useState(0)
   const [adminAuthenticated, setAdminAuthenticated] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const { theme } = useWeatherTheme()
   
   // 🚀 하이브리드 라우팅 모드 (테스트용 - 나중에 사용자 설정으로 변경 가능)
   const [useHybridNavigation] = useState(true)
@@ -84,6 +97,35 @@ function App() {
   
   // 배터리 절약 모드 감지
   const [batteryOptimized, setBatteryOptimized] = useState(false)
+  
+  // 페이지와 URL 동기화 함수
+  const handlePageChange = useCallback((newPage: CurrentPage) => {
+    setCurrentPage(newPage)
+    
+    // URL 업데이트
+    const pageRoutes = {
+      dashboard: '/',
+      saju: '/saju',
+      tarot: '/tarot',
+      magazine: '/magazine',
+      consultation: '/consultation', 
+      store: '/store',
+      notices: '/notices',
+      profile: '/profile',
+      fortune: '/fortune',
+      zodiac: '/zodiac',
+      personality: '/personality',
+      love: '/love',
+      compatibility: '/compatibility',
+      admin: '/admin',
+      dream: '/dream',
+      calendar: '/calendar',
+      subscription: '/subscription'
+    }
+    
+    const targetUrl = pageRoutes[newPage] || '/'
+    window.history.pushState(null, '', targetUrl)
+  }, [])
   
   // 🔄 개선된 URL 기반 라우팅 초기화 (config 활용)
   useEffect(() => {
@@ -183,10 +225,10 @@ function App() {
   // 배경 이미지 자동 페이드 전환 (30초 간격)
   useEffect(() => {
     const bgTimer = setInterval(() => {
-      setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length)
+      setCurrentBgImage((prev) => (prev + 1) % getBackgroundForTheme(theme).length)
     }, 30000)
     return () => clearInterval(bgTimer)
-  }, [])
+  }, [theme])
   
   // 배터리 API 사용 (지원되는 경우)
   useMemo(() => {
@@ -224,33 +266,45 @@ function App() {
   })
 
   return (
-    <div className={`min-h-screen relative overflow-hidden theme-${theme}`} data-theme={theme}>
-      {/* 배경 이미지들 (페이드 전환) */}
-      {backgroundImages.map((image, index) => (
+    <div className={`min-h-screen relative overflow-hidden theme-transition theme-${theme}`}>
+      {/* 배경 이미지들 (페이드 전환) - 테마별 동적 변경 */}
+      {getBackgroundForTheme(theme).map((image, index) => (
         <div
           key={index}
           className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-3000 ease-in-out ${
             index === currentBgImage ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
-            backgroundImage: `url(${image})`,
+            background: image,
             backgroundAttachment: 'fixed'
           }}
         />
       ))}
       
-      {/* 테마에 따른 전체 오버레이 */}
-      <div className={`absolute inset-0 ${themeTransitions.slow} ${getThemeClasses.pageOverlay(theme)}`} />
+      {/* 테마에 따른 전체 오버레이 - CSS 변수 사용 */}
+      <div className="absolute inset-0 theme-transition" 
+           style={{
+             background: 'linear-gradient(135deg, var(--theme-bg-overlay) 0%, var(--theme-bg-card) 100%)'
+           }} />
       
       {/* 배경 이미지 인디케이터 - 헤더와 겹치지 않도록 위치 조정 */}
       {!isAuthModalOpen && (
-        <div className="fixed top-20 right-4 flex space-x-2 z-40 bg-black/20 backdrop-blur-sm rounded-full p-2">
-          {backgroundImages.map((_, index) => (
+        <div className="fixed top-20 right-4 flex space-x-2 z-40 theme-bg-card backdrop-blur-sm rounded-full p-2 theme-border border">
+          {getBackgroundForTheme(theme).map((_, index) => (
             <motion.div
               key={index}
               className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
-                index === currentBgImage ? 'bg-white shadow-lg' : 'bg-white/50'
+                index === currentBgImage 
+                  ? 'theme-accent shadow-lg' 
+                  : theme === 'light' 
+                    ? 'bg-orange-400/60 hover:bg-orange-500' 
+                    : 'bg-white/50 hover:bg-white/70'
               }`}
+              style={{
+                backgroundColor: index === currentBgImage 
+                  ? 'var(--theme-accent)' 
+                  : undefined
+              }}
               onClick={() => setCurrentBgImage(index)}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.8 }}
@@ -309,7 +363,7 @@ function App() {
           onViewModeChange={setViewMode}
           apiStatus={apiHealth?.status || 'unknown'}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
           onAuthModalStateChange={setIsAuthModalOpen}
         />
 
@@ -317,7 +371,7 @@ function App() {
         {useHybridNavigation ? (
           <RouteAwareNavigation
             currentPage={currentPage}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
             viewMode={viewMode}
             routingMode="router_hybrid"
             onUrlChange={handleUrlChange}
@@ -325,7 +379,7 @@ function App() {
         ) : (
           <Navigation 
             currentPage={currentPage}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
             viewMode={viewMode}
           />
         )}
@@ -543,6 +597,15 @@ function App() {
       </div>
     </div>
   )
+}
+
+// 메인 App 컴포넌트 (테마 프로바이더로 감싸기)
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
 }
 
 export default App

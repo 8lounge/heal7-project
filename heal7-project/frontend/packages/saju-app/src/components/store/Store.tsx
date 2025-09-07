@@ -13,9 +13,9 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<'all' | 'bestseller' | 'new' | 'sale'>('all')
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
-  const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
+  const textClass = 'theme-text-primary'
+  const accentClass = 'theme-accent'
 
   let filteredProducts = products
 
@@ -44,9 +44,7 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
       >
         <motion.button
           onClick={() => setSelectedProduct(null)}
-          className={`mb-6 px-4 py-2 rounded-lg ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
+          className="mb-6 btn-secondary"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -94,22 +92,22 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
                 )}
               </div>
 
-              <h1 className={`text-3xl font-bold ${textClass} mb-4`}>
+              <h1 className="text-3xl font-bold theme-text-heading mb-4">
                 {product.name}
               </h1>
 
-              <p className={`${textClass} opacity-75 mb-6`}>
+              <p className="theme-text-secondary mb-6">
                 {product.description}
               </p>
 
               {/* 가격 */}
               <div className="mb-6">
-                <div className={`text-3xl font-bold ${accentClass} mb-2`}>
+                <div className="text-3xl font-bold theme-accent mb-2">
                   {product.price.toLocaleString()}원
                 </div>
                 {product.discount > 0 && (
                   <div className="flex items-center gap-3">
-                    <span className={`${textClass} opacity-75 line-through`}>
+                    <span className="theme-text-muted line-through">
                       {product.originalPrice.toLocaleString()}원
                     </span>
                     <span className="px-2 py-1 rounded-full bg-red-500 text-white text-sm font-bold">
@@ -149,9 +147,7 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
               {/* 구매 버튼 */}
               <div className="space-y-3">
                 <motion.button
-                  className={`w-full py-4 rounded-lg text-lg font-bold ${
-                    viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                  }`}
+                  className="w-full py-4 btn-outlined text-lg font-bold"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -159,7 +155,7 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
                 </motion.button>
                 
                 <motion.button
-                  className="w-full py-4 rounded-lg text-lg font-bold bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 transition-colors"
+                  className="w-full py-4 btn-primary text-lg font-bold"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -168,11 +164,11 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
               </div>
 
               {/* 배송 정보 */}
-              <div className={`mt-6 p-4 bg-white/5 rounded-lg ${textClass}`}>
-                <h4 className="font-bold mb-2">📦 배송 정보</h4>
-                <p className="text-sm opacity-75">{product.deliveryInfo}</p>
+              <div className="mt-6 glass-2 p-4">
+                <h4 className="font-bold mb-2 theme-text-primary">📦 배송 정보</h4>
+                <p className="text-sm theme-text-caption">{product.deliveryInfo}</p>
                 {product.stock && (
-                  <p className="text-sm opacity-75 mt-1">
+                  <p className="text-sm theme-text-caption mt-1">
                     재고: {product.stock}개 남음
                   </p>
                 )}
@@ -182,7 +178,7 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
               <div className="mt-6">
                 <div className="flex flex-wrap gap-2">
                   {product.tags.map((tag, index) => (
-                    <span key={index} className="px-2 py-1 rounded text-sm bg-white/10 text-gray-400">
+                    <span key={index} className="px-2 py-1 rounded text-sm bg-[var(--theme-bg-primary)] text-[var(--theme-text-primary)] border border-[var(--theme-border)]">
                       {tag}
                     </span>
                   ))}
@@ -257,8 +253,8 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
             onClick={() => setActiveFilter(filter.key as any)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeFilter === filter.key
-                ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                ? 'btn-primary'
+                : 'btn-ghost'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -279,8 +275,8 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
           onClick={() => setSelectedCategory('all')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             selectedCategory === 'all'
-              ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-              : 'bg-white/10 hover:bg-white/20 text-gray-300'
+              ? 'btn-primary'
+              : 'btn-ghost'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -293,8 +289,8 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
             onClick={() => setSelectedCategory(category.id)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               selectedCategory === category.id
-                ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                ? 'btn-primary'
+                : 'btn-ghost'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -384,9 +380,7 @@ const Store: React.FC<StoreProps> = ({ viewMode }) => {
 
             {/* 구매 버튼 */}
             <motion.button
-              className={`w-full py-2 rounded-lg font-medium ${
-                viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-              }`}
+              className="w-full py-2 rounded-lg font-medium btn-primary"
               onClick={(e) => {
                 e.stopPropagation()
                 setSelectedProduct(product.id)

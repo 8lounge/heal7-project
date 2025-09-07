@@ -52,7 +52,7 @@ export const AnalyticsTab = () => {
       </div>
 
       {/* 기간 선택 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white text-lg font-semibold">리뷰 & 댓글 관리</h3>
           <div className="flex gap-2">
@@ -94,7 +94,7 @@ export const AnalyticsTab = () => {
 
       {/* 리뷰 관리 */}
       {activeTab === 'reviews' && (
-        <div className="card-cosmic">
+        <div className="card-base">
           <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">리뷰 목록</h4>
@@ -154,7 +154,7 @@ export const AnalyticsTab = () => {
 
       {/* 댓글 관리 */}
       {activeTab === 'comments' && (
-        <div className="card-cosmic">
+        <div className="card-base">
           <div className="p-6 border-b border-gray-600/40">
             <h4 className="text-white font-semibold">댓글 목록</h4>
           </div>

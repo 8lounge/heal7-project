@@ -44,9 +44,9 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
   const [loading, setLoading] = useState(false);
 
   // 동적 스타일 클래스
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic';
-  const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white';
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white';
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base';
+  const textClass = 'theme-text-primary';
+  const accentClass = 'theme-accent';
   const titleClass = viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic';
 
   const getScoreColor = (score: number) => {
@@ -184,7 +184,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                     placeholder="이름을 입력하세요"
                     value={person1.name}
                     onChange={(e) => setPerson1({...person1, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className="input-field focus:border-purple-500"
                   />
                 </div>
                 
@@ -194,7 +194,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                     type="date"
                     value={person1.birthDate}
                     onChange={(e) => setPerson1({...person1, birthDate: e.target.value})}
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className="input-field focus:border-purple-500"
                   />
                 </div>
                 
@@ -204,7 +204,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                     type="time"
                     value={person1.birthTime}
                     onChange={(e) => setPerson1({...person1, birthTime: e.target.value})}
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className="input-field focus:border-purple-500"
                   />
                 </div>
                 
@@ -249,7 +249,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                     placeholder="이름을 입력하세요"
                     value={person2.name}
                     onChange={(e) => setPerson2({...person2, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className="input-field focus:border-purple-500"
                   />
                 </div>
                 
@@ -259,7 +259,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                     type="date"
                     value={person2.birthDate}
                     onChange={(e) => setPerson2({...person2, birthDate: e.target.value})}
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className="input-field focus:border-purple-500"
                   />
                 </div>
                 
@@ -269,7 +269,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                     type="time"
                     value={person2.birthTime}
                     onChange={(e) => setPerson2({...person2, birthTime: e.target.value})}
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className="input-field focus:border-purple-500"
                   />
                 </div>
                 
@@ -309,9 +309,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
               onClick={handleAnalyze}
               disabled={loading}
               className={`px-8 py-3 text-lg rounded-xl font-bold transition-all duration-300 ${
-                viewMode === 'cyber_fantasy'
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg'
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg'
+                viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
               } disabled:opacity-50`}
               whileHover={{ scale: loading ? 1 : 1.05 }}
               whileTap={{ scale: loading ? 1 : 0.95 }}
@@ -358,7 +356,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                 </div>
               </div>
               
-              <div className="bg-black/20 border border-white/20 rounded-lg p-6 backdrop-blur-sm">
+              <div className="card-base p-6 backdrop-blur-sm">
                 <h3 className={`font-semibold mb-3 ${textClass}`}>종합 평가</h3>
                 <p className={`${textClass} opacity-90 text-lg leading-relaxed`}>
                   {result.overall_assessment}
@@ -375,7 +373,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                 </h3>
                 <div className="space-y-3">
                   {result.strengths.map((strength, index) => (
-                    <div key={index} className="flex items-start gap-3 bg-black/20 border border-white/20 rounded-lg p-3 backdrop-blur-sm">
+                    <div key={index} className="flex items-start gap-3 card-base p-3 backdrop-blur-sm">
                       <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                       <p className={`${textClass} opacity-90`}>{strength}</p>
                     </div>
@@ -390,7 +388,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                 </h3>
                 <div className="space-y-3">
                   {result.challenges.map((challenge, index) => (
-                    <div key={index} className="flex items-start gap-3 bg-black/20 border border-white/20 rounded-lg p-3 backdrop-blur-sm">
+                    <div key={index} className="flex items-start gap-3 card-base p-3 backdrop-blur-sm">
                       <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
                       <p className={`${textClass} opacity-90`}>{challenge}</p>
                     </div>
@@ -407,7 +405,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {result.improvement_tips.map((tip, index) => (
-                  <div key={index} className="bg-black/20 border border-white/20 rounded-lg p-4 backdrop-blur-sm">
+                  <div key={index} className="card-base p-4 backdrop-blur-sm">
                     <div className="flex items-center gap-2 mb-2">
                       <div className={`w-6 h-6 ${viewMode === 'cyber_fantasy' ? 'bg-purple-500' : 'bg-indigo-500'} text-white rounded-full flex items-center justify-center text-sm font-bold`}>
                         {index + 1}
@@ -426,7 +424,7 @@ export const CompatibilityAnalysis: React.FC<CompatibilityAnalysisProps> = ({ vi
                 <Target className="w-5 h-5 mr-2" />
                 장기적 관계 전망
               </h3>
-              <div className="bg-black/20 border border-white/20 rounded-lg p-6 backdrop-blur-sm">
+              <div className="card-base p-6 backdrop-blur-sm">
                 <p className={`${textClass} opacity-90 text-lg leading-relaxed`}>
                   {result.long_term_outlook}
                 </p>

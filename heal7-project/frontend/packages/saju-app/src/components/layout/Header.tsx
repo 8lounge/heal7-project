@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AuthModal } from '../auth/AuthModal'
 import { useAuth } from '../../hooks/useAuth'
-import { useWeatherTheme } from '../../hooks/useWeatherTheme'
+import { useTheme } from '../../contexts/ThemeContext'
 import { getThemeClasses, getMenuButtonClass, themeTransitions } from '../../utils/themeStyles'
 
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
@@ -20,7 +20,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage, onPageChange, onAuthModalStateChange }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { theme, weatherData, isLoading: isWeatherLoading, toggleTheme } = useWeatherTheme();
+  const { theme, weatherData, isLoading: isWeatherLoading, toggleTheme, isManualOverride, resetToAuto } = useTheme();
 
   const handleAuthModalOpen = (isOpen: boolean) => {
     setIsAuthModalOpen(isOpen);
@@ -103,62 +103,86 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
           {/* 모드 전환 & 상태 */}
           <div className="flex items-center space-x-4">
 
-            {/* 날씨 기반 테마 전환 - 모바일에서 숨김 */}
-            <div className="hidden md:flex items-center space-x-2 group relative">
-              <span className={`text-sm ${themeTransitions.colors} ${getThemeClasses.themeLabel.light(theme)}`}>
-                ☀️ 낮
+            {/* 개선된 테마 토글 시스템 - 모바일에서 숨김 */}
+            <div className="hidden md:flex items-center space-x-3 group relative">
+              {/* 라이트 모드 라벨 */}
+              <span className={`text-sm ${themeTransitions.colors} ${
+                theme === 'light' ? 'theme-accent' : 'theme-text-muted'
+              }`}>
+                ☀️
               </span>
+
+              {/* 테마 토글 스위치 */}
               <motion.button
-                className={`relative w-14 h-7 rounded-full ${
+                className={`relative w-16 h-8 rounded-full theme-transition ${
                   theme === 'dark' 
-                    ? 'bg-gradient-to-r from-purple-500 to-indigo-500' 
-                    : 'bg-gradient-to-r from-pink-400 to-orange-500'
-                }`}
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg theme-shadow' 
+                    : 'bg-gradient-to-r from-pink-500 to-orange-500 shadow-lg'
+                } ${isManualOverride ? 'ring-2 ring-white/30' : ''}`}
                 onClick={toggleTheme}
                 whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
                 disabled={isWeatherLoading}
               >
                 <motion.div
-                  className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg flex items-center justify-center text-xs"
+                  className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg flex items-center justify-center text-sm font-bold"
                   animate={{
-                    x: theme === 'dark' ? 28 : 4
+                    x: theme === 'dark' ? 36 : 4
                   }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 >
                   {theme === 'dark' ? '🌙' : '☀️'}
                 </motion.div>
               </motion.button>
-              <span className={`text-sm ${themeTransitions.colors} ${getThemeClasses.themeLabel.dark(theme)}`}>
-                🌙 밤
+
+              {/* 다크 모드 라벨 */}
+              <span className={`text-sm ${themeTransitions.colors} ${
+                theme === 'dark' ? 'theme-accent' : 'theme-text-muted'
+              }`}>
+                🌙
               </span>
-              {/* 한국 기상청 날씨 정보 툴팁 */}
-              <div className={`absolute top-8 right-0 text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 ${themeTransitions.normal} whitespace-nowrap z-50 ${getThemeClasses.tooltip.container(theme)}`}>
-                {isWeatherLoading ? (
-                  '🌦️ 기상청 날씨 정보 로딩 중...'
-                ) : weatherData ? (
-                  <>
-                    <div className={`font-semibold ${getThemeClasses.tooltip.title(theme)}`}>🇰🇷 기상청 날씨</div>
-                    <div>{weatherData.city} {weatherData.temperature}°C</div>
-                    <div className={getThemeClasses.tooltip.content(theme)}>
-                      {weatherData.weather === 'clear' && '☀️ 맑음'}
-                      {weatherData.weather === 'clouds' && '☁️ 구름많음/흐림'}
-                      {weatherData.weather === 'rain' && '🌧️ 비'}
-                      {weatherData.weather === 'snow' && '❄️ 눈'}
-                      {' - '}
-                      <span className={getThemeClasses.tooltip.accent(theme)}>
-                        {theme === 'dark' ? '어두운 테마' : '밝은 테마'}
-                      </span>
-                      {' 활성화'}
+
+              {/* 자동 모드 복원 버튼 (수동 모드일 때만 표시) */}
+              {isManualOverride && (
+                <motion.button
+                  className="text-xs px-2 py-1 theme-bg-surface theme-border rounded-lg theme-text-secondary hover:theme-text-primary theme-transition"
+                  onClick={resetToAuto}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="자동 테마로 복원"
+                >
+                  🤖 자동
+                </motion.button>
+              )}
+
+              {/* 기상청 날씨 정보 툴팁 */}
+              <div className={`absolute top-10 right-0 text-xs px-4 py-3 rounded-lg opacity-0 group-hover:opacity-100 ${themeTransitions.normal} whitespace-nowrap z-50 theme-bg-card theme-border backdrop-blur-sm`}>
+                <div className="space-y-2">
+                  <div className="font-semibold theme-accent">
+                    🌤️ 실시간 기상정보
+                  </div>
+                  
+                  {weatherData && (
+                    <>
+                      <div className="theme-text-primary">
+                        🇰🇷 {weatherData.city} {weatherData.temperature}°C
+                      </div>
+                      <div className="theme-text-secondary">
+                        {weatherData.weather === 'clear' && '☀️ 맑음'}
+                        {weatherData.weather === 'clouds' && '☁️ 구름많음/흐림'}
+                        {weatherData.weather === 'rain' && '🌧️ 비'}
+                        {weatherData.weather === 'snow' && '❄️ 눈'}
+                      </div>
+                    </>
+                  )}
+
+                  <div className="theme-text-muted border-t theme-border pt-2">
+                    <div>현재: <span className="theme-accent">{theme === 'dark' ? '다크 모드' : '라이트 모드'}</span></div>
+                    <div className="text-xs mt-1">
+                      기상청 API 연동 • 30분마다 갱신
                     </div>
-                    <div className={`text-xs mt-1 ${getThemeClasses.tooltip.subtitle(theme)}`}>클릭으로 수동 전환 가능</div>
-                  </>
-                ) : (
-                  <>
-                    <div>🌦️ 기상청 날씨 기반 자동 테마</div>
-                    <div className="text-xs text-gray-400">오후 6시 이후/흐린날 = 어두운 테마</div>
-                    <div className="text-xs text-gray-400">그 외 시간 = 밝은 테마</div>
-                  </>
-                )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -183,7 +207,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                     </span>
                   </motion.div>
                   <motion.button
-                    className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all duration-300"
+                    className="btn-ghost !py-1 !px-3 text-sm"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleLogout}
@@ -193,7 +217,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                 </div>
               ) : (
                 <motion.button
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg text-white font-medium transition-all duration-300"
+                  className="btn-primary"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleAuthModalOpen(true)}
@@ -213,91 +237,61 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
             <nav className="flex gap-3 px-4 overflow-x-auto scrollbar-hide pb-2 scroll-smooth mobile-nav-scroll">
               <button 
                 onClick={() => onPageChange?.('dashboard')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'dashboard' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'dashboard' ? 'active' : ''}`}
               >
                 🏠 메인
               </button>
               <button 
                 onClick={() => onPageChange?.('saju')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'saju' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'saju' ? 'active' : ''}`}
               >
                 🔮 사주명리
               </button>
               <button 
                 onClick={() => onPageChange?.('tarot')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'tarot' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'tarot' ? 'active' : ''}`}
               >
                 🃏 타로카드
               </button>
               <button 
                 onClick={() => onPageChange?.('magazine')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'magazine' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'magazine' ? 'active' : ''}`}
               >
                 📰 매거진
               </button>
               <button 
+                onClick={() => onPageChange?.('compatibility')}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'compatibility' ? 'active' : ''}`}
+              >
+                💑 궁합
+              </button>
+              <button 
                 onClick={() => onPageChange?.('consultation')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'consultation' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'consultation' ? 'active' : ''}`}
               >
                 💬 상담
               </button>
               <button 
                 onClick={() => onPageChange?.('store')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'store' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'store' ? 'active' : ''}`}
               >
                 🛍️ 스토어
               </button>
               <button 
                 onClick={() => onPageChange?.('notices')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'notices' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'notices' ? 'active' : ''}`}
               >
                 📢 공지사항
               </button>
               <button 
                 onClick={() => onPageChange?.('profile')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'profile' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'profile' ? 'active' : ''}`}
               >
                 👤 프로필
               </button>
               <button 
                 onClick={() => onPageChange?.('admin')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 text-xs whitespace-nowrap flex-shrink-0 ${
-                  currentPage === 'admin' 
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30' 
-                    : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-                }`}
+                className={`card-nav text-xs whitespace-nowrap flex-shrink-0 ${currentPage === 'admin' ? 'active' : ''}`}
               >
                 ⚙️ 관리자
               </button>
@@ -308,6 +302,18 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               <div className="w-16 h-1 bg-white/20 rounded-full">
                 <div className="w-8 h-1 bg-white/50 rounded-full animate-pulse"></div>
               </div>
+            </div>
+            
+            {/* 모바일 기상정보 표시만 (토글 숨김) */}
+            <div className="mt-6 pt-4 border-t border-white/20">
+              <div className="text-center text-xs text-white/60">
+                🌤️ 기상청 연동 자동 테마 • 현재: {theme === 'dark' ? '다크' : '라이트'} 모드
+              </div>
+              {weatherData && (
+                <div className="text-center mt-1 text-xs text-white/70">
+                  🇰🇷 {weatherData.city} {weatherData.temperature}°C • {weatherData.weather === 'clear' ? '☀️ 맑음' : weatherData.weather === 'clouds' ? '☁️ 흐림' : weatherData.weather === 'rain' ? '🌧️ 비' : '❄️ 눈'}
+                </div>
+              )}
             </div>
           </div>
         </div>

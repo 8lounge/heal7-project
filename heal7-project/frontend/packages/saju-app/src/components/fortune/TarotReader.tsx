@@ -61,7 +61,7 @@ const TarotReader: React.FC<TarotReaderProps> = ({ viewMode }) => {
     }, 2000)
   }
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal' : 'card-cosmic'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
 
   // 스프레드 옵션
   const spreadOptions = [
@@ -85,7 +85,7 @@ const TarotReader: React.FC<TarotReaderProps> = ({ viewMode }) => {
         transition={{ delay: 0.2 }}
       >
         <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${
-          viewMode === 'cyber_fantasy' ? 'text-mystic' : 'text-cosmic'
+          'text-white'
         }`}>
           🃏 {viewMode === 'cyber_fantasy' ? '홀로그래픽 타로' : '타로카드 리딩'}
         </h1>
@@ -141,7 +141,7 @@ const TarotReader: React.FC<TarotReaderProps> = ({ viewMode }) => {
       >
         <motion.button
           className={`px-8 py-4 text-lg font-bold rounded-xl ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+            viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
           }`}
           onClick={drawCards}
           disabled={isReading}
@@ -326,7 +326,7 @@ const TarotReader: React.FC<TarotReaderProps> = ({ viewMode }) => {
           transition={{ delay: 2 }}
         >
           <motion.button
-            className="btn-outline"
+            className="btn-secondary"
             onClick={() => {
               setShowResult(false)
               setDrawnCards([])

@@ -10,6 +10,8 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeTextClasses } from '../../utils/themeStyles';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@heal7/shared';
 import { Button } from '@heal7/shared';
 import { Badge } from '@heal7/shared';
@@ -138,11 +140,8 @@ interface PointSystemData {
 }
 
 const UnifiedSajuAdminDashboard: React.FC = () => {
-  // 테마 관리 상태
-  const [themeMode, setThemeMode] = useState<'day' | 'night'>(() => {
-    const saved = localStorage.getItem('heal7_admin_theme');
-    return (saved as 'day' | 'night') || 'night';
-  });
+  // 메인 앱의 테마 시스템 사용
+  const { theme, toggleTheme } = useTheme();
 
   // 통합 상태 관리
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -275,10 +274,8 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
 
   // 테마 토글 핸들러
   const handleThemeToggle = useCallback(() => {
-    const newTheme = themeMode === 'day' ? 'night' : 'day';
-    setThemeMode(newTheme);
-    localStorage.setItem('heal7_admin_theme', newTheme);
-  }, [themeMode]);
+    toggleTheme();
+  }, [toggleTheme]);
 
   // 데이터 새로고침
   const handleRefresh = useCallback(async () => {
@@ -287,14 +284,6 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
     setRefreshing(false);
   }, [initializeData]);
 
-  // 테마 변경 시 body 클래스 업데이트
-  useEffect(() => {
-    document.body.className = document.body.className.replace(
-      /theme-(day|night)/g,
-      ''
-    );
-    document.body.classList.add(`theme-${themeMode}`);
-  }, [themeMode]);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -353,13 +342,13 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
 
   return (
     <div className={`min-h-screen transition-all duration-500 ${
-      themeMode === 'day' 
+      theme === 'light' 
         ? 'bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100' 
         : 'bg-gradient-to-br from-purple-950 via-blue-900 to-indigo-950'
     }`}>
       {/* 헤더 */}
       <header className={`border-b backdrop-blur-md transition-all duration-500 ${
-        themeMode === 'day'
+        theme === 'light'
           ? 'border-orange-200/30 bg-white/20'
           : 'border-white/10 bg-black/20'
       }`}>
@@ -367,16 +356,16 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Sparkles className={`w-8 h-8 transition-all duration-500 ${
-                themeMode === 'day' ? 'text-orange-500' : 'text-purple-400'
+                theme === 'light' ? 'text-orange-500' : 'text-purple-400'
               }`} />
               <div>
                 <h1 className={`text-xl font-bold transition-all duration-500 ${
-                  themeMode === 'day' ? 'text-orange-800 glow-text-orange' : 'text-white glow-text-purple'
+                  theme === 'light' ? 'text-orange-800 glow-text-orange' : 'text-white glow-text-purple'
                 }`}>
                   🔮 HEAL7 사주 관리자
                 </h1>
                 <p className={`text-sm transition-all duration-500 ${
-                  themeMode === 'day' ? 'text-orange-600/70' : 'text-white/60'
+                  theme === 'light' ? 'text-orange-600/70' : 'text-white/60'
                 }`}>
                   통합 관리 대시보드 v2.0
                 </p>
@@ -385,40 +374,40 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               {/* 테마 토글 영역 */}
               <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border transition-all duration-500 ${
-                themeMode === 'day'
+                theme === 'light'
                   ? 'bg-orange-200/20 border-orange-300/30'
                   : 'bg-purple-500/20 border-purple-400/30'
               }`}>
                 <span className={`text-sm font-medium transition-all duration-500 ${
-                  themeMode === 'day' ? 'text-orange-200' : 'text-purple-200'
+                  theme === 'light' ? 'text-orange-200' : 'text-purple-200'
                 }`}>
-                  {themeMode === 'day' ? '☀️ 낮' : '🌙 밤'}
+                  {theme === 'light' ? '☀️ 낮' : '🌙 밤'}
                 </span>
                 <button
                   onClick={handleThemeToggle}
                   className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 ${
-                    themeMode === 'day'
+                    theme === 'light'
                       ? 'bg-orange-400 focus:ring-orange-300'
                       : 'bg-purple-600 focus:ring-purple-400'
                   }`}
                 >
                   <div className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-500 shadow-lg ${
-                    themeMode === 'day'
+                    theme === 'light'
                       ? 'left-6 bg-white border-orange-200'
                       : 'left-0.5 bg-white border-purple-200'
                   } border flex items-center justify-center text-xs`}>
-                    {themeMode === 'day' ? '☀️' : '🌙'}
+                    {theme === 'light' ? '☀️' : '🌙'}
                   </div>
                 </button>
                 <span className={`text-sm font-medium transition-all duration-500 ${
-                  themeMode === 'day' ? 'text-orange-200/60' : 'text-purple-200/60'
+                  theme === 'light' ? 'text-orange-200/60' : 'text-purple-200/60'
                 }`}>
-                  {themeMode === 'day' ? '🌙 밤' : '☀️ 낮'}
+                  {theme === 'light' ? '🌙 밤' : '☀️ 낮'}
                 </span>
               </div>
               
               <Badge variant="outline" className={`transition-all duration-500 ${
-                themeMode === 'day' 
+                theme === 'light' 
                   ? 'text-green-600 border-green-500'
                   : 'text-green-400 border-green-400'
               }`}>
@@ -430,7 +419,7 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                 onClick={handleRefresh}
                 disabled={refreshing}
                 className={`transition-all duration-500 ${
-                  themeMode === 'day'
+                  theme === 'light'
                     ? 'text-orange-700 border-orange-300/50 hover:bg-orange-100/50'
                     : 'text-white border-white/20 hover:bg-white/20'
                 }`}
@@ -456,8 +445,12 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                   className={`
                     flex items-center space-x-2 px-4 py-3 rounded-lg transition-all duration-200
                     ${activeTab === tab.id 
-                      ? 'bg-purple-500/80 text-white shadow-lg shadow-purple-500/25' 
-                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                      ? theme === 'light'
+                        ? 'bg-orange-500/80 text-white shadow-lg shadow-orange-500/25' 
+                        : 'bg-purple-500/80 text-white shadow-lg shadow-purple-500/25'
+                      : theme === 'light'
+                        ? 'bg-white/60 text-orange-900/70 hover:bg-white/80 hover:text-orange-900'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
                     }
                   `}
                 >
@@ -473,7 +466,9 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
         <div className="space-y-6">
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">시스템 대시보드</h2>
+              <h2 className={`text-2xl font-bold mb-6 ${
+                theme === 'light' ? 'text-orange-900' : 'text-white'
+              }`}>시스템 대시보드</h2>
               
               {/* 시스템 상태 카드들 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -510,14 +505,24 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                 </Card>
 
                 {/* 시스템 상태 */}
-                <Card className="bg-white/10 border-white/20 backdrop-blur-md">
+                <Card className={`backdrop-blur-md theme-transition ${
+                  theme === 'light' 
+                    ? 'bg-white/80 border-orange-300/30 text-orange-900' 
+                    : 'bg-white/10 border-white/20 text-white'
+                }`}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-white/80">시스템 상태</CardTitle>
+                    <CardTitle className={`text-sm font-medium ${
+                      theme === 'light' ? 'text-orange-800/80' : 'text-white/80'
+                    }`}>시스템 상태</CardTitle>
                     <Server className="h-4 w-4 text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{systemHealth?.uptime}%</div>
-                    <p className="text-xs text-white/60">가동률</p>
+                    <div className={`text-2xl font-bold ${
+                      theme === 'light' ? 'text-orange-900' : 'text-white'
+                    }`}>{systemHealth?.uptime}%</div>
+                    <p className={`text-xs ${
+                      theme === 'light' ? 'text-orange-700/60' : 'text-white/60'
+                    }`}>가동률</p>
                     <div className="mt-2">
                       <div className="flex justify-between text-xs">
                         <span className={getStatusColor(systemHealth?.api_status || '')}>API</span>
@@ -528,16 +533,28 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                 </Card>
 
                 {/* 콘텐츠 통계 */}
-                <Card className="bg-white/10 border-white/20 backdrop-blur-md">
+                <Card className={`backdrop-blur-md theme-transition ${
+                  theme === 'light' 
+                    ? 'bg-white/80 border-orange-300/30 text-orange-900' 
+                    : 'bg-white/10 border-white/20 text-white'
+                }`}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-white/80">콘텐츠</CardTitle>
+                    <CardTitle className={`text-sm font-medium ${
+                      theme === 'light' ? 'text-orange-800/80' : 'text-white/80'
+                    }`}>콘텐츠</CardTitle>
                     <FileText className="h-4 w-4 text-orange-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-white">{contentStats?.total_interpretations?.toLocaleString()}</div>
-                    <p className="text-xs text-white/60">총 해석 데이터</p>
+                    <div className={`text-2xl font-bold ${
+                      theme === 'light' ? 'text-orange-900' : 'text-white'
+                    }`}>{contentStats?.total_interpretations?.toLocaleString()}</div>
+                    <p className={`text-xs ${
+                      theme === 'light' ? 'text-orange-700/60' : 'text-white/60'
+                    }`}>총 해석 데이터</p>
                     <div className="mt-2">
-                      <div className="text-xs text-white/60">꿈풀이: {contentStats?.dream_interpretations}</div>
+                      <div className={`text-xs ${
+                        theme === 'light' ? 'text-orange-700/60' : 'text-white/60'
+                      }`}>꿈풀이: {contentStats?.dream_interpretations}</div>
                     </div>
                   </CardContent>
                 </Card>
@@ -545,10 +562,14 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
 
               {/* 최근 활동 및 시스템 메트릭 */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-white/10 border-white/20 backdrop-blur-md">
+                <Card className={`backdrop-blur-md theme-transition ${
+                  theme === 'light' 
+                    ? 'bg-white/80 border-orange-300/30 text-orange-900' 
+                    : 'bg-white/10 border-white/20 text-white'
+                }`}>
                   <CardHeader>
-                    <CardTitle className="text-white">인기 기능</CardTitle>
-                    <CardDescription className="text-white/60">사용량 기준 순위</CardDescription>
+                    <CardTitle className={theme === 'light' ? 'text-orange-900' : 'text-white'}>인기 기능</CardTitle>
+                    <CardDescription className={theme === 'light' ? 'text-orange-700/60' : 'text-white/60'}>사용량 기준 순위</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -560,10 +581,14 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                               index === 1 ? 'bg-gray-300' :
                               index === 2 ? 'bg-orange-400' : 'bg-purple-400'
                             }`} />
-                            <span className="text-white text-sm">{feature.name}</span>
+                            <span className={`text-sm ${
+                              theme === 'light' ? 'text-orange-900' : 'text-white'
+                            }`}>{feature.name}</span>
                           </div>
                           <div className="text-right">
-                            <div className="text-white text-sm font-medium">
+                            <div className={`text-sm font-medium ${
+                              theme === 'light' ? 'text-orange-900' : 'text-white'
+                            }`}>
                               {feature.usage_count.toLocaleString()}
                             </div>
                             <div className={`text-xs ${
@@ -578,31 +603,35 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/10 border-white/20 backdrop-blur-md">
+                <Card className={`backdrop-blur-md theme-transition ${
+                  theme === 'light' 
+                    ? 'bg-white/80 border-orange-300/30 text-orange-900' 
+                    : 'bg-white/10 border-white/20 text-white'
+                }`}>
                   <CardHeader>
-                    <CardTitle className="text-white">시스템 리소스</CardTitle>
-                    <CardDescription className="text-white/60">실시간 사용률</CardDescription>
+                    <CardTitle className={theme === 'light' ? 'text-orange-900' : 'text-white'}>시스템 리소스</CardTitle>
+                    <CardDescription className={theme === 'light' ? 'text-orange-700/60' : 'text-white/60'}>실시간 사용률</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-white/80">메모리 사용률</span>
-                          <span className="text-white">{systemHealth?.memory_usage}%</span>
+                          <span className={theme === 'light' ? 'text-orange-700/80' : 'text-white/80'}>메모리 사용률</span>
+                          <span className={theme === 'light' ? 'text-orange-900' : 'text-white'}>{systemHealth?.memory_usage}%</span>
                         </div>
                         <Progress value={systemHealth?.memory_usage} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-white/80">CPU 사용률</span>
-                          <span className="text-white">{systemHealth?.cpu_usage}%</span>
+                          <span className={theme === 'light' ? 'text-orange-700/80' : 'text-white/80'}>CPU 사용률</span>
+                          <span className={theme === 'light' ? 'text-orange-900' : 'text-white'}>{systemHealth?.cpu_usage}%</span>
                         </div>
                         <Progress value={systemHealth?.cpu_usage} className="h-2" />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-white/80">응답 시간</span>
-                          <span className="text-white">{systemHealth?.response_time}ms</span>
+                          <span className={theme === 'light' ? 'text-orange-700/80' : 'text-white/80'}>응답 시간</span>
+                          <span className={theme === 'light' ? 'text-orange-900' : 'text-white'}>{systemHealth?.response_time}ms</span>
                         </div>
                         <Progress value={Math.max(0, 100 - (systemHealth?.response_time || 0) / 10)} className="h-2" />
                       </div>

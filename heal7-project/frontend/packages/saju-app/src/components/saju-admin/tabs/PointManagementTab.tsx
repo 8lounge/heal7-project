@@ -25,7 +25,7 @@ export const PointManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 섹션 선택 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <h3 className="text-white text-lg font-semibold mb-4">포인트 & 결제 관리</h3>
         <div className="flex gap-2">
           {sections.map(section => (
@@ -67,7 +67,7 @@ export const PointManagementTab = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 결제 수단별 통계 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">결제 수단별 현황</h4>
               <div className="space-y-3">
                 {[
@@ -95,7 +95,7 @@ export const PointManagementTab = () => {
             </div>
 
             {/* 포인트 사용 패턴 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">포인트 사용 패턴</h4>
               <div className="space-y-3">
                 {[
@@ -120,7 +120,7 @@ export const PointManagementTab = () => {
 
       {/* 거래 내역 */}
       {activeSection === 'transactions' && (
-        <div className="card-cosmic">
+        <div className="card-base">
           <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">거래 내역</h4>
@@ -190,7 +190,7 @@ export const PointManagementTab = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 포인트 정책 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">포인트 적립/사용 정책</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">
@@ -218,7 +218,7 @@ export const PointManagementTab = () => {
             </div>
 
             {/* 결제 수수료 설정 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">결제 수수료 설정</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10">

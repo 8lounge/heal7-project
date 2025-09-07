@@ -96,8 +96,8 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
   //   ? dailyFortuneData 
   //   : dailyFortuneData.filter(f => f.category === selectedCategory)
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
-  const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
+  const textClass = 'theme-text-primary'
 
   return (
     <motion.div
@@ -124,13 +124,13 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
           transition={{ delay: 0.4, type: 'spring' }}
         >
           <div className="text-6xl mb-4">{greeting.emoji}</div>
-          <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${textClass}`}>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 theme-text-heading">
             🧙‍♀️ 치유 마녀 플랫폼
           </h1>
-          <p className={`text-xl mb-4 ${textClass.replace('text-', 'text-opacity-90 text-')}`}>
+          <p className="text-xl mb-4 theme-text-secondary">
             삶의 방향을 찾는 당신의 나침반
           </p>
-          <p className={`text-lg mb-6 ${textClass.replace('text-', 'text-opacity-80 text-')}`}>
+          <p className="text-lg mb-6 theme-text-body">
             마음의 평안 • 현명한 선택 • 따뜻한 조언
           </p>
           
@@ -138,15 +138,15 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
           <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-6 text-sm">
             <div className="flex items-center">
               <div className={`w-2 h-2 rounded-full ${apiHealth?.status === 'healthy' ? 'bg-green-400 animate-pulse' : 'bg-red-400'} mr-2`} />
-              <span className="text-gray-300">
+              <span className="theme-text-caption">
                 {apiHealth?.status === 'healthy' ? '✨ 치유 시스템 운영 중' : '🔧 시스템 점검 중'}
               </span>
             </div>
-            <span className="text-gray-400 hidden md:block">•</span>
+            <span className="theme-text-muted hidden md:block">•</span>
             <div className="flex items-center">
-              <span className="text-gray-300">📊 오늘&nbsp;</span>
+              <span className="theme-text-caption">📊 오늘&nbsp;</span>
               <motion.span 
-                className="text-4xl font-bold text-white mx-2"
+                className="text-4xl font-bold theme-text-heading mx-2"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ 
@@ -158,7 +158,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
               >
                 {animatedNumber.toLocaleString()}
               </motion.span>
-              <span className="text-gray-300">명이 치유를 받았어요</span>
+              <span className="theme-text-caption">명이 치유를 받았어요</span>
             </div>
           </div>
         </motion.div>
@@ -170,18 +170,14 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        <h2 className={`text-xl font-bold mb-4 ${textClass} flex items-center`}>
+        <h2 className="text-xl font-bold mb-4 theme-text-heading flex items-center">
           🔥 지금 HOT한 키워드
         </h2>
         <div className="flex flex-wrap gap-3">
           {trendingKeywords.map((keyword, index) => (
             <motion.span
               key={keyword}
-              className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all
-                ${viewMode === 'cyber_fantasy' 
-                  ? 'gradient-theme-primary-30 text-theme-primary hover:opacity-80' 
-                  : 'gradient-theme-primary-30 text-theme-primary hover:opacity-80'
-                }`}
+              className="card-compact !p-3 text-sm font-medium cursor-pointer theme-text-interactive hover:card-nav"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 + index * 0.1 }}
@@ -244,7 +240,7 @@ const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
                   {dailyFortuneData[currentSlide].keywords.map((keyword, idx) => (
                     <span
                       key={idx}
-                      className="px-3 py-1 bg-black/30 text-gray-300 text-sm rounded-full"
+                      className="px-3 py-1 rounded-full text-sm bg-[var(--theme-bg-primary)] text-[var(--theme-text-primary)] border border-[var(--theme-border)]"
                     >
                       {keyword}
                     </span>

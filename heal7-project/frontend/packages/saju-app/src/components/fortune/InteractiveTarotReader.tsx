@@ -30,7 +30,7 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
   const [isDrawing, setIsDrawing] = useState(false)
   const [showCards, setShowCards] = useState(false)
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
   const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
@@ -220,8 +220,8 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
                       key={index}
                       className={`p-4 text-left rounded-lg transition-all ${
                         selectedQuestion === question
-                          ? 'bg-purple-500/30 border border-purple-400'
-                          : 'bg-black/20 border border-white/20 hover:bg-black/30'
+                          ? 'btn-primary'
+                          : 'card-base hover:opacity-80'
                       }`}
                       onClick={() => handleQuestionSelect(question)}
                       whileHover={{ scale: 1.02 }}
@@ -238,7 +238,7 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
                     또는 직접 질문해보세요
                   </label>
                   <textarea
-                    className="w-full p-4 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 resize-none"
+                    className="input-field resize-none"
                     rows={3}
                     placeholder="예: 이번 달 연애운은 어떨까요?"
                     value={customQuestion}
@@ -252,7 +252,7 @@ const InteractiveTarotReader: React.FC<InteractiveTarotReaderProps> = ({ viewMod
 
               <motion.button
                 className={`w-full py-4 rounded-lg font-bold text-lg ${
-                  viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                  viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
                 disabled={!selectedQuestion && !customQuestion.trim() || isDrawing}
                 onClick={drawCards}

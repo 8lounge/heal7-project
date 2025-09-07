@@ -11,21 +11,21 @@ export const getThemeClasses = {
   
   // 로고 텍스트 클래스
   logoTitle: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-cosmic' : 'text-gray-900',
+    theme === 'dark' ? 'theme-text-heading' : 'theme-text-heading',
   
   logoSubtitle: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-gray-300' : 'text-gray-700',
+    theme === 'dark' ? 'theme-text-caption' : 'theme-text-caption',
   
   // 메뉴 버튼 클래스
   menuButton: {
     active: (theme: ThemeMode) =>
       theme === 'dark'
-        ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30'
-        : 'bg-pink-500/20 text-pink-900 shadow-lg backdrop-blur-sm border border-pink-400/30',
+        ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border-2 border-white/50 ring-1 ring-purple-400/30'
+        : 'bg-pink-500/20 text-pink-900 shadow-lg backdrop-blur-sm border-2 border-pink-400/60 ring-1 ring-pink-300/30',
     inactive: (theme: ThemeMode) =>
       theme === 'dark'
-        ? 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/20'
-        : 'bg-orange-300/10 text-orange-800/80 hover:bg-pink-400/20 hover:text-pink-900 backdrop-blur-sm border border-orange-300/20'
+        ? 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/30 hover:border-white/50'
+        : 'bg-orange-300/10 text-orange-800/80 hover:bg-pink-400/20 hover:text-pink-900 backdrop-blur-sm border border-orange-300/30 hover:border-pink-400/50'
   },
   
   // 테마 토글 라벨 클래스
@@ -93,35 +93,35 @@ export const themeColors = {
   }
 }
 
-// 테마별 텍스트 색상 유틸리티
+// 테마별 텍스트 색상 유틸리티 - 새 CSS 클래스 활용
 export const getThemeTextClasses = {
-  // 기본 텍스트 색상 (제목, 메인 텍스트)
-  primary: (theme: ThemeMode) => 
-    theme === 'dark' ? 'text-white' : 'text-gray-900',
+  // 기본 텍스트 색상 (제목, 메인 텍스트) - WCAG AA 준수
+  primary: (theme: ThemeMode) => 'theme-text-primary',
     
-  // 보조 텍스트 색상 (부제목, 설명)
-  secondary: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-white/80' : 'text-gray-700',
+  // 보조 텍스트 색상 (부제목, 설명) - 고대비율
+  secondary: (theme: ThemeMode) => 'theme-text-secondary',
     
-  // 흐린 텍스트 색상 (메타데이터, 라벨)
-  muted: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-white/60' : 'text-gray-600',
+  // 흐린 텍스트 색상 (메타데이터, 라벨) - 접근성 준수
+  muted: (theme: ThemeMode) => 'theme-text-muted',
     
   // 미묘한 텍스트 색상 (구분선, 힌트)
-  subtle: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-white/40' : 'text-gray-500',
+  subtle: (theme: ThemeMode) => 'theme-text-caption',
     
+  // 헤딩 텍스트 (제목, 중요한 텍스트)
+  heading: (theme: ThemeMode) => 'theme-text-heading',
+  
+  // 본문 텍스트 (일반 텍스트, 설명)
+  body: (theme: ThemeMode) => 'theme-text-body',
+  
   // 아이콘 색상
-  icon: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-white/60' : 'text-gray-600',
+  icon: (theme: ThemeMode) => 'theme-text-muted',
     
-  // 플레이스홀더 색상  
+  // 플레이스홀더 색상 - Tailwind 클래스 유지 (CSS 변수 지원 한계)
   placeholder: (theme: ThemeMode) =>
-    theme === 'dark' ? 'placeholder-white/60' : 'placeholder-gray-400',
+    theme === 'dark' ? 'placeholder-white/60' : 'placeholder-gray-500',
     
-  // 링크/버튼 텍스트 색상
-  interactive: (theme: ThemeMode) =>
-    theme === 'dark' ? 'text-white hover:text-white' : 'text-gray-800 hover:text-gray-900',
+  // 링크/버튼 텍스트 색상 - 인터랙티브 요소
+  interactive: (theme: ThemeMode) => 'theme-text-interactive',
     
   // 해시태그 키워드 텍스트 색상
   hashtag: (theme: ThemeMode) =>

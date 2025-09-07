@@ -34,7 +34,7 @@ export const ContentManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 콘텐츠 타입 선택 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <h3 className="text-white text-lg font-semibold mb-4">콘텐츠 관리</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {contentTypes.map(type => (
@@ -56,7 +56,7 @@ export const ContentManagementTab = () => {
 
       {/* 매거진 관리 */}
       {contentType === 'magazine' && (
-        <div className="card-cosmic">
+        <div className="card-base">
           <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">매거진 관리</h4>
@@ -103,7 +103,7 @@ export const ContentManagementTab = () => {
 
       {/* 상품 관리 */}
       {contentType === 'products' && (
-        <div className="card-cosmic">
+        <div className="card-base">
           <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">상품 관리</h4>
@@ -146,7 +146,7 @@ export const ContentManagementTab = () => {
 
       {/* 스토어 관리 */}
       {contentType === 'store' && (
-        <div className="card-cosmic">
+        <div className="card-base">
           <div className="p-6 border-b border-gray-600/40">
             <div className="flex items-center justify-between">
               <h4 className="text-white font-semibold">스토어 관리</h4>

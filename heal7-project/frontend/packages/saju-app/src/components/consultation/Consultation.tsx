@@ -13,7 +13,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [activeTab, setActiveTab] = useState<'consultants' | 'packages' | 'reviews'>('consultants')
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
   const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
   const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
 
@@ -42,7 +42,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
         <motion.button
           onClick={() => setSelectedConsultant(null)}
           className={`mb-6 px-4 py-2 rounded-lg ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+            viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -107,7 +107,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
 
           {/* 상담 정보 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white/10 p-4 rounded-lg backdrop-blur-md border border-white/20">
+            <div className="card-base p-4">
               <h3 className={`font-bold ${textClass} mb-3`}>💰 상담 요금</h3>
               <div className={`text-2xl font-bold ${accentClass} mb-2`}>
                 {consultant.pricePerMinute.toLocaleString()}원/분
@@ -117,7 +117,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
               </p>
             </div>
             
-            <div className="bg-white/10 p-4 rounded-lg backdrop-blur-md border border-white/20">
+            <div className="card-base p-4">
               <h3 className={`font-bold ${textClass} mb-3`}>📞 상담 방식</h3>
               <div className="flex flex-wrap gap-2">
                 {consultant.consultationMethods.map((method, index) => (
@@ -138,7 +138,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
           <div className="text-center mb-8">
             <motion.button
               className={`px-8 py-4 rounded-lg text-lg font-bold ${
-                viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -160,7 +160,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
               {consultantReviews.slice(0, 3).map((review) => (
                 <motion.div
                   key={review.id}
-                  className="bg-white/10 p-4 rounded-lg backdrop-blur-md border border-white/20"
+                  className="card-base p-4"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
@@ -233,8 +233,8 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
             onClick={() => setActiveTab(tab.key as any)}
             className={`px-6 py-3 rounded-lg font-medium transition-colors ${
               activeTab === tab.key
-                ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
+                : 'card-base hover:opacity-80 text-gray-300'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -264,8 +264,8 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
                     onClick={() => setSelectedCategory('all')}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                       selectedCategory === 'all'
-                        ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                        : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                        ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
+                        : 'card-base hover:opacity-80 text-gray-300'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -278,8 +278,8 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
                       onClick={() => setSelectedCategory(category.id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         selectedCategory === category.id
-                          ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                          : 'bg-white/10 hover:bg-white/20 text-gray-300'
+                          ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
+                          : 'card-base hover:opacity-80 text-gray-300'
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -393,7 +393,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
 
                     <motion.button
                       className={`w-full py-3 rounded-lg font-bold ${
-                        viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
+                        viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

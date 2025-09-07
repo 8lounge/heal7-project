@@ -28,7 +28,7 @@ export const UserManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 회원 통계 및 필터 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <h3 className="text-white text-lg font-semibold mb-4">회원 관리</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
@@ -65,7 +65,7 @@ export const UserManagementTab = () => {
       </div>
 
       {/* 회원 목록 테이블 */}
-      <div className="card-cosmic">
+      <div className="card-base">
         <div className="p-6 border-b border-gray-600/40">
           <div className="flex items-center justify-between">
             <h4 className="text-white font-semibold">회원 목록</h4>
@@ -148,7 +148,7 @@ export const UserManagementTab = () => {
       </div>
 
       {/* 회원 등급 관리 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <h4 className="text-white font-semibold mb-4">회원 등급 설정</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[

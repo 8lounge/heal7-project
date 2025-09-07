@@ -34,7 +34,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
   const [monthlyFortune, setMonthlyFortune] = useState<MonthlyFortune | null>(null);
   const [todayFortune, setTodayFortune] = useState<CalendarDate | null>(null);
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic';
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base';
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
@@ -91,7 +91,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
     const isSelected = selectedDate?.date.toDateString() === calendarDate.date.toDateString();
     const is절기 = is절기날(calendarDate.date);
     
-    let className = 'relative p-2 rounded-lg cursor-pointer transition-all hover:bg-white/20 ';
+    let className = 'relative p-2 rounded-lg cursor-pointer card-nav ';
     
     if (isToday) {
       className += 'ring-2 ring-yellow-400 bg-yellow-400/20 ';
@@ -170,11 +170,11 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
         {/* 헤더 */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Calendar className="w-8 h-8 text-white" />
-            <h1 className="text-4xl font-bold text-white">📅 운세 캘린더</h1>
+            <Calendar className="w-8 h-8 theme-text-primary" />
+            <h1 className="text-4xl font-bold theme-text-heading">📅 운세 캘린더</h1>
             <Star className="w-8 h-8 text-yellow-300" />
           </div>
-          <p className="text-white/80 text-lg">
+          <p className="theme-text-secondary text-lg">
             12지신, 60갑자, 손없는날을 한눈에 확인하세요
           </p>
         </div>
@@ -187,17 +187,17 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
               <div className="flex items-center justify-between mb-6">
                 <button
                   onClick={() => navigateMonth('prev')}
-                  className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+                  className="btn-ghost !p-2"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-white">
+                  <h2 className="text-2xl font-bold theme-text-heading">
                     {year}년 {month}월
                   </h2>
                   {monthlyFortune && (
-                    <p className="text-white/80 text-sm mt-1">
+                    <p className="theme-text-secondary text-sm mt-1">
                       {monthlyFortune.monthlyMessage}
                     </p>
                   )}
@@ -205,7 +205,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
 
                 <button
                   onClick={() => navigateMonth('next')}
-                  className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+                  className="btn-ghost !p-2"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -217,7 +217,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   <div 
                     key={day} 
                     className={`text-center py-2 font-medium ${
-                      index === 0 ? 'text-red-300' : index === 6 ? 'text-blue-300' : 'text-white'
+                      index === 0 ? 'text-red-300' : index === 6 ? 'text-blue-300' : 'theme-text-primary'
                     }`}
                   >
                     {day}
@@ -243,7 +243,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                       <div className={`text-sm font-bold mb-1 ${
                         dayOfWeek === 0 ? 'text-red-300' : 
                         dayOfWeek === 6 ? 'text-blue-300' : 
-                        'text-white'
+                        'theme-text-primary'
                       }`}>
                         {calendarDate.date.getDate()}
                       </div>

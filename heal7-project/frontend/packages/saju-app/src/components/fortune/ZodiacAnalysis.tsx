@@ -196,7 +196,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
 
       {/* 출생년도/생년월일 입력 */}
       <div className={`p-6 mb-8 rounded-xl ${
-        viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
+        viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
       }`}>
         <div className="flex items-center justify-center gap-4 mb-4">
           <Calendar className="w-5 h-5 text-white" />
@@ -237,14 +237,14 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
             onChange={(e) => setBirthYear(e.target.value)}
             min="1900"
             max="2030"
-            className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 w-24 text-center"
+            className="input-field focus:ring-2 focus:ring-purple-500 w-24 text-center"
           />
           {useDetailedBirth && (
             <>
               <select
                 value={birthMonth}
                 onChange={(e) => setBirthMonth(e.target.value)}
-                className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="input-field focus:ring-2 focus:ring-purple-500"
               >
                 <option value="">월</option>
                 {Array.from({length: 12}, (_, i) => (
@@ -256,7 +256,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
               <select
                 value={birthDay}
                 onChange={(e) => setBirthDay(e.target.value)}
-                className="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="input-field focus:ring-2 focus:ring-purple-500"
               >
                 <option value="">일</option>
                 {Array.from({length: 31}, (_, i) => (
@@ -304,8 +304,8 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
               className={`
-                relative bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 cursor-pointer
-                transition-all duration-300 hover:scale-105 hover:bg-white/20 overflow-hidden
+                relative card-base p-4 cursor-pointer
+                transition-all duration-300 hover:scale-105 overflow-hidden
                 ${selectedZodiac?.id === zodiac.id ? 'ring-2 ring-purple-400 bg-purple-500/20 shadow-lg shadow-purple-500/25' : ''}
               `}
               onClick={() => handleZodiacClick(zodiac)}
@@ -397,7 +397,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
             className="space-y-6"
           >
             {/* 기본 정보 카드 - 카드 이미지 제거 */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+            <div className="card-base p-6 text-center">
               <h2 className="text-3xl font-bold text-white mb-2">
                 {selectedZodiac.name} ({selectedZodiac.chineseName})
               </h2>
@@ -416,7 +416,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
               {/* 좌측 - 띠 결과 이미지/설명 */}
               <div className="lg:col-span-1">
                 <motion.div 
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center h-full flex flex-col justify-center"
+                  className="card-base p-6 text-center h-full flex flex-col justify-center"
                   initial={{ 
                     opacity: 0, 
                     scale: 0.5, 
@@ -536,7 +536,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
               {/* 우측 - 정보 섹터들 */}
               <div className="lg:col-span-2 space-y-6">
                 {/* 성격 특성 */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <div className="card-base p-6">
                   <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                     <Star className="w-5 h-5 text-yellow-400" />
                     주요 성격
@@ -558,7 +558,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                 </div>
 
                 {/* 2025년 운세 */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <div className="card-base p-6">
                   <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-orange-400" />
                     2025년 운세
@@ -580,7 +580,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                 </div>
 
                 {/* 적합한 직업 */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <div className="card-base p-6">
                   <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                     <Briefcase className="w-5 h-5 text-green-400" />
                     적합한 직업
@@ -601,7 +601,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                 </div>
 
                 {/* 행운 요소 */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+                <div className="card-base p-6">
                   <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                     <Gem className="w-5 h-5 text-purple-400" />
                     행운 요소
@@ -639,7 +639,7 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
             </div>
 
             {/* 궁합 정보 */}
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6">
+              <div className="card-base p-6">
                 <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                   <Users className="w-5 h-5 text-pink-400" />
                   띠 궁합

@@ -53,7 +53,7 @@ export const SystemManagementTab = () => {
   return (
     <div className="space-y-6">
       {/* 탭 선택 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <h3 className="text-white text-lg font-semibold mb-4">시스템 관리</h3>
         <div className="flex gap-2">
           {tabs.map(tab => (
@@ -105,7 +105,7 @@ export const SystemManagementTab = () => {
           </div>
 
           {/* 문의 목록 */}
-          <div className="card-cosmic">
+          <div className="card-base">
             <div className="p-6 border-b border-gray-600/40">
               <div className="flex items-center justify-between">
                 <h4 className="text-white font-semibold">1:1 문의 목록</h4>
@@ -170,7 +170,7 @@ export const SystemManagementTab = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 사주 엔진 설정 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">사주 엔진 설정</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -198,7 +198,7 @@ export const SystemManagementTab = () => {
             </div>
 
             {/* 알림 설정 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">알림 설정</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -227,7 +227,7 @@ export const SystemManagementTab = () => {
             </div>
 
             {/* 운영 정책 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">운영 정책</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -255,7 +255,7 @@ export const SystemManagementTab = () => {
             </div>
 
             {/* 백업 설정 */}
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">백업 & 보안</h4>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -313,7 +313,7 @@ export const SystemManagementTab = () => {
           </div>
 
           {/* 서비스 상태 */}
-          <div className="card-cosmic p-6">
+          <div className="card-base p-6">
             <h4 className="text-white font-semibold mb-4">서비스 상태</h4>
             <div className="space-y-3">
               {[
@@ -339,7 +339,7 @@ export const SystemManagementTab = () => {
 
           {/* 로그 및 경고 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">최근 로그</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
@@ -363,7 +363,7 @@ export const SystemManagementTab = () => {
               </div>
             </div>
 
-            <div className="card-cosmic p-6">
+            <div className="card-base p-6">
               <h4 className="text-white font-semibold mb-4">시스템 경고</h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-400/20 rounded">

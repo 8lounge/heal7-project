@@ -29,7 +29,7 @@ export const SajuEngineTab = () => {
   return (
     <div className="space-y-6">
       {/* 카테고리 선택 */}
-      <div className="card-cosmic p-6">
+      <div className="card-base p-6">
         <h3 className="text-white text-lg font-semibold mb-4">사주 해석 데이터 관리</h3>
         <div className="flex flex-wrap gap-2 mb-4">
           {categories.map(category => (
@@ -67,7 +67,7 @@ export const SajuEngineTab = () => {
       </div>
 
       {/* 데이터 표시 영역 */}
-      <div className="card-cosmic">
+      <div className="card-base">
         <div className="p-6 border-b border-gray-600/40">
           <h4 className="text-white font-semibold">{selectedCategory} 해석 데이터</h4>
           <p className="text-gray-200 text-sm mt-1">총 {mockData[selectedCategory]?.length || 0}개의 해석 데이터</p>

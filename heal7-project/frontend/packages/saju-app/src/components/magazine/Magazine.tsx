@@ -12,9 +12,9 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedArticle, setSelectedArticle] = useState<string | null>(null)
 
-  const cardClass = viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
-  const textClass = viewMode === 'cyber_fantasy' ? 'text-cyan-100' : 'text-white'
-  const accentClass = viewMode === 'cyber_fantasy' ? 'text-pink-300' : 'text-white'
+  const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
+  const textClass = 'theme-text-primary'
+  const accentClass = 'theme-accent'
 
   const filteredArticles = selectedCategory === 'all' 
     ? magazineArticles 
@@ -37,9 +37,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
         {/* 뒤로가기 버튼 */}
         <motion.button
           onClick={() => setSelectedArticle(null)}
-          className={`mb-6 px-4 py-2 rounded-lg ${
-            viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-          }`}
+          className="mb-6 btn-secondary"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -68,15 +66,15 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
               )}
             </div>
             
-            <h1 className={`text-3xl md:text-4xl font-bold ${textClass} mb-4`}>
+            <h1 className="text-3xl md:text-4xl font-bold theme-text-heading mb-4">
               {article.title}
             </h1>
             
-            <p className={`text-xl ${accentClass} mb-6`}>
+            <p className="text-xl theme-accent mb-6">
               {article.subtitle}
             </p>
             
-            <div className={`flex flex-wrap items-center gap-4 text-sm ${textClass} opacity-75`}>
+            <div className="flex flex-wrap items-center gap-4 text-sm theme-text-caption">
               <span className="flex items-center gap-2">
                 <span className="text-2xl">{article.authorImage}</span>
                 {article.author}
@@ -90,7 +88,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
           </div>
 
           {/* 기사 내용 */}
-          <div className={`${textClass} leading-relaxed whitespace-pre-line mb-8`}>
+          <div className="theme-text-body leading-relaxed whitespace-pre-line mb-8">
             {article.content}
           </div>
 
@@ -99,7 +97,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
             {article.tags.map((tag, index) => (
               <span 
                 key={index} 
-                className="px-3 py-1 rounded-full text-sm bg-white/25 text-white"
+                className="px-3 py-1 rounded-full text-sm bg-[var(--theme-bg-primary)] text-[var(--theme-text-primary)] border border-[var(--theme-border)]"
               >
                 {tag}
               </span>
@@ -109,9 +107,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
           {/* 소셜 공유 버튼 */}
           <div className="flex items-center gap-4">
             <motion.button
-              className={`px-6 py-2 rounded-lg ${
-                viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-              }`}
+              className="btn-primary"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
@@ -131,7 +127,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
             </motion.button>
             
             <motion.button
-              className="px-6 py-2 rounded-lg border border-white/20 hover:bg-white/10 text-white transition-colors"
+              className="btn-outlined"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -157,10 +153,10 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <h1 className="text-4xl font-bold mb-6 text-white">
+        <h1 className="text-4xl font-bold mb-6 theme-text-heading">
           📰 {viewMode === 'cyber_fantasy' ? '사이버 매거진' : '치유마녀 매거진'}
         </h1>
-        <p className="text-gray-300 text-lg">
+        <p className="theme-text-secondary text-lg">
           {viewMode === 'cyber_fantasy' 
             ? '차세대 MZ 운세 트렌드의 모든 것'
             : 'MZ세대를 위한 운세 트렌드와 라이프스타일 매거진'
@@ -180,7 +176,7 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
           {popularTags.slice(0, 10).map((tag, index) => (
             <motion.span
               key={index}
-              className="px-3 py-1 rounded-full text-sm bg-white/25 hover:bg-white/35 cursor-pointer text-white transition-colors"
+              className="px-3 py-1 rounded-full text-sm bg-[var(--theme-bg-primary)] hover:bg-[var(--theme-bg-secondary)] cursor-pointer text-[var(--theme-text-primary)] border border-[var(--theme-border)] transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -202,8 +198,8 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
             onClick={() => setSelectedCategory('all')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               selectedCategory === 'all'
-                ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                : 'bg-white/25 hover:bg-white/35 text-white'
+                ? 'btn-primary'
+                : 'btn-ghost'
             }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -216,8 +212,8 @@ const Magazine: React.FC<MagazineProps> = ({ viewMode }) => {
               onClick={() => setSelectedCategory(category.id)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 selectedCategory === category.id
-                  ? viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                  : 'bg-white/25 hover:bg-white/35 text-white'
+                  ? 'btn-primary'
+                  : 'btn-ghost'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

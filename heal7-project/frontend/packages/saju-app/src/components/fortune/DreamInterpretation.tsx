@@ -10,7 +10,7 @@ import {
 } from '../../data/dreamData';
 // import dreamInterpretations from '../../data/enhanced_dreamData'; // 하드코딩 제거
 import MultiPerspectiveDreamComparison from './MultiPerspectiveDreamComparison';
-import { useWeatherTheme } from '../../hooks/useWeatherTheme';
+import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeTextClasses, themeTransitions } from '../../utils/themeStyles';
 
 type ViewMode = 'basic' | 'cyber_fantasy'
@@ -30,7 +30,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
   const [dreamViewMode, setDreamViewMode] = useState<'regular' | 'multi-perspective'>('regular');
   
   // 테마 훅 추가
-  const { theme } = useWeatherTheme();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -40,36 +40,40 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
       const searchDreamAPI = async () => {
         try {
           const query = searchQuery.toLowerCase().trim();
-          const response = await fetch('/api/saju/dream-interpretation/search', {
+          const response = await fetch('/api/dreams/search', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ keyword: query, limit: 10 })
+            body: JSON.stringify({ 
+              keywords: [query],
+              search_mode: "any",
+              limit: 10
+            })
           });
 
           if (response.ok) {
             const apiResults = await response.json();
             
-            // API 응답 구조 확인: {success: boolean, results: [...], total_count: number}
-            if (apiResults.success && apiResults.results && Array.isArray(apiResults.results)) {
+            // API 응답 구조 확인: List[DreamInterpretationResponse]
+            if (Array.isArray(apiResults)) {
               // API 응답을 프론트엔드 형식으로 변환
-              const formattedResults = apiResults.results.map((dream: any, index: number) => ({
+              const formattedResults = apiResults.map((dream: any, index: number) => ({
                 id: (index + 1).toString(),
                 keyword: dream.keyword || '알 수 없는 꿈',
                 category: dream.category || '꿈풀이',
-                emoji: '🌙', // 기본 이모지, 추후 카테고리별로 매핑 가능
-                traditionInterpretation: dream.tradition_interpretation || '',
-                modernInterpretation: dream.modern_interpretation || dream.tradition_interpretation || '',
-                psychologyInterpretation: dream.psychology_interpretation || '',
-                mood: dream.mood === 'positive' || dream.mood === '길몽' ? 'positive' : 
-                      dream.mood === 'negative' || dream.mood === '흉몽' ? 'negative' : 'neutral',
-                frequency: Math.round(dream.frequency * 10) || Math.floor(Math.random() * 100) + 1,
-                keywords: Array.isArray(dream.keywords) ? dream.keywords : [dream.keyword].filter(Boolean),
+                emoji: '🌙', // 기본 이모지 (백엔드에서 emoji 필드 없음)
+                traditionInterpretation: dream.traditional_meaning || '',
+                modernInterpretation: dream.modern_meaning || dream.traditional_meaning || '',
+                psychologyInterpretation: dream.psychological_meaning || '',
+                mood: dream.fortune_aspect === '길몽' ? 'positive' : 
+                      dream.fortune_aspect === '흉몽' ? 'negative' : 'neutral',
+                frequency: Math.round(dream.confidence_score * 10) || Math.floor(Math.random() * 100) + 1,
+                keywords: Array.isArray(dream.related_keywords) ? dream.related_keywords : [dream.keyword].filter(Boolean),
                 variations: [dream.keyword].filter(Boolean),
-                luckyNumbers: Array.isArray(dream.luckyNumbers) ? dream.luckyNumbers : [],
+                luckyNumbers: Array.isArray(dream.lucky_numbers) ? dream.lucky_numbers : [],
                 tags: ['꿈풀이'],
-                relatedDreams: Array.isArray(dream.relatedDreams) ? dream.relatedDreams : []
+                relatedDreams: Array.isArray(dream.related_keywords) ? dream.related_keywords : []
               }));
               
               console.log('Formatted Results:', formattedResults);
@@ -173,8 +177,8 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
         </div>
 
         {/* 검색 영역 */}
-        <div className={`p-6 mb-8 rounded-xl ${
-          viewMode === 'cyber_fantasy' ? 'card-crystal backdrop-blur-md' : 'card-cosmic'
+        <div className={`p-6 mb-8 ${
+          viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base'
         }`}>
           <div className="relative mb-6">
             <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${getThemeTextClasses.icon(theme)} w-5 h-5`} />
@@ -183,7 +187,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               placeholder="꿈에서 본 것을 검색해보세요 (예: 뱀, 물, 돈, 날아가기)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full bg-white/10 border border-white/20 rounded-lg pl-12 pr-4 py-3 ${getThemeTextClasses.primary(theme)} ${getThemeTextClasses.placeholder(theme)} focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-md`}
+              className={`w-full glass-4 pl-12 pr-4 py-3 ${getThemeTextClasses.primary(theme)} ${getThemeTextClasses.placeholder(theme)} focus:outline-none focus:ring-2 focus:ring-purple-500`}
             />
           </div>
 
@@ -231,7 +235,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                   <button
                     key={keyword}
                     onClick={() => handleSearch(keyword)}
-                    className={`bg-white/10 hover:bg-white/20 ${getThemeTextClasses.interactive(theme)} px-3 py-1 rounded-full text-sm transition-colors backdrop-blur-md border border-white/20`}
+                    className={`card-nav px-3 py-1 rounded-full text-sm ${getThemeTextClasses.interactive(theme)}`}
                   >
                     {keyword}
                   </button>
@@ -270,7 +274,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                 {searchResults.map((dream) => (
                   <div
                     key={dream.id}
-                    className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/20 transition-all ${selectedDream?.id === dream.id ? 'ring-2 ring-[var(--theme-primary)] bg-[var(--theme-primary)]/20' : ''}`}
+                    className={`card-nav p-4 cursor-pointer ${selectedDream?.id === dream.id ? 'active ring-2 ring-[var(--theme-accent)]' : ''}`}
                     onClick={() => setSelectedDream(dream)}
                   >
                     <div className="flex items-start gap-4">
@@ -312,7 +316,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                   {dreamCategories.map((category) => (
                     <div
                       key={category.id}
-                      className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-center cursor-pointer hover:bg-white/20 transition-all"
+                      className="card-nav p-4 text-center cursor-pointer"
                       onClick={() => handleSearch(category.name)}
                     >
                       <div className="text-3xl mb-2">{category.emoji}</div>
@@ -328,7 +332,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
           {/* 상세 해석 */}
           <div className="lg:col-span-1">
             {selectedDream ? (
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 sticky top-6">
+              <div className="glass-3 p-6 sticky top-6">
                 <div className="text-center mb-6">
                   <div className="text-6xl mb-3">{selectedDream.emoji}</div>
                   <h2 className={`text-2xl font-bold ${getThemeTextClasses.primary(theme)} mb-2`}>{selectedDream.keyword}</h2>
@@ -406,7 +410,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                           <button
                             key={related}
                             onClick={() => handleSearch(related)}
-                            className={`bg-white/10 hover:bg-white/20 ${getThemeTextClasses.interactive(theme)} px-2 py-1 rounded text-xs transition-colors backdrop-blur-md border border-white/20`}
+                            className={`card-compact !p-2 text-xs cursor-pointer ${getThemeTextClasses.interactive(theme)}`}
                           >
                             {related}
                           </button>
@@ -417,7 +421,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
                 </div>
               </div>
             ) : (
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-center">
+              <div className="glass-3 p-6 text-center">
                 <Moon className={`w-16 h-16 ${getThemeTextClasses.primary(theme)} mx-auto mb-4`} />
                 <h3 className={`${getThemeTextClasses.primary(theme)} font-medium mb-2`}>꿈을 선택해주세요</h3>
                 <p className={`${getThemeTextClasses.muted(theme)} text-sm`}>

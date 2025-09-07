@@ -16,5 +16,9 @@ export * from './components/ui/use-toast'
 export { default as OptimizedCyberCrystal } from './components/3d/OptimizedCyberCrystal'
 export { default as OptimizedStars } from './components/3d/OptimizedStars'
 
+// Three.js Core Components (re-export to prevent duplication)
+export { Canvas } from '@react-three/fiber'
+export { OrbitControls } from '@react-three/drei'
+
 // Utilities
 export * from './lib/utils'
