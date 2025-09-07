@@ -70,7 +70,7 @@
   --shadow-glow: 0 0 30px rgba(168, 85, 247, 0.6);
 }
 
-/* ☀️ Dawn 테마 - 신비로운 보라색 새벽 (톤앤매너 일관성) */
+/* ☀️ Sunny 테마 - 청춘 활력 오렌지/핑크 (보라색 제거) */
 .theme-light {
   /* 텍스트 계층 (고대비율 - 가독성 개선) */
   --theme-text-primary: #1f2937;
@@ -78,20 +78,20 @@
   --theme-text-muted: #6b7280;
   --theme-text-inverse: #ffffff;
   
-  /* 배경 색상 - 보라색 새벽 그라데이션 */
-  --theme-bg-primary: linear-gradient(135deg, #f8f7ff 0%, #f3f4f6 30%, #e5e7eb 70%, #f1f5f9 100%);
-  --theme-bg-secondary: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e5e7eb 100%);
-  --theme-bg-overlay: rgba(248, 247, 255, 0.95);
+  /* 배경 색상 - 따뜻한 오렌지/핑크 그라데이션 */
+  --theme-bg-primary: linear-gradient(135deg, #fff7ed 0%, #ffedd5 30%, #fed7aa 70%, #fdba74 100%);
+  --theme-bg-secondary: linear-gradient(135deg, #fef7f0 0%, #fed7d7 50%, #fecaca 100%);
+  --theme-bg-overlay: rgba(255, 247, 237, 0.95);
   
-  /* 액센트 색상 (보라색 계열 - 톤앤매너 통일) */
-  --theme-accent: #8B5CF6;
-  --theme-accent-hover: #7c3aed;
-  --theme-accent-light: #c4b5fd;
-  --theme-accent-dark: #6d28d9;
+  /* 액센트 색상 (오렌지 계열 - 활력있는 느낌) */
+  --theme-accent: #f97316;
+  --theme-accent-hover: #ea580c;
+  --theme-accent-light: #fb923c;
+  --theme-accent-dark: #c2410c;
   
-  /* 보조 색상 (인디고 계열 - 컨셉 통일) */
-  --theme-secondary: #6366F1;
-  --theme-secondary-hover: #4f46e5;
+  /* 보조 색상 (핑크 계열 - 청춘 느낌) */
+  --theme-secondary: #ec4899;
+  --theme-secondary-hover: #db2777;
   
   /* 글래스모피즘 5단계 투명도 시스템 (밝은 배경용 - 배경이미지 투과 강화) */
   --glass-level-1: rgba(255, 255, 255, 0.25); /* 최소 투명도 */
@@ -100,16 +100,16 @@
   --glass-level-4: rgba(255, 255, 255, 0.65); /* 버튼/입력 */
   --glass-level-5: rgba(255, 255, 255, 0.80); /* 강조 요소 */
   
-  /* 테두리 시스템 */
-  --theme-border: rgba(251, 146, 60, 0.25);
-  --theme-border-light: rgba(245, 101, 101, 0.15);
-  --theme-border-strong: rgba(251, 146, 60, 0.4);
+  /* 테두리 시스템 (오렌지/핑크 계열) */
+  --theme-border: rgba(249, 115, 22, 0.25);
+  --theme-border-light: rgba(251, 146, 60, 0.15);
+  --theme-border-strong: rgba(249, 115, 22, 0.4);
   
-  /* 그림자 시스템 (따뜻한 색조) */
-  --shadow-soft: 0 8px 32px 0 rgba(251, 146, 60, 0.15);
-  --shadow-medium: 0 12px 40px 0 rgba(245, 101, 101, 0.2);
-  --shadow-strong: 0 16px 48px 0 rgba(245, 101, 101, 0.25);
-  --shadow-glow: 0 0 30px rgba(253, 152, 83, 0.4);
+  /* 그림자 시스템 (따뜻한 오렌지/핑크 색조) */
+  --shadow-soft: 0 8px 32px 0 rgba(249, 115, 22, 0.15);
+  --shadow-medium: 0 12px 40px 0 rgba(236, 72, 153, 0.2);
+  --shadow-strong: 0 16px 48px 0 rgba(236, 72, 153, 0.25);
+  --shadow-glow: 0 0 30px rgba(251, 146, 60, 0.4);
 }
 
 /* =================================================================== */
@@ -318,10 +318,10 @@
 /* 테마별 카드 배경 그라디언트 */
 .theme-light .card-base {
   background: linear-gradient(135deg, 
-    rgba(248, 247, 255, 0.9) 0%, 
-    rgba(243, 240, 255, 0.8) 50%, 
-    rgba(237, 233, 254, 0.9) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+    rgba(255, 247, 237, 0.9) 0%, 
+    rgba(254, 215, 170, 0.8) 50%, 
+    rgba(252, 165, 165, 0.9) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.2);
 }
 
 .theme-dark .card-base {
@@ -344,9 +344,9 @@
 .theme-light .card-featured {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%, 
-    rgba(250, 245, 255, 0.9) 50%, 
-    rgba(245, 243, 255, 0.95) 100%);
-  border: 2px solid rgba(139, 92, 246, 0.4);
+    rgba(255, 237, 213, 0.9) 50%, 
+    rgba(254, 202, 202, 0.95) 100%);
+  border: 2px solid rgba(249, 115, 22, 0.4);
 }
 
 .theme-dark .card-featured {
@@ -366,9 +366,9 @@
 
 .theme-light .card-compact {
   background: linear-gradient(135deg, 
-    rgba(251, 250, 255, 0.8) 0%, 
-    rgba(246, 243, 255, 0.7) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.15);
+    rgba(255, 251, 235, 0.8) 0%, 
+    rgba(254, 226, 226, 0.7) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.15);
 }
 
 .theme-dark .card-compact {
@@ -388,9 +388,9 @@
 
 .theme-light .card-nav {
   background: linear-gradient(135deg, 
-    rgba(249, 248, 255, 0.85) 0%, 
-    rgba(244, 241, 255, 0.8) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.18);
+    rgba(255, 251, 235, 0.85) 0%, 
+    rgba(254, 237, 237, 0.8) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.18);
 }
 
 .theme-dark .card-nav {
@@ -409,8 +409,8 @@
 .theme-light .card-nav:hover {
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%, 
-    rgba(250, 245, 255, 0.9) 100%);
-  border-color: rgba(139, 92, 246, 0.35);
+    rgba(255, 237, 213, 0.9) 100%);
+  border-color: rgba(249, 115, 22, 0.35);
 }
 
 .theme-dark .card-nav:hover {
@@ -571,17 +571,17 @@
     --theme-border: rgba(139, 92, 246, 0.3);
   }
 
-  /* ☀️ Dawn 테마 (보라색 새벽 - 톤앤매너 통일) */
+  /* ☀️ Sunny 테마 (오렌지/핑크 청춘 활력) */
   .theme-light {
-    --theme-primary: #8B5CF6;      /* 통일된 Mystic 보라색 */
-    --theme-secondary: #6366F1;    /* 통일된 Cosmic 인디고 */
-    --theme-accent: #C4B5FD;       /* 부드러운 보라색 액센트 */
-    --theme-bg-primary: rgba(139, 92, 246, 0.08);
-    --theme-bg-secondary: rgba(99, 102, 241, 0.05);
-    --theme-bg-card: rgba(248, 247, 255, 0.8);
-    --theme-text-primary: #1E1B4B;
-    --theme-text-secondary: #4C1D95;
-    --theme-border: rgba(139, 92, 246, 0.2);
+    --theme-primary: #f97316;      /* 활력찬 오렌지 */
+    --theme-secondary: #ec4899;    /* 청춘 핑크 */
+    --theme-accent: #fb923c;       /* 부드러운 오렌지 액센트 */
+    --theme-bg-primary: rgba(249, 115, 22, 0.08);
+    --theme-bg-secondary: rgba(236, 72, 153, 0.05);
+    --theme-bg-card: rgba(255, 247, 237, 0.8);
+    --theme-text-primary: #1f2937;
+    --theme-text-secondary: #374151;
+    --theme-border: rgba(249, 115, 22, 0.2);
   }
 
   /* Theme-aware utility classes */
@@ -647,24 +647,32 @@
     background-repeat: no-repeat;
   }
 
-  /* 🌙 다크 테마 배경 - 2개 이미지 롤링 애니메이션 */
+  /* 🌙 다크 테마 배경 - 2개 이미지 30초 자동전환 */
   .theme-dark body {
-    background-image: url('https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png');
-    animation: darkThemeBackgroundRotation 10s infinite alternate;
+    animation: darkThemeBackgroundRotation 60s infinite;
   }
 
   @keyframes darkThemeBackgroundRotation {
-    0%, 50% {
+    0%, 49.99% {
       background-image: url('https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png');
     }
-    51%, 100% {
+    50%, 100% {
       background-image: url('https://cdn.midjourney.com/6169ce40-f23a-46d0-9c92-d6fbb4d976a4/0_1.png');
     }
   }
 
-  /* ☀️ 라이트 테마 배경 */
+  /* ☀️ 라이트 테마 배경 - 2개 이미지 30초 자동전환 */
   .theme-light body {
-    background-image: url('https://cdn.midjourney.com/b274426b-a59d-44e0-ab72-ea7fcc8da8e2/0_0.png');
+    animation: lightThemeBackgroundRotation 60s infinite;
+  }
+
+  @keyframes lightThemeBackgroundRotation {
+    0%, 49.99% {
+      background-image: url('https://cdn.midjourney.com/b274426b-a59d-44e0-ab72-ea7fcc8da8e2/0_0.png');
+    }
+    50%, 100% {
+      background-image: url('https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png');
+    }
   }
 
   /* 커스텀 스크롤바 - 0.5cm 너비 */
