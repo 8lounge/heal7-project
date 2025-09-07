@@ -415,59 +415,9 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* 좌측 - 띠 결과 이미지/설명 */}
               <div className="lg:col-span-1">
-                <motion.div 
-                  className="card-base p-6 text-center h-full flex flex-col justify-center"
-                  initial={{ 
-                    opacity: 0, 
-                    scale: 0.5, 
-                    rotateY: -180,
-                    rotateX: 15,
-                    z: -300
-                  }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1, 
-                    rotateY: [360, 0],
-                    rotateX: 0,
-                    z: 0
-                  }}
-                  transition={{ 
-                    duration: 4.5, 
-                    delay: 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                    times: [0, 0.4, 1]
-                  }}
-                  style={{ 
-                    perspective: "1500px",
-                    transformStyle: "preserve-3d"
-                  }}
-                >
-                  {/* 메인 이미지 - 로열카드 3D 회전 효과 */}
-                  <motion.div 
-                    className="mb-6"
-                    style={{ 
-                      perspective: "1000px",
-                      perspectiveOrigin: "center center"
-                    }}
-                    initial={{ 
-                      opacity: 0, 
-                      scale: 0.3, 
-                      rotateY: -180,
-                      z: -200
-                    }}
-                    animate={{ 
-                      opacity: 1, 
-                      scale: 1, 
-                      rotateY: 0,
-                      z: 0
-                    }}
-                    transition={{ 
-                      duration: 4.0,
-                      delay: 0.3,
-                      ease: [0.25, 0.46, 0.45, 0.94],
-                      times: [0, 0.3, 0.8, 1]
-                    }}
-                  >
+                <div className="card-base p-6 text-center h-full flex flex-col justify-center">
+                  {/* 메인 이미지 */}
+                  <div className="mb-6">
                     <OptimizedImage
                       key={`zodiac-image-${selectedZodiac.id}`}
                       id={selectedZodiac.id}
@@ -477,60 +427,35 @@ export const ZodiacAnalysis: React.FC<ZodiacAnalysisProps> = ({ viewMode = 'basi
                       loading="eager"
                       isActive={true}
                     />
-                  </motion.div>
+                  </div>
                   
                   {/* 띠 정보 */}
-                  <motion.div 
-                    className="space-y-3"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.8 }}
-                  >
-                    <motion.h3 
-                      className="text-2xl font-bold text-white"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: 0.9 }}
-                    >
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-bold text-white">
                       {selectedZodiac.name}
-                    </motion.h3>
-                    <motion.p 
-                      className="text-white/70 text-lg"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.4, delay: 1.0 }}
-                    >
+                    </h3>
+                    <p className="text-white/70 text-lg">
                       {selectedZodiac.chineseName}
-                    </motion.p>
+                    </p>
                     
                     {/* 기본 속성 */}
-                    <motion.div 
-                      className="space-y-2"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 1.1 }}
-                    >
+                    <div className="space-y-2">
                       <div className="bg-purple-500/20 text-purple-300 px-3 py-2 rounded-lg text-sm">
                         <span className="font-medium">오행:</span> {selectedZodiac.element}
                       </div>
                       <div className="bg-blue-500/20 text-blue-300 px-3 py-2 rounded-lg text-sm">
                         <span className="font-medium">최근 해:</span> {getMostRecentZodiacYear(selectedZodiac.id)}년
                       </div>
-                    </motion.div>
+                    </div>
                     
                     {/* 대표 특징 */}
-                    <motion.div 
-                      className="mt-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 1.2 }}
-                    >
+                    <div className="mt-4 p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
                       <p className="text-yellow-200 text-sm font-medium">
                         "{selectedZodiac.characteristics[0]}"
                       </p>
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* 우측 - 정보 섹터들 */}
