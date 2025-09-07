@@ -57,13 +57,13 @@ type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' 
 const getBackgroundForTheme = (theme: 'light' | 'dark') => {
   if (theme === 'light') {
     return [
-      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282654398897463407/heal7witch_A_mystical_tarot_reading_scene_with_soft_pink_and_or_8f4a8a9d-3a8d-4c90-9a2f-3d8e7b6c9f4e.png?ex=66e01b2c&is=66dec9ac&hm=94d58f5a8e3c2b1d9f6e8a7b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6&") center/cover, linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // 핑크 타로 이미지
-      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282654712983726184/heal7witch_Mystical_fortune_telling_ambient_with_warm_orange_an_4c7d8e9f-2b1a-4e8c-9d6f-7a5b4c3d2e1f.png?ex=66e01b7a&is=66dec9fa&hm=7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c&") center/cover, linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffecd2 100%)', // 오랜지 포춘텔링 이미지
+      'url("https://cdn.midjourney.com/a4b2c8e9-f123-4567-8901-2345678901ab/0_1.png") center/cover, linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // 미드저니 핑크 타로 배경
+      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffecd2 100%)', // 오랜지 그라디언트
     ]
   } else {
     return [
-      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282655127894523947/heal7witch_A_mystical_cyber_fantasy_scene_with_deep_purple_and_6e8f9a2b-4c7d-1e5f-9a3b-2d8e7c6f5a4b.png?ex=66e01bde&is=66deca5e&hm=2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3&") center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // 보라색 사이버 판타지
-      'url("https://cdn.discordapp.com/attachments/1019956581121929328/1282655398731826192/heal7witch_Deep_mystical_purple_cosmic_scene_with_crystal_balls_2f8a9b3c-5d7e-4f6a-8b9c-1e4d7a6f3b2e.png?ex=66e01c24&is=66decaa4&hm=5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b&") center/cover, linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%)', // 진보라 우주적 신비 이미지
+      'url("https://cdn.midjourney.com/6169ce40-f23a-46d0-9c92-d6fbb4d976a4/0_1.png") center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // 미드저니 신비로운 배경
+      'linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%)', // 진보라 우주적 신비 그라디언트
     ]
   }
 }

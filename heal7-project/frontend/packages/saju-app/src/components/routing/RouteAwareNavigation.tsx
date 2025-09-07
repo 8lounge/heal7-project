@@ -8,6 +8,7 @@ import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NavigationProps, CurrentPage, RoutingMode } from '../../types/routingTypes'
 import { CORE_NAVIGATION, EXTRA_NAVIGATION, ROUTE_CONFIG } from '../../config/routeConfig'
+import { useTheme } from '../../contexts/ThemeContext'
 
 // 하이브리드 네비게이션 Props (기존 + 라우터 기능)
 interface RouteAwareNavigationProps extends NavigationProps {
@@ -23,6 +24,7 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
   onUrlChange
 }) => {
   const [showMore, setShowMore] = useState(false)
+  const { theme } = useTheme()
 
   // 🔄 하이브리드 페이지 변경 핸들러
   const handlePageChange = useCallback((pageId: CurrentPage) => {
@@ -48,6 +50,7 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
         routeInfo={routeInfo}
         isActive={currentPage === routeInfo.pageId}
         viewMode={viewMode}
+        theme={theme}
         onClick={() => handlePageChange(routeInfo.pageId)}
         isPrimary={true}
       />
@@ -62,6 +65,7 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
         routeInfo={routeInfo}
         isActive={currentPage === routeInfo.pageId}
         viewMode={viewMode}
+        theme={theme}
         onClick={() => handlePageChange(routeInfo.pageId)}
         isPrimary={false}
       />
@@ -76,10 +80,10 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
         
         {/* 더보기 버튼 */}
         <motion.button
-          className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white ${
-            viewMode === 'cyber_fantasy'
-              ? 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
-              : 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+          className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 backdrop-blur-md border ${
+            theme === 'light'
+              ? 'bg-gradient-to-r from-pink-200/60 to-orange-200/60 hover:from-pink-300/70 hover:to-orange-300/70 border-orange-300/40 text-pink-800'
+              : 'bg-white/10 hover:bg-white/20 border-white/20 text-white'
           }`}
           onClick={() => setShowMore(!showMore)}
           whileHover={{ scale: 1.02 }}
@@ -98,10 +102,10 @@ export const RouteAwareNavigation: React.FC<RouteAwareNavigationProps> = ({
           {renderCoreNavigation()}
           
           <motion.button
-            className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white min-w-[70px] ${
-              viewMode === 'cyber_fantasy'
-                ? 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
-                : 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+            className={`px-3 py-2 rounded-lg font-medium transition-all duration-300 min-w-[70px] backdrop-blur-md border ${
+              theme === 'light'
+                ? 'bg-gradient-to-r from-pink-200/60 to-orange-200/60 hover:from-pink-300/70 hover:to-orange-300/70 border-orange-300/40 text-pink-800'
+                : 'bg-white/10 hover:bg-white/20 border-white/20 text-white'
             }`}
             onClick={() => setShowMore(!showMore)}
             whileHover={{ scale: 1.02 }}
@@ -159,6 +163,7 @@ interface CompactNavButtonProps {
   routeInfo: typeof ROUTE_CONFIG[keyof typeof ROUTE_CONFIG]
   isActive: boolean
   viewMode: 'basic' | 'cyber_fantasy'
+  theme: 'light' | 'dark'
   onClick: () => void
   isPrimary: boolean
 }
@@ -167,21 +172,24 @@ const CompactNavButton: React.FC<CompactNavButtonProps> = ({
   routeInfo,
   isActive,
   viewMode,
+  theme,
   onClick,
   isPrimary
 }) => (
   <motion.button
     className={`
-      relative px-3 py-2 rounded-lg font-medium transition-all duration-300 text-white whitespace-nowrap
+      relative px-3 py-2 rounded-lg font-medium transition-all duration-300 whitespace-nowrap
       ${isPrimary ? 'min-w-[70px] sm:min-w-[80px]' : 'min-w-[60px] sm:min-w-[70px]'}
-      mobile-touch
-      ${isActive
-        ? viewMode === 'cyber_fantasy'
-          ? 'bg-gradient-to-r from-[var(--theme-primary)]/80 to-[var(--theme-secondary)]/80 shadow-lg'
-          : 'bg-gradient-to-r from-[var(--theme-secondary)]/80 to-[var(--theme-primary)]/80 shadow-lg'
-        : viewMode === 'cyber_fantasy'
-          ? 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
-          : 'bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20'
+      mobile-touch backdrop-blur-md
+      ${theme === 'light'
+        ? isActive
+          ? 'bg-gradient-to-r from-pink-500 to-orange-500 text-white shadow-lg shadow-pink-500/25'
+          : 'bg-gradient-to-r from-pink-200/60 to-orange-200/60 hover:from-pink-300/70 hover:to-orange-300/70 border border-orange-300/40 text-pink-800'
+        : isActive
+          ? viewMode === 'cyber_fantasy'
+            ? 'bg-gradient-to-r from-[var(--theme-primary)]/80 to-[var(--theme-secondary)]/80 shadow-lg text-white'
+            : 'bg-gradient-to-r from-[var(--theme-secondary)]/80 to-[var(--theme-primary)]/80 shadow-lg text-white'
+          : 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
       }
       ${!isPrimary ? 'text-sm' : ''}
     `}

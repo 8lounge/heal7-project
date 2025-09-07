@@ -126,13 +126,13 @@ const ModularSajuAdminDashboard: React.FC = () => {
     <div className={`min-h-screen transition-all duration-500 ${
       theme === 'light' 
         ? 'bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100' 
-        : 'bg-gradient-to-br from-purple-950 via-blue-900 to-indigo-950'
+        : 'bg-gradient-to-br from-purple-900 via-violet-800 to-purple-950'
     }`}>
       {/* 헤더 */}
       <header className={`border-b backdrop-blur-md transition-all duration-500 sticky top-0 z-50 ${
         theme === 'light'
           ? 'border-orange-200/30 bg-white/20'
-          : 'border-white/10 bg-black/20'
+          : 'border-purple-400/30 bg-purple-900/20'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -210,10 +210,10 @@ const ModularSajuAdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* 탭 네비게이션 */}
         <div className="mb-8">
-          <div className={`p-2 rounded-xl backdrop-blur-md border transition-all duration-500 ${
+          <div className={`p-2 rounded-xl backdrop-blur-md border transition-all duration-500 glass-3 ${
             theme === 'light'
               ? 'bg-white/30 border-orange-200/30'
-              : 'bg-black/30 border-white/10'
+              : 'bg-purple-900/20 border-purple-400/20'
           }`}>
             <div className="flex flex-wrap gap-2">
               {tabMenus.map((tab) => {
@@ -224,14 +224,14 @@ const ModularSajuAdminDashboard: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center px-4 py-3 rounded-lg transition-all duration-300 group ${
+                    className={`flex items-center px-4 py-3 rounded-lg transition-all duration-300 group cyber-card ${
                       isActive
                         ? theme === 'light'
                           ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25'
-                          : 'bg-purple-500 text-white shadow-lg shadow-purple-500/25'
+                          : 'bg-purple-600 text-white shadow-lg shadow-purple-600/40 glow-border-purple'
                         : theme === 'light'
                           ? 'text-orange-700 hover:bg-orange-200/30'
-                          : 'text-white/70 hover:bg-white/10 hover:text-white'
+                          : 'text-white/80 hover:bg-purple-500/20 hover:text-white neon-button'
                     }`}
                   >
                     <Icon className="w-5 h-5 mr-2" />
@@ -261,7 +261,7 @@ const ModularSajuAdminDashboard: React.FC = () => {
 
         {/* 하단 상태바 */}
         <div className={`mt-8 pt-6 border-t transition-all duration-500 ${
-          theme === 'light' ? 'border-orange-200/30' : 'border-white/10'
+          theme === 'light' ? 'border-orange-200/30' : 'border-purple-400/20'
         }`}>
           <div className="flex items-center justify-between">
             <div className={`text-sm transition-all duration-500 ${

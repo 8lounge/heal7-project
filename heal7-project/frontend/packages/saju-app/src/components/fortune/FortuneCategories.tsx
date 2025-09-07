@@ -6,6 +6,7 @@ import {
   Sparkles,
   Moon
 } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface FortuneCategory {
   id: string;
@@ -32,6 +33,7 @@ interface FortuneCategoriesProps {
 
 export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: _viewMode, onCategorySelect }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { theme } = useTheme();
 
   const handleServiceClick = (serviceId: string) => {
     // 서비스 ID를 라우트 이름으로 매핑
@@ -289,9 +291,15 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services[selectedCategory]?.map((service) => (
-                <div key={service.id} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all duration-300 hover:shadow-lg">
+                <div key={service.id} className={`backdrop-blur-md border rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-br from-pink-100/60 to-orange-100/60 border-pink-300/30 hover:from-pink-200/70 hover:to-orange-200/70'
+                    : 'bg-white/10 border-white/20 hover:bg-white/20'
+                }`}>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-lg text-white">
+                    <h3 className={`font-semibold text-lg ${
+                      theme === 'light' ? 'text-pink-800' : 'text-white'
+                    }`}>
                       {service.name}
                     </h3>
                     {service.isPremium && (
@@ -328,11 +336,19 @@ export const FortuneCategories: React.FC<FortuneCategoriesProps> = ({ viewMode: 
 
         {/* 특별 혜택 섹션 */}
         <div className="mt-16">
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">
+          <div className={`backdrop-blur-md border rounded-xl p-8 text-center ${
+            theme === 'light'
+              ? 'bg-gradient-to-br from-pink-100/60 to-orange-100/60 border-pink-300/30'
+              : 'bg-white/10 border-white/20'
+          }`}>
+            <h2 className={`text-2xl font-bold mb-4 ${
+              theme === 'light' ? 'text-pink-800' : 'text-white'
+            }`}>
               🎁 런칭 기념 특별 혜택
             </h2>
-            <p className="text-white/80 mb-6">
+            <p className={`mb-6 ${
+              theme === 'light' ? 'text-pink-700' : 'text-white/80'
+            }`}>
               지금 가입하면 모든 프리미엄 서비스 <strong className="text-amber-300">30일 무료</strong> + 
               개인 맞춤 운세 리포트 <strong className="text-amber-300">무료 제공</strong>!
             </p>

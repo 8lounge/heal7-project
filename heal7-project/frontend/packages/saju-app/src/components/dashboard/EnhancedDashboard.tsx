@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-import { useWeatherTheme } from '../../hooks/useWeatherTheme'
+import { useTheme } from '../../contexts/ThemeContext'
 import { 
   dailyFortuneData, 
   trendingTopics, 
@@ -19,7 +19,7 @@ interface EnhancedDashboardProps {
 const EnhancedDashboard: React.FC<EnhancedDashboardProps> = ({ viewMode }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const { theme } = useWeatherTheme()
+  const { theme } = useTheme()
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareContent, setShareContent] = useState('')
   const [animatedNumber, setAnimatedNumber] = useState(0)

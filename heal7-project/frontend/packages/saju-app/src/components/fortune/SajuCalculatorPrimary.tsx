@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import { useTheme } from '../../contexts/ThemeContext';
 import { sampleSajuResults } from '../../data/sajuData';
 import { SajuForm, SajuCalculatorProps, LoadingStep } from '../../types/sajuCalculatorTypes';
 
@@ -12,6 +13,7 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
   viewMode, 
   onDetailedAnalysis 
 }) => {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState<SajuForm>({
     year: '',
     month: '',
@@ -203,7 +205,9 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center">
+            <h2 className={`text-xl font-bold mb-6 flex items-center ${
+              theme === 'light' ? 'text-pink-800' : 'text-white'
+            }`}>
               <span className="mr-2">📝</span>
               생년월일 입력
             </h2>
@@ -212,37 +216,55 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
               {/* 생년월일 */}
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">년</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>년</label>
                   <input
                     type="number"
                     placeholder="1990"
                     min="1900"
                     max="2030"
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className={`w-full px-4 py-3 rounded-lg focus:outline-none transition-all duration-300 ${
+                      theme === 'light'
+                        ? 'bg-gradient-to-r from-pink-50/80 to-orange-50/80 border border-pink-300/40 text-pink-900 placeholder-pink-500 focus:border-pink-500 focus:bg-white/90'
+                        : 'bg-black/20 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500'
+                    }`}
                     value={formData.year}
                     onChange={(e) => handleInputChange('year', e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">월</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>월</label>
                   <input
                     type="number"
                     placeholder="1"
                     min="1"
                     max="12"
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className={`w-full px-4 py-3 rounded-lg focus:outline-none transition-all duration-300 ${
+                      theme === 'light'
+                        ? 'bg-gradient-to-r from-pink-50/80 to-orange-50/80 border border-pink-300/40 text-pink-900 placeholder-pink-500 focus:border-pink-500 focus:bg-white/90'
+                        : 'bg-black/20 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500'
+                    }`}
                     value={formData.month}
                     onChange={(e) => handleInputChange('month', e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">일</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>일</label>
                   <input
                     type="number"
                     placeholder="15"
                     min="1"
                     max="31"
-                    className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+                    className={`w-full px-4 py-3 rounded-lg focus:outline-none transition-all duration-300 ${
+                      theme === 'light'
+                        ? 'bg-gradient-to-r from-pink-50/80 to-orange-50/80 border border-pink-300/40 text-pink-900 placeholder-pink-500 focus:border-pink-500 focus:bg-white/90'
+                        : 'bg-black/20 border border-white/20 text-white placeholder-gray-400 focus:border-purple-500'
+                    }`}
                     value={formData.day}
                     onChange={(e) => handleInputChange('day', e.target.value)}
                   />
@@ -252,7 +274,9 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
               {/* 시간 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">시</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>시</label>
                   <select
                     className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white focus:border-purple-500 focus:outline-none"
                     value={formData.hour}
@@ -265,7 +289,9 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">분</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>분</label>
                   <select
                     className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white focus:border-purple-500 focus:outline-none"
                     value={formData.minute}
@@ -282,7 +308,9 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
               {/* 성별 및 지역 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">성별</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>성별</label>
                   <select
                     className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white focus:border-purple-500 focus:outline-none"
                     value={formData.gender}
@@ -293,7 +321,9 @@ const SajuCalculatorPrimary: React.FC<SajuCalculatorPrimaryProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">출생지</label>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'light' ? 'text-pink-700' : 'text-gray-300'
+                  }`}>출생지</label>
                   <select
                     className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-lg text-white focus:border-purple-500 focus:outline-none"
                     value={formData.location}

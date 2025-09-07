@@ -77,14 +77,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty('--theme-accent', '#a855f7');
       root.className = 'theme-dark';
     } else {
-      root.style.setProperty('--theme-text-primary', '#000000');
-      root.style.setProperty('--theme-text-secondary', '#1f2937');
-      root.style.setProperty('--theme-text-muted', '#4b5563');
+      root.style.setProperty('--theme-text-primary', '#1a202c');
+      root.style.setProperty('--theme-text-secondary', '#2d3748');
+      root.style.setProperty('--theme-text-muted', '#4a5568');
       root.style.setProperty('--theme-bg-primary', '#fdf2f8');
-      root.style.setProperty('--theme-bg-surface', 'rgba(236, 72, 153, 0.1)');
-      root.style.setProperty('--theme-bg-card', 'rgba(255, 255, 255, 0.8)');
-      root.style.setProperty('--theme-bg-card-alt', 'rgba(252, 231, 243, 0.6)');
-      root.style.setProperty('--theme-border', 'rgba(251, 146, 60, 0.2)');
+      root.style.setProperty('--theme-bg-surface', 'rgba(236, 72, 153, 0.15)');
+      root.style.setProperty('--theme-bg-card', 'linear-gradient(135deg, rgba(240, 147, 251, 0.4) 0%, rgba(245, 87, 108, 0.4) 100%)');
+      root.style.setProperty('--theme-bg-card-alt', 'linear-gradient(135deg, rgba(255, 154, 158, 0.3) 0%, rgba(254, 207, 239, 0.3) 50%, rgba(255, 236, 210, 0.3) 100%)');
+      root.style.setProperty('--theme-border', 'rgba(251, 146, 60, 0.3)');
       root.style.setProperty('--theme-accent', '#ec4899');
       root.className = 'theme-light';
     }
