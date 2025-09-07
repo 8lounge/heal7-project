@@ -6,40 +6,40 @@
 /* 🎨 HEAL7 DESIGN SYSTEM - UNIFIED THEME ARCHITECTURE 
 /* =================================================================== */
 
-/* 전역 기본 변수 (다크 테마 기본값) */
+/* 전역 기본 변수 (Mystic Design System v2.0) */
 :root {
-  /* 🌙 다크 테마 기본 색상 */
+  /* 🌙 Mystic 테마 기본 색상 - 보라색 우주 컨셉 */
   --theme-text-primary: #ffffff;
   --theme-text-secondary: #e5e7eb;
   --theme-text-muted: #9ca3af;
-  --theme-bg-primary: #000000;
-  --theme-bg-surface: rgba(255, 255, 255, 0.1);
-  --theme-border: rgba(255, 255, 255, 0.1);
-  --theme-accent: #a855f7;
+  --theme-bg-primary: linear-gradient(135deg, #1a0d2e 0%, #2d1b4e 50%, #1e0a37 100%);
+  --theme-bg-surface: rgba(139, 92, 246, 0.15);
+  --theme-border: rgba(139, 92, 246, 0.3);
+  --theme-accent: #8B5CF6;
   
   /* 글로벌 애니메이션 */
   --theme-transition: all 0.5s ease-in-out;
   --theme-transition-fast: all 0.3s ease-out;
   --theme-transition-slow: all 0.8s ease-in-out;
   
-  /* 글래스모피즘 기본값 */
-  --glass-blur: blur(15px);
+  /* 글래스모피즘 기본값 - 블러효과 제거 */
+  --glass-blur: blur(0px);
   --glass-border-radius: 16px;
   --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-/* 🌙 다크 테마 - 신비로운 보라색 우주 */
+/* 🌙 Mystic 테마 - 신비로운 보라색 우주 (이미지 컨셉 반영) */
 .theme-dark {
   /* 텍스트 계층 (고대비율) */
   --theme-text-primary: #ffffff;
   --theme-text-secondary: #e2e8f0;
-  --theme-text-muted: #94a3b8;
+  --theme-text-muted: #c4b5fd;
   --theme-text-inverse: #1e1b4b;
   
-  /* 배경 색상 */
-  --theme-bg-primary: #0f0a1a;
-  --theme-bg-secondary: #1a1229;
-  --theme-bg-overlay: rgba(0, 0, 0, 0.85);
+  /* 배경 색상 - 보라색 그라데이션 우주 */
+  --theme-bg-primary: linear-gradient(135deg, #1a0d2e 0%, #2d1b4e 30%, #4c1d95 70%, #1e0a37 100%);
+  --theme-bg-secondary: linear-gradient(135deg, #2d1b4e 0%, #4c1d95 50%, #3730a3 100%);
+  --theme-bg-overlay: rgba(26, 13, 46, 0.85);
   
   /* 액센트 색상 (보라색 계열) */
   --theme-accent: #a855f7;
@@ -70,35 +70,35 @@
   --shadow-glow: 0 0 30px rgba(168, 85, 247, 0.6);
 }
 
-/* ☀️ 라이트 테마 - 따뜻한 핑크+오렌지 일몰 */
+/* ☀️ Dawn 테마 - 신비로운 보라색 새벽 (톤앤매너 일관성) */
 .theme-light {
-  /* 텍스트 계층 (고대비율) */
-  --theme-text-primary: #1a202c;
-  --theme-text-secondary: #2d3748;
-  --theme-text-muted: #4a5568;
+  /* 텍스트 계층 (고대비율 - 가독성 개선) */
+  --theme-text-primary: #1f2937;
+  --theme-text-secondary: #374151;
+  --theme-text-muted: #6b7280;
   --theme-text-inverse: #ffffff;
   
-  /* 배경 색상 */
-  --theme-bg-primary: #fff8f5;
-  --theme-bg-secondary: #fef2f2;
-  --theme-bg-overlay: rgba(255, 247, 237, 0.95);
+  /* 배경 색상 - 보라색 새벽 그라데이션 */
+  --theme-bg-primary: linear-gradient(135deg, #f8f7ff 0%, #f3f4f6 30%, #e5e7eb 70%, #f1f5f9 100%);
+  --theme-bg-secondary: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e5e7eb 100%);
+  --theme-bg-overlay: rgba(248, 247, 255, 0.95);
   
-  /* 액센트 색상 (핑크+코랄 계열) */
-  --theme-accent: #f56565;
-  --theme-accent-hover: #e53e3e;
-  --theme-accent-light: #feb2b2;
-  --theme-accent-dark: #c53030;
+  /* 액센트 색상 (보라색 계열 - 톤앤매너 통일) */
+  --theme-accent: #8B5CF6;
+  --theme-accent-hover: #7c3aed;
+  --theme-accent-light: #c4b5fd;
+  --theme-accent-dark: #6d28d9;
   
-  /* 보조 색상 (오렌지 계열) */
-  --theme-secondary: #fd9853;
-  --theme-secondary-hover: #ea580c;
+  /* 보조 색상 (인디고 계열 - 컨셉 통일) */
+  --theme-secondary: #6366F1;
+  --theme-secondary-hover: #4f46e5;
   
-  /* 글래스모피즘 5단계 투명도 시스템 (밝은 배경용) */
-  --glass-level-1: rgba(255, 255, 255, 0.15); /* 최소 투명도 */
-  --glass-level-2: rgba(255, 255, 255, 0.25); /* 배경 영역 */
-  --glass-level-3: rgba(255, 255, 255, 0.40); /* 카드 기본 */
-  --glass-level-4: rgba(255, 255, 255, 0.55); /* 버튼/입력 */
-  --glass-level-5: rgba(255, 255, 255, 0.70); /* 강조 요소 */
+  /* 글래스모피즘 5단계 투명도 시스템 (밝은 배경용 - 배경이미지 투과 강화) */
+  --glass-level-1: rgba(255, 255, 255, 0.25); /* 최소 투명도 */
+  --glass-level-2: rgba(255, 255, 255, 0.40); /* 배경 영역 */
+  --glass-level-3: rgba(255, 255, 255, 0.50); /* 카드 기본 */
+  --glass-level-4: rgba(255, 255, 255, 0.65); /* 버튼/입력 */
+  --glass-level-5: rgba(255, 255, 255, 0.80); /* 강조 요소 */
   
   /* 테두리 시스템 */
   --theme-border: rgba(251, 146, 60, 0.25);
@@ -315,6 +315,23 @@
   padding: 1.5rem;
 }
 
+/* 테마별 카드 배경 그라디언트 */
+.theme-light .card-base {
+  background: linear-gradient(135deg, 
+    rgba(248, 247, 255, 0.9) 0%, 
+    rgba(243, 240, 255, 0.8) 50%, 
+    rgba(237, 233, 254, 0.9) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.theme-dark .card-base {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.15) 0%, 
+    rgba(99, 102, 241, 0.10) 50%, 
+    rgba(168, 85, 247, 0.15) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
 /* 강조 카드 - 중요한 내용용 */
 .card-featured {
   @apply glass-4 theme-transition;
@@ -324,11 +341,41 @@
   box-shadow: var(--shadow-glow);
 }
 
+.theme-light .card-featured {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(250, 245, 255, 0.9) 50%, 
+    rgba(245, 243, 255, 0.95) 100%);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+}
+
+.theme-dark .card-featured {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.20) 0%, 
+    rgba(99, 102, 241, 0.15) 50%, 
+    rgba(168, 85, 247, 0.20) 100%);
+  border: 2px solid var(--theme-accent);
+}
+
 /* 컴팩트 카드 - 작은 정보용 */
 .card-compact {
   @apply glass-2 theme-transition;
   color: var(--theme-text-primary);
   padding: 1rem;
+}
+
+.theme-light .card-compact {
+  background: linear-gradient(135deg, 
+    rgba(251, 250, 255, 0.8) 0%, 
+    rgba(246, 243, 255, 0.7) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.theme-dark .card-compact {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.10) 0%, 
+    rgba(99, 102, 241, 0.08) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
 }
 
 /* 네비게이션 카드 - 메뉴/네비게이션용 */
@@ -339,9 +386,37 @@
   cursor: pointer;
 }
 
+.theme-light .card-nav {
+  background: linear-gradient(135deg, 
+    rgba(249, 248, 255, 0.85) 0%, 
+    rgba(244, 241, 255, 0.8) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+}
+
+.theme-dark .card-nav {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.12) 0%, 
+    rgba(99, 102, 241, 0.10) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
 .card-nav:hover {
   @apply glass-4;
   transform: translateY(-1px);
+  border-color: var(--theme-border-strong);
+}
+
+.theme-light .card-nav:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(250, 245, 255, 0.9) 100%);
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+.theme-dark .card-nav:hover {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.18) 0%, 
+    rgba(99, 102, 241, 0.15) 100%);
   border-color: var(--theme-border-strong);
 }
 
@@ -430,7 +505,7 @@
 
 /* 사주 해석 에디터 전용 스타일 */
 .interpretation-editor {
-  @apply bg-white/10 rounded-lg backdrop-blur-sm text-white placeholder-white/40 focus:bg-white/15 transition-all duration-300;
+  @apply bg-white/10 rounded-lg text-white placeholder-white/40 focus:bg-white/15 transition-all duration-300;
   border: 1px solid var(--theme-border);
 }
 
@@ -483,30 +558,30 @@
     --crystal-white: rgba(255, 255, 255, 0.1);
   }
 
-  /* 🌙 밤 테마 (어두운 테마) */
+  /* 🌙 Mystic 테마 (보라색 우주 컨셉) */
   .theme-dark {
-    --theme-primary: #8B5CF6;      /* 보라색 */
-    --theme-secondary: #6366F1;    /* 인디고 */
-    --theme-accent: #EC4899;       /* 핑크 */
-    --theme-bg-primary: rgba(139, 92, 246, 0.2);
-    --theme-bg-secondary: rgba(99, 102, 241, 0.15);
-    --theme-bg-card: rgba(0, 0, 0, 0.4);
+    --theme-primary: #8B5CF6;      /* Mystic 보라색 */
+    --theme-secondary: #6366F1;    /* Cosmic 인디고 */
+    --theme-accent: #EC4899;       /* Fortune 핑크 */
+    --theme-bg-primary: rgba(139, 92, 246, 0.25);
+    --theme-bg-secondary: rgba(99, 102, 241, 0.20);
+    --theme-bg-card: rgba(139, 92, 246, 0.15);
     --theme-text-primary: #FFFFFF;
-    --theme-text-secondary: #D1D5DB;
-    --theme-border: rgba(255, 255, 255, 0.2);
+    --theme-text-secondary: #E2E8F0;
+    --theme-border: rgba(139, 92, 246, 0.3);
   }
 
-  /* ☀️ 낮 테마 (밝은 테마) */
+  /* ☀️ Dawn 테마 (보라색 새벽 - 톤앤매너 통일) */
   .theme-light {
-    --theme-primary: #EC4899;      /* 핑크 */
-    --theme-secondary: #F97316;    /* 오렌지 */
-    --theme-accent: #F59E0B;       /* 액센트 황금색 (기존 보라색에서 변경) */
-    --theme-bg-primary: rgba(236, 72, 153, 0.2);
-    --theme-bg-secondary: rgba(249, 115, 22, 0.15);
-    --theme-bg-card: rgba(255, 255, 255, 0.4);
-    --theme-text-primary: #1F2937;
-    --theme-text-secondary: #4B5563;
-    --theme-border: rgba(236, 72, 153, 0.3);
+    --theme-primary: #8B5CF6;      /* 통일된 Mystic 보라색 */
+    --theme-secondary: #6366F1;    /* 통일된 Cosmic 인디고 */
+    --theme-accent: #C4B5FD;       /* 부드러운 보라색 액센트 */
+    --theme-bg-primary: rgba(139, 92, 246, 0.08);
+    --theme-bg-secondary: rgba(99, 102, 241, 0.05);
+    --theme-bg-card: rgba(248, 247, 255, 0.8);
+    --theme-text-primary: #1E1B4B;
+    --theme-text-secondary: #4C1D95;
+    --theme-border: rgba(139, 92, 246, 0.2);
   }
 
   /* Theme-aware utility classes */
@@ -564,6 +639,32 @@
     line-height: 1.6;
     color: #1f2937;
     overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  /* 🌙 다크 테마 배경 - 2개 이미지 롤링 애니메이션 */
+  .theme-dark body {
+    background-image: url('https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png');
+    animation: darkThemeBackgroundRotation 10s infinite alternate;
+  }
+
+  @keyframes darkThemeBackgroundRotation {
+    0%, 50% {
+      background-image: url('https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png');
+    }
+    51%, 100% {
+      background-image: url('https://cdn.midjourney.com/6169ce40-f23a-46d0-9c92-d6fbb4d976a4/0_1.png');
+    }
+  }
+
+  /* ☀️ 라이트 테마 배경 */
+  .theme-light body {
+    background-image: url('https://cdn.midjourney.com/b274426b-a59d-44e0-ab72-ea7fcc8da8e2/0_0.png');
   }
 
   /* 커스텀 스크롤바 - 0.5cm 너비 */
@@ -596,7 +697,7 @@
   }
 
   .btn-mystic {
-    @apply px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg
+    @apply px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-medium rounded-lg
            shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200;
   }
 
@@ -613,19 +714,19 @@
 
   /* 🌌 카드 스타일 */
   .card-glass {
-    @apply backdrop-blur-sm bg-black/30 border border-white/20 rounded-xl shadow-xl;
+    @apply bg-black/30 border border-white/20 rounded-xl shadow-xl;
   }
 
   .card-cosmic {
-    @apply bg-gradient-to-br from-indigo-900/50 via-purple-900/50 to-pink-900/50
-           backdrop-blur-sm border border-white/10 rounded-xl shadow-2xl;
+    @apply bg-gradient-to-br from-indigo-900/50 via-purple-900/50 to-violet-900/50
+           border border-white/10 rounded-xl shadow-2xl;
   }
 
   .card-crystal {
     background: linear-gradient(135deg,
       rgba(0, 0, 0, 0.3),
       rgba(0, 0, 0, 0.15));
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(0px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -716,7 +817,7 @@
       linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
       radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent),
       radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.1), transparent);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(0px);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 16px;
     box-shadow: 
