@@ -6,8 +6,8 @@ export const getThemeClasses = {
   // 헤더 관련 클래스
   header: (theme: ThemeMode) => 
     theme === 'dark' 
-      ? 'bg-black/20 border-white/10' 
-      : 'bg-pink-100/30 border-orange-200/20',
+      ? 'bg-purple-900/20 border-purple-500/20' 
+      : 'bg-purple-50/30 border-purple-200/20',
   
   // 로고 텍스트 클래스
   logoTitle: (theme: ThemeMode) =>
@@ -16,47 +16,47 @@ export const getThemeClasses = {
   logoSubtitle: (theme: ThemeMode) =>
     theme === 'dark' ? 'theme-text-caption' : 'theme-text-caption',
   
-  // 메뉴 버튼 클래스
+  // 메뉴 버튼 클래스 - Mystic Design System 적용 (블러효과 제거)
   menuButton: {
     active: (theme: ThemeMode) =>
       theme === 'dark'
-        ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border-2 border-white/50 ring-1 ring-purple-400/30'
-        : 'bg-pink-500/20 text-pink-900 shadow-lg backdrop-blur-sm border-2 border-pink-400/60 ring-1 ring-pink-300/30',
+        ? 'bg-purple-500/30 text-white shadow-lg border-2 border-purple-400/60 ring-1 ring-purple-300/40'
+        : 'bg-purple-500/20 text-purple-900 shadow-lg border-2 border-purple-400/60 ring-1 ring-purple-300/30',
     inactive: (theme: ThemeMode) =>
       theme === 'dark'
-        ? 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white backdrop-blur-sm border border-white/30 hover:border-white/50'
-        : 'bg-orange-300/10 text-orange-800/80 hover:bg-pink-400/20 hover:text-pink-900 backdrop-blur-sm border border-orange-300/30 hover:border-pink-400/50'
+        ? 'bg-purple-500/10 text-purple-100/80 hover:bg-purple-500/20 hover:text-white border border-purple-400/30 hover:border-purple-300/50'
+        : 'bg-purple-300/10 text-purple-700/80 hover:bg-purple-400/20 hover:text-purple-900 border border-purple-300/30 hover:border-purple-400/50'
   },
   
-  // 테마 토글 라벨 클래스
+  // 테마 토글 라벨 클래스 - 보라색 컨셉 통일
   themeLabel: {
     light: (theme: ThemeMode) =>
-      theme === 'light' ? 'text-orange-700' : 'text-gray-500',
+      theme === 'light' ? 'text-purple-700' : 'text-purple-400',
     dark: (theme: ThemeMode) =>
-      theme === 'dark' ? 'text-white' : 'text-gray-500'
+      theme === 'dark' ? 'text-purple-100' : 'text-purple-400'
   },
   
-  // 툴팁 관련 클래스
+  // 툴팁 관련 클래스 - Mystic Design System
   tooltip: {
     container: (theme: ThemeMode) =>
       theme === 'dark' 
-        ? 'bg-black/80 text-white' 
-        : 'bg-pink-50/90 text-gray-900 border border-pink-200/40',
+        ? 'bg-purple-900/80 text-white border border-purple-500/30' 
+        : 'bg-purple-50/90 text-purple-900 border border-purple-200/40',
     title: (theme: ThemeMode) =>
-      theme === 'dark' ? 'text-purple-300' : 'text-pink-600',
+      theme === 'dark' ? 'text-purple-200' : 'text-purple-700',
     content: (theme: ThemeMode) =>
-      theme === 'dark' ? 'text-gray-300' : 'text-gray-800',
+      theme === 'dark' ? 'text-purple-100' : 'text-purple-800',
     accent: (theme: ThemeMode) =>
-      theme === 'dark' ? 'text-purple-300' : 'text-orange-600',
+      theme === 'dark' ? 'text-purple-300' : 'text-purple-600',
     subtitle: (theme: ThemeMode) =>
-      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+      theme === 'dark' ? 'text-purple-300' : 'text-purple-600'
   },
   
-  // 전체 페이지 오버레이 클래스
+  // 전체 페이지 오버레이 클래스 - 이미지 컨셉 기반
   pageOverlay: (theme: ThemeMode) =>
     theme === 'dark' 
-      ? 'bg-gradient-to-br from-black/90 via-purple-900/85 to-purple-950/90' 
-      : 'bg-gradient-to-br from-pink-50/85 via-orange-50/90 to-pink-100/80'
+      ? 'bg-gradient-to-br from-purple-950/90 via-purple-900/85 to-indigo-950/90' 
+      : 'bg-gradient-to-br from-purple-50/85 via-indigo-50/90 to-purple-100/80'
 }
 
 // 테마 전환 애니메이션 클래스
@@ -67,29 +67,29 @@ export const themeTransitions = {
   colors: 'transition-colors duration-500'
 }
 
-// 테마별 색상 팔레트
+// 테마별 색상 팔레트 - Mystic Design System v2.0
 export const themeColors = {
   dark: {
-    primary: 'purple-500',
-    secondary: 'indigo-500',
-    accent: 'purple-300',
+    primary: 'purple-500',    // Mystic 보라색
+    secondary: 'indigo-500',  // Cosmic 인디고
+    accent: 'purple-300',     // 부드러운 보라색
     text: 'white',
-    textSecondary: 'gray-300',
-    textMuted: 'gray-400',
-    background: 'black',
-    surface: 'white/20',
-    border: 'white/10'
+    textSecondary: 'slate-200',
+    textMuted: 'purple-200',
+    background: 'purple-900', // 블랙 대신 보라색 기조
+    surface: 'purple-500/20',
+    border: 'purple-400/30'
   },
   light: {
-    primary: 'pink-500',
-    secondary: 'orange-500',
-    accent: 'pink-600',
-    text: 'gray-900',
-    textSecondary: 'gray-700',
-    textMuted: 'gray-600',
-    background: 'pink-50',
-    surface: 'pink-300/20',
-    border: 'orange-200/20'
+    primary: 'purple-500',    // 통일된 Mystic 보라색
+    secondary: 'indigo-500',  // 통일된 Cosmic 인디고
+    accent: 'purple-300',     // 부드러운 보라색 액센트
+    text: 'indigo-900',       // 진한 인디고 텍스트
+    textSecondary: 'purple-700',
+    textMuted: 'purple-500',
+    background: 'purple-50',  // 연한 보라색 배경
+    surface: 'purple-100/20',
+    border: 'purple-200/30'
   }
 }
 
@@ -131,7 +131,7 @@ export const getThemeTextClasses = {
   hashtagContainer: (theme: ThemeMode) =>
     theme === 'dark' 
       ? 'bg-purple-500/20 border border-purple-400/30 hover:bg-purple-500/30' 
-      : 'bg-pink-500/20 border border-pink-400/30 hover:bg-pink-500/30',
+      : 'bg-purple-500/20 border border-purple-400/30 hover:bg-purple-500/30',
       
   // 조합 해석 텍스트 (특별한 정보)
   combination: (theme: ThemeMode) =>

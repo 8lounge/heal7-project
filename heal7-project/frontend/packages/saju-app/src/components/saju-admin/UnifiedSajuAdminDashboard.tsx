@@ -331,52 +331,43 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-blue-900 to-indigo-950 flex items-center justify-center">
+      <div className="min-h-screen bg-cosmic-gradient flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-white/80">관리자 대시보드 로딩 중...</p>
+          <div className="w-16 h-16 border-4 border-[var(--theme-accent)] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="theme-text-muted">관리자 대시보드 로딩 중...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
+    <div className={`min-h-screen theme-transition ${
       theme === 'light' 
-        ? 'bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100' 
-        : 'bg-gradient-to-br from-purple-950 via-blue-900 to-indigo-950'
+        ? 'bg-cosmic-gradient theme-light' 
+        : 'bg-cosmic-gradient theme-dark'
     }`}>
       {/* 헤더 */}
-      <header className={`border-b backdrop-blur-md transition-all duration-500 ${
+      <header className={`border-b backdrop-blur-md theme-transition ${
         theme === 'light'
-          ? 'border-orange-200/30 bg-white/20'
-          : 'border-white/10 bg-black/20'
+          ? 'border-[var(--theme-border)] bg-[var(--theme-bg-surface)]'
+          : 'border-[var(--theme-border)] bg-[var(--theme-bg-surface)]'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Sparkles className={`w-8 h-8 transition-all duration-500 ${
-                theme === 'light' ? 'text-orange-500' : 'text-purple-400'
-              }`} />
+              <Sparkles className={`w-8 h-8 theme-transition text-[var(--theme-accent)]`} />
               <div>
-                <h1 className={`text-xl font-bold transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-800 glow-text-orange' : 'text-white glow-text-purple'
-                }`}>
+                <h1 className={`text-xl font-bold theme-transition theme-text-heading glow-text-purple`}>
                   🔮 HEAL7 사주 관리자
                 </h1>
-                <p className={`text-sm transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-600/70' : 'text-white/60'
-                }`}>
+                <p className={`text-sm theme-transition theme-text-muted`}>
                   통합 관리 대시보드 v2.0
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               {/* 테마 토글 영역 */}
-              <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border transition-all duration-500 ${
-                theme === 'light'
-                  ? 'bg-orange-200/20 border-orange-300/30'
-                  : 'bg-purple-500/20 border-purple-400/30'
+              <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border theme-transition glass-3
               }`}>
                 <span className={`text-sm font-medium transition-all duration-500 ${
                   theme === 'light' ? 'text-orange-200' : 'text-purple-200'

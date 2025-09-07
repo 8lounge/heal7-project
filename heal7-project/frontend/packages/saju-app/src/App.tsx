@@ -298,7 +298,7 @@ function AppContent() {
                 index === currentBgImage 
                   ? 'theme-accent shadow-lg' 
                   : theme === 'light' 
-                    ? 'bg-orange-400/60 hover:bg-orange-500' 
+                    ? 'bg-purple-400/60 hover:bg-purple-500' 
                     : 'bg-white/50 hover:bg-white/70'
               }`}
               style={{

@@ -66,26 +66,28 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const root = document.documentElement;
     
     if (currentTheme === 'dark') {
+      // 🌙 Mystic Dark - 신비로운 보라색 우주 (이미지 컨셉 반영)
       root.style.setProperty('--theme-text-primary', '#ffffff');
-      root.style.setProperty('--theme-text-secondary', '#e5e7eb');
-      root.style.setProperty('--theme-text-muted', '#9ca3af');
-      root.style.setProperty('--theme-bg-primary', '#000000');
-      root.style.setProperty('--theme-bg-surface', 'rgba(255, 255, 255, 0.1)');
-      root.style.setProperty('--theme-bg-card', 'rgba(255, 255, 255, 0.1)');
-      root.style.setProperty('--theme-bg-card-alt', 'rgba(168, 85, 247, 0.1)');
-      root.style.setProperty('--theme-border', 'rgba(255, 255, 255, 0.1)');
-      root.style.setProperty('--theme-accent', '#a855f7');
+      root.style.setProperty('--theme-text-secondary', '#e2e8f0');
+      root.style.setProperty('--theme-text-muted', '#c4b5fd');
+      root.style.setProperty('--theme-bg-primary', 'linear-gradient(135deg, #1a0d2e 0%, #2d1b4e 30%, #4c1d95 70%, #1e0a37 100%)');
+      root.style.setProperty('--theme-bg-surface', 'rgba(139, 92, 246, 0.15)');
+      root.style.setProperty('--theme-bg-card', 'rgba(139, 92, 246, 0.15)');
+      root.style.setProperty('--theme-bg-card-alt', 'rgba(139, 92, 246, 0.20)');
+      root.style.setProperty('--theme-border', 'rgba(139, 92, 246, 0.3)');
+      root.style.setProperty('--theme-accent', '#8B5CF6');
       root.className = 'theme-dark';
     } else {
-      root.style.setProperty('--theme-text-primary', '#1a202c');
-      root.style.setProperty('--theme-text-secondary', '#2d3748');
-      root.style.setProperty('--theme-text-muted', '#4a5568');
-      root.style.setProperty('--theme-bg-primary', '#fdf2f8');
-      root.style.setProperty('--theme-bg-surface', 'rgba(236, 72, 153, 0.15)');
-      root.style.setProperty('--theme-bg-card', 'linear-gradient(135deg, rgba(240, 147, 251, 0.4) 0%, rgba(245, 87, 108, 0.4) 100%)');
-      root.style.setProperty('--theme-bg-card-alt', 'linear-gradient(135deg, rgba(255, 154, 158, 0.3) 0%, rgba(254, 207, 239, 0.3) 50%, rgba(255, 236, 210, 0.3) 100%)');
-      root.style.setProperty('--theme-border', 'rgba(251, 146, 60, 0.3)');
-      root.style.setProperty('--theme-accent', '#ec4899');
+      // ☀️ Dawn Light - 신비로운 보라색 새벽 (톤앤매너 통일)
+      root.style.setProperty('--theme-text-primary', '#1e1b4b');
+      root.style.setProperty('--theme-text-secondary', '#4c1d95');
+      root.style.setProperty('--theme-text-muted', '#7c3aed');
+      root.style.setProperty('--theme-bg-primary', 'linear-gradient(135deg, #f8f7ff 0%, #f3f4f6 30%, #e5e7eb 70%, #f1f5f9 100%)');
+      root.style.setProperty('--theme-bg-surface', 'rgba(139, 92, 246, 0.08)');
+      root.style.setProperty('--theme-bg-card', 'linear-gradient(135deg, rgba(248, 247, 255, 0.8) 0%, rgba(243, 244, 246, 0.6) 100%)');
+      root.style.setProperty('--theme-bg-card-alt', 'linear-gradient(135deg, rgba(250, 245, 255, 0.8) 0%, rgba(243, 232, 255, 0.6) 50%, rgba(229, 231, 235, 0.4) 100%)');
+      root.style.setProperty('--theme-border', 'rgba(139, 92, 246, 0.2)');
+      root.style.setProperty('--theme-accent', '#8B5CF6');
       root.className = 'theme-light';
     }
   }, [currentTheme]);

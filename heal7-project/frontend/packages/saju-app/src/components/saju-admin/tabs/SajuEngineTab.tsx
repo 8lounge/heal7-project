@@ -36,10 +36,10 @@ export const SajuEngineTab = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-lg border transition-all ${
+              className={`px-4 py-2 rounded-lg border theme-transition ${
                 selectedCategory === category
-                  ? 'bg-purple-500/30 border-purple-400 text-purple-300'
-                  : 'bg-white/10 border-white/20 text-white/90 hover:bg-white/20'
+                  ? 'bg-[var(--theme-accent)]/30 border-[var(--theme-accent)] text-[var(--theme-accent)]'
+                  : 'glass-2 border-[var(--theme-border)] theme-text-secondary hover:glass-3'
               }`}
             >
               {category}
