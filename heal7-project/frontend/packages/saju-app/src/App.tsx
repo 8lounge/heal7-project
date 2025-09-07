@@ -30,7 +30,7 @@ import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
 // Lazy Loading으로 Admin 컴포넌트 분할
-const SajuAdminDashboard = lazy(() => import('./components/saju-admin/UnifiedSajuAdminDashboard'))
+const SajuAdminDashboard = lazy(() => import('./components/saju-admin/ModularSajuAdminDashboard'))
 const AdminLogin = lazy(() => import('./components/saju-admin/AdminLogin'))
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
