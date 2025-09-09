@@ -49,7 +49,7 @@ interface HealthStatus {
   last_check: string;
 }
 
-interface SystemSettings {
+export interface SystemSettings {
   autoRefresh: boolean;
   refreshInterval: number;
   notifications: boolean;
@@ -62,8 +62,14 @@ interface SystemSettings {
   logLevel: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
 }
 
-interface CrawlerSettings {
+export interface CrawlerSettings {
   httpx: {
+    enabled: boolean;
+    timeout: number;
+    maxRetries: number;
+    userAgent: string;
+  };
+  httpx_bs: {
     enabled: boolean;
     timeout: number;
     maxRetries: number;
@@ -83,7 +89,7 @@ interface CrawlerSettings {
   };
 }
 
-interface APIKeys {
+export interface APIKeys {
   openai: string;
   anthropic: string;
   google: string;

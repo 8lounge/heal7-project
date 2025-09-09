@@ -117,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
                 className={`relative w-16 h-8 rounded-full theme-transition ${
                   theme === 'dark' 
                     ? 'bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg theme-shadow' 
-                    : 'bg-gradient-to-r from-pink-500 to-orange-500 shadow-lg'
+                    : 'bg-gradient-to-r from-orange-400 to-amber-500 shadow-lg'
                 } ${isManualOverride ? 'ring-2 ring-white/30' : ''}`}
                 onClick={toggleTheme}
                 whileTap={{ scale: 0.95 }}
@@ -191,7 +191,7 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onViewModeChange, currentPage
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
                   <motion.div 
-                    className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center cursor-pointer"
+                    className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${theme === 'dark' ? 'bg-gradient-to-r from-purple-500 to-indigo-500' : 'bg-gradient-to-r from-orange-500 to-amber-500'}`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleProfileClick}

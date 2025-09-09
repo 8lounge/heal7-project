@@ -26,7 +26,7 @@ class DreamKeywordSearch(BaseModel):
     keywords: List[str]
     search_mode: str = "smart"  # "smart", "exact", "fuzzy"
     limit: int = 10
-    quality_threshold: float = 7.0
+    quality_threshold: float = 0.5
 
 class DreamInterpretationResponse(BaseModel):
     keyword: str
@@ -159,12 +159,13 @@ async def search_dreams(search_request: DreamKeywordSearch):
             # 정확 일치 검색
             keywords_str = "'" + "','".join([kw.replace("'", "''") for kw in search_request.keywords]) + "'"
             query = f"""
-            SELECT keyword, category, traditional_meaning, modern_meaning, psychological_meaning,
-                   fortune_aspect, confidence_score, related_keywords, lucky_numbers
-            FROM dream_service.clean_dream_interpretations 
-            WHERE LOWER(keyword) IN (LOWER({keywords_str}))
-               AND confidence_score >= {search_request.quality_threshold}
-            ORDER BY confidence_score DESC
+            SELECT di.keyword, dc.korean_name as category, di.traditional_meaning, di.modern_meaning, di.psychological_meaning,
+                   di.fortune_aspect, di.confidence_score, di.related_keywords, di.lucky_numbers
+            FROM dream_interpretations di
+            LEFT JOIN dream_categories dc ON di.category_id = dc.id 
+            WHERE LOWER(di.keyword) IN ({keywords_str})
+               AND di.confidence_score >= {search_request.quality_threshold}
+            ORDER BY di.confidence_score DESC
             LIMIT {search_request.limit};
             """
         elif search_request.search_mode == "fuzzy":
@@ -172,15 +173,16 @@ async def search_dreams(search_request: DreamKeywordSearch):
             keyword_conditions = []
             for kw in search_request.keywords:
                 clean_kw = kw.replace("'", "''")
-                keyword_conditions.append(f"(LOWER(keyword) LIKE LOWER('%{clean_kw}%') OR LOWER(traditional_meaning) LIKE LOWER('%{clean_kw}%'))")
+                keyword_conditions.append(f"(LOWER(di.keyword) LIKE LOWER('%{clean_kw}%') OR LOWER(di.traditional_meaning) LIKE LOWER('%{clean_kw}%'))")
             
             query = f"""
-            SELECT keyword, category, traditional_meaning, modern_meaning, psychological_meaning,
-                   fortune_aspect, confidence_score, related_keywords, lucky_numbers
-            FROM dream_service.clean_dream_interpretations 
+            SELECT di.keyword, dc.korean_name as category, di.traditional_meaning, di.modern_meaning, di.psychological_meaning,
+                   di.fortune_aspect, di.confidence_score, di.related_keywords, di.lucky_numbers
+            FROM dream_interpretations di
+            LEFT JOIN dream_categories dc ON di.category_id = dc.id
             WHERE ({' OR '.join(keyword_conditions)})
-               AND confidence_score >= {search_request.quality_threshold}
-            ORDER BY confidence_score DESC
+               AND di.confidence_score >= {search_request.quality_threshold}
+            ORDER BY di.confidence_score DESC
             LIMIT {search_request.limit * 2};
             """
         else:  # smart 모드 (기본)
@@ -189,25 +191,26 @@ async def search_dreams(search_request: DreamKeywordSearch):
             for kw in search_request.keywords:
                 clean_kw = kw.replace("'", "''")
                 smart_conditions.extend([
-                    f"LOWER(keyword) = LOWER('{clean_kw}')",
-                    f"LOWER(keyword) LIKE LOWER('{clean_kw}%')",
-                    f"LOWER(keyword) LIKE LOWER('%{clean_kw}%')",
-                    f"'{clean_kw}' = ANY(ARRAY(SELECT LOWER(unnest(related_keywords))))"
+                    f"LOWER(di.keyword) = LOWER('{clean_kw}')",
+                    f"LOWER(di.keyword) LIKE LOWER('{clean_kw}%')",
+                    f"LOWER(di.keyword) LIKE LOWER('%{clean_kw}%')",
+                    f"'{clean_kw}' = ANY(ARRAY(SELECT LOWER(unnest(di.related_keywords))))"
                 ])
             
             query = f"""
-            SELECT keyword, category, traditional_meaning, modern_meaning, psychological_meaning,
-                   fortune_aspect, confidence_score, related_keywords, lucky_numbers
-            FROM dream_service.clean_dream_interpretations 
+            SELECT di.keyword, dc.korean_name as category, di.traditional_meaning, di.modern_meaning, di.psychological_meaning,
+                   di.fortune_aspect, di.confidence_score, di.related_keywords, di.lucky_numbers
+            FROM dream_interpretations di
+            LEFT JOIN dream_categories dc ON di.category_id = dc.id
             WHERE ({' OR '.join(smart_conditions)})
-               AND confidence_score >= {search_request.quality_threshold}
+               AND di.confidence_score >= {search_request.quality_threshold}
             ORDER BY 
                 CASE 
-                    WHEN LOWER(keyword) = LOWER('{search_request.keywords[0].replace("'", "''")}') THEN 1
-                    WHEN LOWER(keyword) LIKE LOWER('{search_request.keywords[0].replace("'", "''")}%') THEN 2
+                    WHEN LOWER(di.keyword) = LOWER('{search_request.keywords[0].replace("'", "''")}') THEN 1
+                    WHEN LOWER(di.keyword) LIKE LOWER('{search_request.keywords[0].replace("'", "''")}%') THEN 2
                     ELSE 3
                 END,
-                confidence_score DESC
+                di.confidence_score DESC
             LIMIT {search_request.limit * 2};
             """
         
@@ -247,18 +250,19 @@ async def simple_search(keyword: str, limit: int = 5):
     """간단한 키워드 검색 (사주 사이트용)"""
     try:
         query = f"""
-        SELECT keyword, category, traditional_meaning, modern_meaning, psychological_meaning,
-               fortune_aspect, confidence_score, related_keywords, lucky_numbers
-        FROM dream_service.clean_dream_interpretations 
-        WHERE LOWER(keyword) LIKE LOWER('%{keyword.replace("'", "''")}%')
-           OR LOWER(traditional_meaning) LIKE LOWER('%{keyword.replace("'", "''")}%')
+        SELECT di.keyword, dc.korean_name as category, di.traditional_meaning, di.modern_meaning, di.psychological_meaning,
+               di.fortune_aspect, di.confidence_score, di.related_keywords, di.lucky_numbers
+        FROM dream_interpretations di
+        LEFT JOIN dream_categories dc ON di.category_id = dc.id
+        WHERE LOWER(di.keyword) LIKE LOWER('%{keyword.replace("'", "''")}%')
+           OR LOWER(di.traditional_meaning) LIKE LOWER('%{keyword.replace("'", "''")}%')
         ORDER BY 
             CASE 
-                WHEN LOWER(keyword) = LOWER('{keyword.replace("'", "''")}') THEN 1
-                WHEN LOWER(keyword) LIKE LOWER('{keyword.replace("'", "''")}%') THEN 2
+                WHEN LOWER(di.keyword) = LOWER('{keyword.replace("'", "''")}') THEN 1
+                WHEN LOWER(di.keyword) LIKE LOWER('{keyword.replace("'", "''")}%') THEN 2
                 ELSE 3
             END,
-            confidence_score DESC
+            di.confidence_score DESC
         LIMIT {limit};
         """
         
@@ -289,9 +293,10 @@ async def simple_search(keyword: str, limit: int = 5):
 async def get_categories():
     """카테고리 목록 및 통계"""
     query = """
-    SELECT category, COUNT(*) as count, AVG(confidence_score) as avg_score
-    FROM dream_service.clean_dream_interpretations 
-    GROUP BY category
+    SELECT dc.korean_name as category, COUNT(*) as count, AVG(di.confidence_score) as avg_score
+    FROM dream_interpretations di
+    LEFT JOIN dream_categories dc ON di.category_id = dc.id
+    GROUP BY dc.korean_name
     ORDER BY count DESC;
     """
     
@@ -321,9 +326,10 @@ async def get_categories():
 async def get_popular_dreams(limit: int = 20):
     """인기/고품질 꿈풀이 키워드"""
     query = f"""
-    SELECT keyword, category, confidence_score, traditional_meaning
-    FROM dream_service.clean_dream_interpretations 
-    ORDER BY confidence_score DESC, LENGTH(keyword) ASC
+    SELECT di.keyword, dc.korean_name as category, di.confidence_score, di.traditional_meaning
+    FROM dream_interpretations di
+    LEFT JOIN dream_categories dc ON di.category_id = dc.id
+    ORDER BY di.confidence_score DESC, LENGTH(di.keyword) ASC
     LIMIT {limit};
     """
     
@@ -345,10 +351,11 @@ async def get_random_dream():
     """랜덤 고품질 꿈풀이"""
     try:
         query = """
-        SELECT keyword, category, traditional_meaning, modern_meaning, psychological_meaning,
-               fortune_aspect, confidence_score, related_keywords, lucky_numbers
-        FROM dream_service.clean_dream_interpretations 
-        WHERE confidence_score >= 8.0
+        SELECT di.keyword, dc.korean_name as category, di.traditional_meaning, di.modern_meaning, di.psychological_meaning,
+               di.fortune_aspect, di.confidence_score, di.related_keywords, di.lucky_numbers
+        FROM dream_interpretations di
+        LEFT JOIN dream_categories dc ON di.category_id = dc.id
+        WHERE di.confidence_score >= 8.0
         ORDER BY RANDOM()
         LIMIT 1;
         """
@@ -380,7 +387,7 @@ async def get_dream_stats():
     """꿈풀이 시스템 통계"""
     try:
         # 전체 통계
-        total_query = "SELECT COUNT(*) as total FROM dream_service.clean_dream_interpretations;"
+        total_query = "SELECT COUNT(*) as total FROM dream_interpretations;"
         total_result = query_dream_database(total_query)
         total_count = int(list(total_result[0].values())[0]) if total_result else 0
         
@@ -394,7 +401,7 @@ async def get_dream_stats():
                 ELSE 'D급'
             END as grade,
             COUNT(*) as count
-        FROM dream_service.clean_dream_interpretations
+        FROM dream_interpretations
         GROUP BY grade
         ORDER BY AVG(confidence_score) DESC;
         """

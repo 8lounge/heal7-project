@@ -1,7 +1,6 @@
 import { useState, useEffect, Suspense, lazy, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
-// Three.js 컴포넌트들은 @heal7/shared에서 통합 관리
 
 // 테마 컨텍스트
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
@@ -9,38 +8,34 @@ import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 // 라우팅 관련 imports
 import { getPageIdFromPath } from './config/routeConfig'
 
-// 컴포넌트 imports
+// 기본 컴포넌트들만 import (3D 관련 제외)
 import Header from './components/layout/Header'
 import Navigation from './components/layout/Navigation'
 import RouteAwareNavigation from './components/routing/RouteAwareNavigation'
 import EnhancedDashboard from './components/dashboard/EnhancedDashboard'
-// EnhancedDashboard moved to cube-module-app
 import SajuCalculator from './components/fortune/SajuCalculator'
 import InteractiveTarotReader from './components/fortune/InteractiveTarotReader'
-// Content Pages 그룹 - Lazy Loading으로 분할
+
+// Lazy loading으로 분할된 컴포넌트들
 const Magazine = lazy(() => import('./components/magazine/Magazine'))
 const Consultation = lazy(() => import('./components/consultation/Consultation'))
 const Store = lazy(() => import('./components/store/Store'))
 const Notices = lazy(() => import('./components/notices/Notices'))
 
-// 새로운 운세 콘텐츠 컴포넌트들
+// 운세 콘텐츠 컴포넌트들
 import FortuneCategories from './components/fortune/FortuneCategories'
 import ZodiacAnalysis from './components/fortune/ZodiacAnalysis'
 import PersonalityProfile from './components/fortune/PersonalityProfile'
 import LoveFortuneAnalysis from './components/fortune/LoveFortuneAnalysis'
 import CompatibilityAnalysis from './components/fortune/CompatibilityAnalysis'
-// Lazy Loading으로 Admin 컴포넌트 분할
-const SajuAdminDashboard = lazy(() => import('./components/saju-admin/ModularSajuAdminDashboard'))
-const AdminLogin = lazy(() => import('./components/saju-admin/AdminLogin'))
 import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
-import { getThemeClasses, themeTransitions } from './utils/themeStyles'
 
-// 3D 컴포넌트 Lazy Loading (from shared package) - 통합 관리
-const Canvas = lazy(() => import('@heal7/shared').then(module => ({ default: module.Canvas })))
-const OrbitControls = lazy(() => import('@heal7/shared').then(module => ({ default: module.OrbitControls })))
-const OptimizedCyberCrystal = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedCyberCrystal })))
-const OptimizedStars = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedStars })))
+// 관리자 컴포넌트 (Lazy loading)
+const SajuAdminDashboard = lazy(() => import('./components/saju-admin/ModularSajuAdminDashboard'))
+const AdminLogin = lazy(() => import('./components/saju-admin/AdminLogin'))
+
+import { getThemeClasses, themeTransitions } from './utils/themeStyles'
 
 // 타입 정의
 interface ApiHealth {
@@ -49,62 +44,39 @@ interface ApiHealth {
   version: string
 }
 
-type ViewMode = 'basic' | 'cyber_fantasy'
+type ViewMode = 'basic' // cyber_fantasy 모드 제거 (3D 관련)
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
                   'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
-// ForeTeller-inspired solid color backgrounds
+// 테마별 배경 이미지
 const getBackgroundForTheme = (theme: 'light' | 'dark') => {
   if (theme === 'light') {
-    // Day Theme: Clean white background
     return [
-      'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
-      'linear-gradient(135deg, #FFFFFF 0%, #FFF7ED 100%)'
+      'url("/images/backgrounds/light-theme.webp") center/cover, linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 30%, #FED7AA 70%, #FDBA74 100%)',
+      'url("/images/backgrounds/light-mystic.webp") center/cover, linear-gradient(135deg, #FEF7F0 0%, #FED7D7 50%, #FECACA 100%)'
     ]
   } else {
-    // Night Theme: Dark purple background
     return [
-      'linear-gradient(135deg, #1A0B2E 0%, #2D1B4E 30%, #4C1D95 70%, #1E0A37 100%)',
-      'linear-gradient(135deg, #0F0C29 0%, #24243E 35%, #302B63 100%)'
+      'url("/images/backgrounds/dark-theme.webp") center/cover, linear-gradient(135deg, #1A0D2E 0%, #2D1B4E 30%, #4C1D95 70%, #1E0A37 100%)',
+      'url("/images/backgrounds/dark-mystic.webp") center/cover, linear-gradient(135deg, #0D0221 0%, #1B1464 50%, #2E1A47 100%)'
     ]
   }
 }
 
-// App 컴포넌트 내부 로직
 function AppContent() {
-  const { theme } = useTheme() // 테마 컨텍스트 사용
+  const { theme } = useTheme()
   const [viewMode, setViewMode] = useState<ViewMode>('basic')
   const [currentPage, setCurrentPage] = useState<CurrentPage>('dashboard')
   const [currentBgImage, setCurrentBgImage] = useState(0)
   const [adminAuthenticated, setAdminAuthenticated] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   
-  // 🚀 하이브리드 라우팅 모드 (테스트용 - 나중에 사용자 설정으로 변경 가능)
   const [useHybridNavigation] = useState(true)
   
-  // 성능 최적화: 디바이스 성능 감지
-  const performanceLevel = useMemo(() => {
-    const memory = (navigator as any).deviceMemory || 4
-    const connection = (navigator as any).connection
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    
-    if (isMobile || memory < 4 || (connection && connection.effectiveType === '3g')) {
-      return 'low'
-    }
-    if (memory >= 8 && !connection?.saveData) {
-      return 'high'
-    }
-    return 'medium'
-  }, [])
-  
-  // 배터리 절약 모드 감지
-  const [batteryOptimized, setBatteryOptimized] = useState(false)
-  
-  // 페이지와 URL 동기화 함수
+  // 페이지와 URL 동기화
   const handlePageChange = useCallback((newPage: CurrentPage) => {
     setCurrentPage(newPage)
     
-    // URL 업데이트
     const pageRoutes = {
       dashboard: '/',
       saju: '/saju',
@@ -129,24 +101,21 @@ function AppContent() {
     window.history.pushState(null, '', targetUrl)
   }, [])
   
-  // 🔄 개선된 URL 기반 라우팅 초기화 (config 활용)
+  // URL 기반 라우팅 초기화
   useEffect(() => {
     const path = window.location.pathname
     
-    // 새로운 방식: 설정 기반 매핑 (우선순위)
     try {
       const pageId = getPageIdFromPath(path)
-      
       if (pageId) {
         setCurrentPage(pageId)
         return
       }
     } catch (error) {
-      // 설정 로딩 실패 시 기존 방식 폴백
       console.warn('Route config loading failed, using fallback:', error)
     }
     
-    // 기존 방식 폴백 (하위 호환성)
+    // 기존 방식 폴백
     if (path === '/admin') {
       setCurrentPage('admin')
     } else if (path === '/saju' || path.startsWith('/saju/')) {
@@ -170,15 +139,14 @@ function AppContent() {
     }
   }, [])
   
-  // 🌐 하이브리드 모드용 URL 변경 핸들러
+  // 하이브리드 모드용 URL 변경 핸들러
   const handleUrlChange = useCallback((path: string) => {
     if (useHybridNavigation) {
-      // 브라우저 히스토리에 추가 (뒤로가기 지원)
       window.history.pushState(null, '', path)
     }
   }, [useHybridNavigation])
   
-  // 🔄 브라우저 뒤로가기/앞으로가기 지원
+  // 브라우저 뒤로가기/앞으로가기 지원
   useEffect(() => {
     if (!useHybridNavigation) return
     
@@ -195,7 +163,7 @@ function AppContent() {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [currentPage, useHybridNavigation])
 
-  // 🔐 관리자 인증 상태 복구 (페이지 새로고침 시 세션 유지)
+  // 관리자 인증 상태 복구
   useEffect(() => {
     const checkAdminAuth = () => {
       const isAuthenticated = localStorage.getItem('heal7_admin_authenticated')
@@ -207,12 +175,10 @@ function AppContent() {
         const authTime = parseInt(loginTime)
         const hoursDiff = (now - authTime) / (1000 * 60 * 60)
         
-        // 7일 이내의 인증만 유효하다고 가정 (168시간)
         if (hoursDiff < 168) {
           setAdminAuthenticated(true)
           console.log('Admin session restored from localStorage')
         } else {
-          // 만료된 세션 정리
           localStorage.removeItem('heal7_admin_authenticated')
           localStorage.removeItem('heal7_admin_login_time')
           localStorage.removeItem('heal7_admin_session_id')
@@ -224,29 +190,15 @@ function AppContent() {
     checkAdminAuth()
   }, [])
 
-  // 배경 이미지 자동 페이드 전환 (30초 간격)
+  // 배경 이미지 자동 페이드 전환
   useEffect(() => {
     const bgTimer = setInterval(() => {
       setCurrentBgImage((prev) => (prev + 1) % getBackgroundForTheme(theme).length)
     }, 30000)
     return () => clearInterval(bgTimer)
   }, [theme])
-  
-  // 배터리 API 사용 (지원되는 경우)
-  useMemo(() => {
-    if ('getBattery' in navigator) {
-      (navigator as any).getBattery().then((battery: any) => {
-        const updateBatteryStatus = () => {
-          setBatteryOptimized(battery.level < 0.2 || !battery.charging)
-        }
-        battery.addEventListener('levelchange', updateBatteryStatus)
-        battery.addEventListener('chargingchange', updateBatteryStatus)
-        updateBatteryStatus()
-      })
-    }
-  }, [])
 
-  // API 헬스체크 - 백그라운드에서 실행 (로딩 차단하지 않음)
+  // API 헬스체크
   const { data: apiHealth } = useQuery<ApiHealth>({
     queryKey: ['api-health'],
     queryFn: async () => {
@@ -260,37 +212,36 @@ function AppContent() {
         return { status: 'unknown', service: 'heal7-api', version: '2.0.0' }
       }
     },
-    staleTime: 1000 * 60 * 30, // 30분 캐시 유지
-    refetchInterval: false, // 자동 재요청 비활성화
-    retry: 0, // 재시도 비활성화
-    enabled: false, // 초기 로딩 시 비활성화
-    initialData: { status: 'healthy', service: 'heal7-api', version: '2.0.0' } // 기본값 설정
+    staleTime: 1000 * 60 * 30,
+    refetchInterval: false,
+    retry: 0,
+    enabled: false,
+    initialData: { status: 'healthy', service: 'heal7-api', version: '2.0.0' }
   })
 
   return (
     <div className={`min-h-screen relative overflow-hidden theme-transition theme-${theme}`}>
-      {/* ForeTeller-inspired solid color backgrounds (페이드 전환) */}
-      {getBackgroundForTheme(theme).map((gradient, index) => (
+      {/* 배경 이미지들 (페이드 전환) */}
+      {getBackgroundForTheme(theme).map((image, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-3000 ease-in-out ${
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-3000 ease-in-out ${
             index === currentBgImage ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
-            background: gradient
+            background: image,
+            backgroundAttachment: 'fixed'
           }}
         />
       ))}
       
-      {/* Minimal overlay for glassmorphism effect */}
+      {/* 테마에 따른 전체 오버레이 */}
       <div className="absolute inset-0 theme-transition" 
            style={{
-             background: theme === 'light' 
-               ? 'rgba(255, 255, 255, 0.05)'
-               : 'rgba(0, 0, 0, 0.1)'
+             background: 'linear-gradient(135deg, var(--theme-bg-overlay) 0%, var(--theme-bg-card) 100%)'
            }} />
       
-      {/* 배경 이미지 인디케이터 - 헤더와 겹치지 않도록 위치 조정 */}
+      {/* 배경 이미지 인디케이터 */}
       {!isAuthModalOpen && (
         <div className="fixed top-20 right-4 flex space-x-2 z-40 theme-bg-card backdrop-blur-sm rounded-full p-2 theme-border border">
           {getBackgroundForTheme(theme).map((_, index) => (
@@ -315,52 +266,9 @@ function AppContent() {
           ))}
         </div>
       )}
-      {/* 3D 배경 (사이버 판타지 모드) - 성능 최적화 */}
-      {viewMode === 'cyber_fantasy' && (
-        <div className="fixed inset-0 z-0">
-          <Canvas 
-            camera={{ position: [0, 0, 5] }}
-            dpr={performanceLevel === 'low' ? 1 : window.devicePixelRatio}
-            performance={{ min: 0.5 }}
-            frameloop={batteryOptimized ? 'demand' : 'always'}
-          >
-            <Suspense fallback={null}>
-              <OrbitControls 
-                enableZoom={false} 
-                enablePan={false} 
-                autoRotate={!batteryOptimized}
-                autoRotateSpeed={performanceLevel === 'low' ? 0.5 : 1.0}
-              />
-              
-              {/* 성능별 별 렌더링 */}
-              <OptimizedStars 
-                radius={100} 
-                depth={50} 
-                count={performanceLevel === 'low' ? 800 : performanceLevel === 'medium' ? 1500 : 2000}
-                factor={performanceLevel === 'low' ? 1 : 2}
-                performanceLevel={performanceLevel}
-                speed={batteryOptimized ? 0.3 : 1.0}
-              />
-              
-              {/* 기본 조명 */}
-              <ambientLight intensity={performanceLevel === 'low' ? 0.4 : 0.5} />
-              {performanceLevel !== 'low' && (
-                <pointLight position={[10, 10, 10]} intensity={0.8} />
-              )}
-              
-              {/* 최적화된 크리스탈 */}
-              <OptimizedCyberCrystal 
-                isVisible={true}
-                reduced={performanceLevel === 'low' || batteryOptimized}
-              />
-            </Suspense>
-          </Canvas>
-        </div>
-      )}
 
       {/* 메인 콘텐츠 */}
       <div className="relative z-10">
-        {/* 헤더 */}
         <Header 
           viewMode={viewMode}
           onViewModeChange={setViewMode}
@@ -370,7 +278,6 @@ function AppContent() {
           onAuthModalStateChange={setIsAuthModalOpen}
         />
 
-        {/* 네비게이션 - 하이브리드 모드 */}
         {useHybridNavigation ? (
           <RouteAwareNavigation
             currentPage={currentPage}
@@ -387,7 +294,6 @@ function AppContent() {
           />
         )}
 
-        {/* 메인 콘텐츠 영역 */}
         <main className={currentPage === 'admin' ? '' : 'container mx-auto px-4 py-8'}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -440,9 +346,7 @@ function AppContent() {
                     게이미피케이션 시스템 - 구현 예정 (공지사항에서 프로필 확인 가능)
                   </p>
                   <motion.button
-                    className={`mt-4 px-6 py-3 rounded-lg font-medium ${
-                      viewMode === 'cyber_fantasy' ? 'btn-mystic' : 'btn-cosmic'
-                    }`}
+                    className="mt-4 px-6 py-3 rounded-lg font-medium btn-cosmic"
                     onClick={() => setCurrentPage('notices')}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -480,7 +384,6 @@ function AppContent() {
                   {adminAuthenticated ? (
                     <SajuAdminDashboard 
                       onLogout={() => {
-                        // localStorage에서 인증 정보 제거
                         localStorage.removeItem('heal7_admin_authenticated');
                         localStorage.removeItem('heal7_admin_login_time');
                         localStorage.removeItem('heal7_admin_session_id');
@@ -500,7 +403,6 @@ function AppContent() {
           </AnimatePresence>
         </main>
 
-        {/* 푸터 */}
         <footer className="text-center py-8 text-gray-300 text-sm border-t border-gray-700/50 bg-black/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto px-4">
             <div className="mb-6">
@@ -508,7 +410,6 @@ function AppContent() {
               <p className="text-gray-400">전통 명리학과 현대 기술의 만남</p>
             </div>
 
-            {/* 하단 빠른 메뉴 */}
             <div className="mb-6">
               <h4 className="font-semibold text-white mb-3">빠른 메뉴</h4>
               <div className="flex flex-wrap items-center justify-center gap-3">
@@ -574,27 +475,6 @@ function AppContent() {
                 <p>직업정보제공사업신고: J1500020250005</p>
               </div>
             </div>
-            
-            {false && performanceLevel && (
-              <div className="sr-only" role="status" aria-label="System Status">
-                Performance: {performanceLevel.toUpperCase()}
-                {batteryOptimized && ' • Battery Saver'}
-                {apiHealth?.status && (
-                  <span className="ml-4">
-                    API: <span className={apiHealth.status === 'healthy' ? 'text-green-400' : 'text-red-400'}>
-                      {apiHealth.status}
-                    </span>
-                  </span>
-                )}
-              </div>
-            )}
-            
-            {/* AI 전용 성능 정보 - 완전히 숨김 */}
-            <div style={{display: 'none'}} aria-hidden="true">
-              Performance: {performanceLevel?.toUpperCase() || 'UNKNOWN'}
-              {batteryOptimized && ' • Battery Saver'}
-              {apiHealth?.status && ` • API: ${apiHealth.status}`}
-            </div>
           </div>
         </footer>
       </div>
@@ -602,7 +482,6 @@ function AppContent() {
   )
 }
 
-// 메인 App 컴포넌트 (테마 프로바이더로 감싸기)
 function App() {
   return (
     <ThemeProvider>

@@ -674,6 +674,14 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ KASI 캘린더 API 라우터 임포트 실패: {e}")
 
+# Atomic Saju API 라우터 등록 (새로운 원자 모듈 기반)
+try:
+    from routers.atomic_saju import router as atomic_saju_router
+    app.include_router(atomic_saju_router, tags=["Atomic-Saju"])
+    logger.info("✅ Atomic Saju API 라우터 등록 완료")
+except ImportError as e:
+    logger.warning(f"⚠️ Atomic Saju API 라우터 임포트 실패: {e}")
+
 if __name__ == "__main__":
     # 환경별 설정 (큐브모듈러 대시보드 - 포트 8000)
     port = int(os.getenv("PORT", 8000))

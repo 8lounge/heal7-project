@@ -123,33 +123,19 @@ const ModularSajuAdminDashboard: React.FC = () => {
   const CurrentTabComponent = currentTab?.component;
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      theme === 'light' 
-        ? 'bg-gradient-to-br from-pink-100 via-orange-50 to-yellow-100' 
-        : 'bg-gradient-to-br from-purple-900 via-violet-800 to-purple-950'
-    }`}>
+    <div className="min-h-screen theme-transition theme-bg-main">
       {/* 헤더 */}
-      <header className={`border-b backdrop-blur-md transition-all duration-500 sticky top-0 z-50 ${
-        theme === 'light'
-          ? 'border-orange-200/30 bg-white/20'
-          : 'border-purple-400/30 bg-purple-900/20'
-      }`}>
+      <header className="theme-glass-header glass-3 backdrop-blur-xl sticky top-0 z-50 theme-transition">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* 로고 및 제목 */}
             <div className="flex items-center space-x-4">
-              <Sparkles className={`w-8 h-8 transition-all duration-500 ${
-                theme === 'light' ? 'text-orange-500' : 'text-purple-400'
-              }`} />
+              <Sparkles className="w-8 h-8 theme-transition text-[var(--theme-accent)] drop-shadow-lg" />
               <div>
-                <h1 className={`text-xl font-bold transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-800 glow-text-orange' : 'text-white glow-text-purple'
-                }`}>
+                <h1 className="text-xl font-bold theme-transition theme-text-heading theme-glow">
                   🔮 HEAL7 사주 관리자
                 </h1>
-                <p className={`text-sm transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-600/70' : 'text-white/60'
-                }`}>
+                <p className="text-sm theme-transition theme-text-secondary">
                   모듈화 관리 대시보드 v2.1 - 7개 탭 완전 구현
                 </p>
               </div>
@@ -163,41 +149,27 @@ const ModularSajuAdminDashboard: React.FC = () => {
                 size="sm"
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className={`transition-all duration-300 ${
-                  theme === 'light'
-                    ? 'text-orange-600 hover:bg-orange-200/30'
-                    : 'text-white/80 hover:bg-white/10'
-                }`}
+                className="theme-button-secondary theme-transition"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 새로고침
               </Button>
 
               {/* 테마 토글 */}
-              <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border transition-all duration-500 ${
-                theme === 'light'
-                  ? 'bg-orange-200/20 border-orange-300/30'
-                  : 'bg-purple-500/20 border-purple-400/30'
-              }`}>
-                <span className={`text-sm font-medium transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-700' : 'text-purple-200'
-                }`}>
+              <div className="flex items-center gap-3 px-4 py-2 rounded-xl glass-3 theme-transition">
+                <span className="text-sm font-medium theme-transition theme-text-primary">
                   {theme === 'light' ? '☀️ 낮' : '🌙 밤'}
                 </span>
                 <button
                   onClick={handleThemeToggle}
-                  className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 ${
-                    theme === 'light'
-                      ? 'bg-orange-400 focus:ring-orange-300'
-                      : 'bg-purple-600 focus:ring-purple-400'
-                  }`}
+                  className="relative w-12 h-6 rounded-full theme-transition focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent)]/50 bg-[var(--theme-accent)]"
                 >
-                  <div className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-500 shadow-lg ${
+                  <div className={`absolute top-0.5 w-5 h-5 rounded-full theme-transition shadow-lg ${
                     theme === 'light'
-                      ? 'left-6 bg-white border-orange-200'
-                      : 'left-0.5 bg-white border-purple-200'
-                  } border flex items-center justify-center text-xs`}>
-                    {theme === 'light' ? <Sun className="w-3 h-3" /> : <Moon className="w-3 h-3" />}
+                      ? 'left-6 bg-white'
+                      : 'left-0.5 bg-white'
+                  } flex items-center justify-center text-xs`}>
+                    {theme === 'light' ? <Sun className="w-3 h-3 text-[var(--theme-accent)]" /> : <Moon className="w-3 h-3 text-[var(--theme-accent)]" />}
                   </div>
                 </button>
               </div>
@@ -210,11 +182,7 @@ const ModularSajuAdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* 탭 네비게이션 */}
         <div className="mb-8">
-          <div className={`p-2 rounded-xl backdrop-blur-md border transition-all duration-500 glass-3 ${
-            theme === 'light'
-              ? 'bg-white/30 border-orange-200/30'
-              : 'bg-purple-900/20 border-purple-400/20'
-          }`}>
+          <div className="p-2 rounded-xl glass-3 theme-transition backdrop-blur-xl">
             <div className="flex flex-wrap gap-2">
               {tabMenus.map((tab) => {
                 const Icon = tab.icon;
@@ -224,25 +192,23 @@ const ModularSajuAdminDashboard: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center px-4 py-3 rounded-lg transition-all duration-300 group cyber-card ${
+                    className={`flex items-center px-4 py-3 rounded-lg theme-transition group ${
                       isActive
-                        ? theme === 'light'
-                          ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/25'
-                          : 'bg-purple-600 text-white shadow-lg shadow-purple-600/40 glow-border-purple'
-                        : theme === 'light'
-                          ? 'text-orange-700 hover:bg-orange-200/30'
-                          : 'text-white/80 hover:bg-purple-500/20 hover:text-white neon-button'
+                        ? 'glass-4 theme-text-primary shadow-lg theme-glow'
+                        : 'glass-2 theme-text-secondary hover:glass-3 hover:theme-text-primary'
                     }`}
                   >
-                    <Icon className="w-5 h-5 mr-2" />
+                    <Icon className={`w-5 h-5 mr-2 theme-transition ${
+                      isActive
+                        ? 'text-[var(--theme-accent)] drop-shadow-lg'
+                        : 'theme-text-muted'
+                    }`} />
                     <div className="text-left">
                       <div className="font-medium">{tab.label}</div>
-                      <div className={`text-xs transition-all duration-300 ${
+                      <div className={`text-xs theme-transition ${
                         isActive 
-                          ? 'text-white/80' 
-                          : theme === 'light' 
-                            ? 'text-orange-600/60' 
-                            : 'text-white/40'
+                          ? 'theme-text-secondary'
+                          : 'theme-text-muted'
                       }`}>
                         {tab.description}
                       </div>
@@ -260,27 +226,19 @@ const ModularSajuAdminDashboard: React.FC = () => {
         </div>
 
         {/* 하단 상태바 */}
-        <div className={`mt-8 pt-6 border-t transition-all duration-500 ${
-          theme === 'light' ? 'border-orange-200/30' : 'border-purple-400/20'
-        }`}>
+        <div className="mt-8 pt-6 theme-border-t theme-transition">
           <div className="flex items-center justify-between">
-            <div className={`text-sm transition-all duration-500 ${
-              theme === 'light' ? 'text-orange-600/70' : 'text-white/60'
-            }`}>
+            <div className="text-sm theme-transition theme-text-secondary">
               마지막 업데이트: {new Date().toLocaleString()}
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span className={`text-sm ${
-                  theme === 'light' ? 'text-orange-600/70' : 'text-white/60'
-                }`}>
+                <span className="text-sm theme-text-secondary">
                   모든 서비스 정상 운영
                 </span>
               </div>
-              <div className={`text-sm font-medium ${
-                theme === 'light' ? 'text-orange-700' : 'text-purple-300'
-              }`}>
+              <div className="text-sm font-medium theme-text-primary text-[var(--theme-accent)] drop-shadow-lg">
                 모듈화 시스템 v2.1 - {currentTab?.label} 활성
               </div>
             </div>

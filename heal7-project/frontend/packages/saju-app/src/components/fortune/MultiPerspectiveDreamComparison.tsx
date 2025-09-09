@@ -16,6 +16,7 @@ import {
   ArrowLeftRight,
   Scale
 } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // 다각도 해석 타입 정의
 interface Perspective {
@@ -119,6 +120,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
   const [viewMode, setViewMode] = useState<'side-by-side' | 'stacked' | 'comparison'>('side-by-side');
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const { theme } = useTheme();
 
   // API 호출 함수
   const searchMultiPerspectiveDreams = async (query: string) => {
@@ -265,7 +267,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
     const analysis = selectedDream.comparison_analysis;
 
     return (
-      <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 shadow-2xl shadow-purple-500/20">
+      <div className="glass-3 backdrop-blur-xl rounded-xl p-6 shadow-2xl theme-transition">
         <div className="flex items-center gap-3 mb-6">
           <Scale className="w-6 h-6 text-amber-300" />
           <h3 className="text-xl font-bold text-white">종합 비교 분석</h3>
@@ -342,22 +344,22 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-slate-900 to-indigo-900 p-6">
+    <div className="min-h-screen theme-bg-main theme-transition p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Eye className="w-8 h-8 text-white" />
-            <h1 className="text-4xl font-bold text-white">🔮 다각도 꿈해몽 비교</h1>
+            <h1 className="text-4xl font-bold theme-text-primary">🔮 다각도 꿈해몽 비교</h1>
             <Globe className="w-8 h-8 text-blue-300" />
           </div>
-          <p className="text-white/80 text-lg">
+          <p className="theme-text-secondary text-lg">
             같은 꿈, 다른 문화권의 다양한 해석을 비교해보세요
           </p>
         </div>
 
         {/* 검색 및 관점 선택 */}
-        <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 mb-8 shadow-2xl shadow-purple-500/10">
+        <div className="glass-3 backdrop-blur-xl rounded-xl p-6 mb-8 shadow-2xl theme-transition">
           {/* 검색 입력 */}
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
@@ -366,13 +368,13 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
               placeholder="꿈 키워드를 입력해서 다양한 관점의 해석을 비교해보세요"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/20 border border-white/30 rounded-lg pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full glass-2 theme-border rounded-lg pl-12 pr-4 py-3 theme-text-primary placeholder:theme-text-muted focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent)] theme-transition"
             />
           </div>
 
           {/* 관점 선택 */}
           <div className="mb-6">
-            <h3 className="text-white font-medium mb-3">비교할 관점 선택 (최소 2개)</h3>
+            <h3 className="theme-text-primary font-medium mb-3">비교할 관점 선택 (최소 2개)</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {perspectives.map((perspective) => {
                 const isSelected = selectedPerspectives.includes(perspective.id);
@@ -401,7 +403,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
 
           {/* 보기 모드 선택 */}
           <div className="flex items-center gap-4">
-            <span className="text-white font-medium">보기 모드:</span>
+            <span className="theme-text-primary font-medium">보기 모드:</span>
             <div className="flex gap-2">
               {[
                 { key: 'side-by-side', label: '나란히', icon: ArrowLeftRight },
@@ -413,7 +415,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
                   onClick={() => setViewMode(key as any)}
                   className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm transition-all ${
                     viewMode === key 
-                      ? 'bg-purple-500/30 text-white border border-purple-500/50' 
+                      ? 'glass-4 theme-text-primary theme-border theme-accent-border' 
                       : 'bg-white/10 text-white/70 hover:bg-white/20'
                   }`}
                 >
@@ -434,7 +436,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
         )}
 
         {searchResults.length > 0 && !selectedDream && (
-          <div className="bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 mb-8 shadow-2xl shadow-purple-500/10">
+          <div className="glass-3 backdrop-blur-xl rounded-xl p-6 mb-8 shadow-2xl theme-transition">
             <h2 className="text-white text-xl font-bold mb-4">
               검색 결과 ({searchResults.length}개)
             </h2>
@@ -442,7 +444,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
               {searchResults.map((result) => (
                 <div
                   key={result.id}
-                  className="bg-purple-500/10 backdrop-blur-md border border-purple-400/30 rounded-lg p-4 cursor-pointer hover:bg-purple-500/20 hover:shadow-lg shadow-purple-500/10 transition-all"
+                  className="glass-2 backdrop-blur-md rounded-lg p-4 cursor-pointer hover:glass-3 hover:shadow-lg theme-transition"
                   onClick={() => loadDreamPerspectives(result.id)}
                 >
                   <div className="flex items-center gap-3 mb-2">
@@ -465,7 +467,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
         {selectedDream && (
           <div className="space-y-8">
             {/* 꿈 정보 헤더 */}
-            <div className="text-center bg-purple-500/10 backdrop-blur-xl border border-purple-400/30 rounded-xl p-6 shadow-2xl shadow-purple-500/20">
+            <div className="text-center glass-3 backdrop-blur-xl rounded-xl p-6 shadow-2xl theme-transition">
               <div className="text-6xl mb-3">{selectedDream.emoji}</div>
               <h2 className="text-3xl font-bold text-white mb-2">{selectedDream.keyword}</h2>
               <p className="text-white/60">
@@ -495,7 +497,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
                   setSelectedDream(null);
                   setSearchQuery('');
                 }}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-lg font-medium transition-all"
+                className="bg-gradient-to-r from-[var(--theme-accent)] to-blue-500 hover:opacity-90 theme-text-inverse px-6 py-3 rounded-lg font-medium theme-transition"
               >
                 다른 꿈 검색하기
               </button>
@@ -518,7 +520,7 @@ export const MultiPerspectiveDreamComparison: React.FC<MultiPerspectiveDreamComp
                 <button
                   key={keyword}
                   onClick={() => setSearchQuery(keyword)}
-                  className="bg-purple-500/10 hover:bg-purple-500/20 backdrop-blur-md border border-purple-400/30 rounded-lg p-4 text-white shadow-lg hover:shadow-purple-500/20 transition-all"
+                  className="glass-2 hover:glass-3 backdrop-blur-md rounded-lg p-4 theme-text-primary shadow-lg theme-transition"
                 >
                   {keyword} 꿈 비교하기
                 </button>

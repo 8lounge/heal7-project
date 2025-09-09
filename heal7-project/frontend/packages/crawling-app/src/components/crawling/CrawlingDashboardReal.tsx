@@ -39,7 +39,7 @@ import {
   WifiOff
 } from 'lucide-react';
 
-type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'settings';
+type CrawlingPage = 'dashboard' | 'crawling' | 'ai-analysis' | 'data-management' | 'tool-selector' | 'settings';
 
 interface DashboardWidget {
   id: string;
@@ -672,7 +672,7 @@ const CrawlingDashboardReal: React.FC = () => {
   };
 
   return (
-    <CrawlingLayout currentPage={currentPage} onPageChange={setCurrentPage}>
+    <CrawlingLayout currentPage={currentPage} onPageChange={(page: CrawlingPage) => setCurrentPage(page)}>
       {renderPageContent()}
     </CrawlingLayout>
   );

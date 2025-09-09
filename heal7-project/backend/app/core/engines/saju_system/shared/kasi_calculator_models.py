@@ -69,10 +69,10 @@ class KasiApiConfig:
     USAGE_LIMIT = 900  # 하루 사용량 제한
     TIMEOUT_SECONDS = 10  # API 타임아웃
     
-    # API 엔드포인트
+    # API 엔드포인트 (수정됨 2025-09-08)
     ENDPOINTS = {
-        'solar_to_lunar': '/getSolCalInfo',
-        'lunar_to_solar': '/getLunCalInfo', 
+        'solar_to_lunar': '/getLunCalInfo',    # 양력→음력 변환 (올바른 엔드포인트)
+        'lunar_to_solar': '/getSolCalInfo',    # 음력→양력 변환  
         'solar_terms': '/get24DivisionsInfo',
         'sexagenary_cycle': '/getSpcifyDayInfo'
     }

@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { crawlingAPI } from '../../api/CrawlingAPIClient';
+import type { CrawlerSettings, SystemSettings, APIKeys } from '../../api/CrawlingAPIClient';
 import {
   Settings,
   Key,
@@ -28,45 +29,6 @@ import {
   Monitor
 } from 'lucide-react';
 
-interface SystemSettings {
-  autoRefresh: boolean;
-  refreshInterval: number;
-  notifications: boolean;
-  soundAlerts: boolean;
-  realTimeUpdates: boolean;
-  darkMode: boolean;
-  maxRetries: number;
-  timeout: number;
-  concurrentConnections: number;
-  logLevel: 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
-}
-
-interface CrawlerSettings {
-  httpx: {
-    enabled: boolean;
-    timeout: number;
-    maxRetries: number;
-    userAgent: string;
-  };
-  playwright: {
-    enabled: boolean;
-    headless: boolean;
-    timeout: number;
-    viewport: { width: number; height: number };
-  };
-  httpx_bs: {
-    enabled: boolean;
-    parser: 'lxml' | 'html.parser' | 'html5lib';
-    timeout: number;
-    encoding: 'auto' | 'utf-8' | 'gbk';
-  };
-}
-
-interface APIKeys {
-  openai: string;
-  anthropic: string;
-  google: string;
-}
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'system' | 'crawler' | 'api' | 'security'>('system');
@@ -103,9 +65,15 @@ const SettingsPage: React.FC = () => {
     },
     httpx_bs: {
       enabled: true,
-      parser: 'lxml',
       timeout: 30,
-      encoding: 'auto'
+      maxRetries: 3,
+      userAgent: 'heal7-crawler/2.1'
+    },
+    selenium: {
+      enabled: true,
+      headless: true,
+      timeout: 60,
+      driver: 'chrome' as const
     }
   });
 
@@ -401,8 +369,8 @@ const SettingsPage: React.FC = () => {
                         checked={settings.headless}
                         onChange={(e) => setCrawlerSettings(prev => ({
                           ...prev,
-                          [tier]: { ...prev[tier as keyof CrawlerSettings], headless: e.target.checked }
-                        }))}
+                          [tier]: { ...(prev[tier as keyof CrawlerSettings] as any), headless: e.target.checked }
+                        } as CrawlerSettings))}
                         className="mr-2 rounded border-slate-600 bg-slate-700 text-blue-500"
                       />
                       헤드리스 모드

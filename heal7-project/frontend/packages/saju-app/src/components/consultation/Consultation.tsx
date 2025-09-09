@@ -231,7 +231,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
           <motion.button
             key={tab.key}
             onClick={() => setActiveTab(tab.key as any)}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`px-6 py-3 btn-unified-height rounded-lg font-medium transition-colors ${
               activeTab === tab.key
                 ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                 : 'card-base hover:opacity-80 text-gray-300'
@@ -262,7 +262,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
                 <div className="flex flex-wrap gap-3 justify-center">
                   <motion.button
                     onClick={() => setSelectedCategory('all')}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    className={`px-4 py-2 btn-unified-height rounded-lg font-medium transition-colors ${
                       selectedCategory === 'all'
                         ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                         : 'card-base hover:opacity-80 text-gray-300'
@@ -276,7 +276,7 @@ const Consultation: React.FC<ConsultationProps> = ({ viewMode }) => {
                     <motion.button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      className={`px-4 py-2 btn-unified-height rounded-lg font-medium transition-colors ${
                         selectedCategory === category.id
                           ? viewMode === 'cyber_fantasy' ? 'btn-primary' : 'btn-secondary'
                           : 'card-base hover:opacity-80 text-gray-300'

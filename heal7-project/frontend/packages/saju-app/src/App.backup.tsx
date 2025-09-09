@@ -53,19 +53,19 @@ type ViewMode = 'basic' | 'cyber_fantasy'
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
                   'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
-// ForeTeller-inspired solid color backgrounds
+// 테마별 미드저니 품질 배경 이미지 (각 2개씩 30초 자동 전환)
 const getBackgroundForTheme = (theme: 'light' | 'dark') => {
   if (theme === 'light') {
-    // Day Theme: Clean white background
+    // ☀️ Sunny 테마: 2개 활력찬 오렌지/핑크 미드저니 이미지
     return [
-      'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
-      'linear-gradient(135deg, #FFFFFF 0%, #FFF7ED 100%)'
+      'url("/images/backgrounds/light-theme.webp") center/cover, linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 30%, #FED7AA 70%, #FDBA74 100%)',
+      'url("/images/backgrounds/light-mystic.webp") center/cover, linear-gradient(135deg, #FEF7F0 0%, #FED7D7 50%, #FECACA 100%)'
     ]
   } else {
-    // Night Theme: Dark purple background
+    // 🌙 Mystic 테마: 2개 신비로운 보라색 우주 미드저니 이미지
     return [
-      'linear-gradient(135deg, #1A0B2E 0%, #2D1B4E 30%, #4C1D95 70%, #1E0A37 100%)',
-      'linear-gradient(135deg, #0F0C29 0%, #24243E 35%, #302B63 100%)'
+      'url("/images/backgrounds/dark-theme.webp") center/cover, linear-gradient(135deg, #1A0D2E 0%, #2D1B4E 30%, #4C1D95 70%, #1E0A37 100%)',
+      'url("/images/backgrounds/dark-mystic.webp") center/cover, linear-gradient(135deg, #0D0221 0%, #1B1464 50%, #2E1A47 100%)'
     ]
   }
 }
@@ -269,25 +269,24 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen relative overflow-hidden theme-transition theme-${theme}`}>
-      {/* ForeTeller-inspired solid color backgrounds (페이드 전환) */}
-      {getBackgroundForTheme(theme).map((gradient, index) => (
+      {/* 배경 이미지들 (페이드 전환) - 테마별 동적 변경 */}
+      {getBackgroundForTheme(theme).map((image, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-3000 ease-in-out ${
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-3000 ease-in-out ${
             index === currentBgImage ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
-            background: gradient
+            background: image,
+            backgroundAttachment: 'fixed'
           }}
         />
       ))}
       
-      {/* Minimal overlay for glassmorphism effect */}
+      {/* 테마에 따른 전체 오버레이 - CSS 변수 사용 */}
       <div className="absolute inset-0 theme-transition" 
            style={{
-             background: theme === 'light' 
-               ? 'rgba(255, 255, 255, 0.05)'
-               : 'rgba(0, 0, 0, 0.1)'
+             background: 'linear-gradient(135deg, var(--theme-bg-overlay) 0%, var(--theme-bg-card) 100%)'
            }} />
       
       {/* 배경 이미지 인디케이터 - 헤더와 겹치지 않도록 위치 조정 */}

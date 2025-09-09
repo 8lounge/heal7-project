@@ -1,5 +1,9 @@
 
 from enum import Enum
+from typing import List, Tuple, Optional
+
+# 🔥 중복 제거: atomic 모듈에서 단일 소스로 import
+from ....core.atomic.constants import GANJI_60 as ATOMIC_GANJI_60
 
 # --- Heavenly Stems (천간) ---
 class Cheongan(Enum):
@@ -51,15 +55,8 @@ class SipSin(Enum):
     JEONG_IN = "정인"
 
 # --- Ganji (갑자) ---
-# Example: 60 Gapja cycle
-GANJI_60 = [
-    "갑자", "을축", "병인", "정묘", "무진", "기사", "경오", "신미", "임신", "계유",
-    "갑술", "을해", "병자", "정축", "무인", "기묘", "경진", "신사", "임오", "계미",
-    "갑신", "을유", "병술", "정해", "무자", "기축", "경인", "신묘", "임진", "계사",
-    "갑오", "을미", "병신", "정유", "무술", "기해", "경자", "신축", "임인", "계묘",
-    "갑진", "을사", "병오", "정미", "무신", "기유", "경술", "신해", "임자", "계축",
-    "갑인", "을묘", "병진", "정사", "무오", "기미", "경신", "신유", "임술", "계해"
-]
+# 🔥 중복 제거: atomic/constants.py에서 import된 배열 사용
+GANJI_60 = ATOMIC_GANJI_60
 
 # --- Myeongrihak Constants and Helper Functions (from saju_system/myeongrihak_constants.py) ---
 

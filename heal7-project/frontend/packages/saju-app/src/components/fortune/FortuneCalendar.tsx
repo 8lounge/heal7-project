@@ -16,6 +16,7 @@ import {
   getKasiApiErrorSummary,
   get절기상세정보,
   is절기날,
+  get갑자표시,
   type CalendarDate,
   type MonthlyFortune 
 } from '../../data/calendarData';
@@ -248,21 +249,27 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                         {calendarDate.date.getDate()}
                       </div>
 
-                      {/* 갑자 */}
-                      <div className="text-xs text-white/80 mb-1">
-                        {calendarDate.gapja}
+                      {/* 갑자 (한자 포함) */}
+                      <div className="text-xs text-white/80 mb-1 leading-tight">
+                        {get갑자표시(calendarDate.gapja)}
                       </div>
 
                       {/* 🔥 음력 날짜 표시 개선 */}
                       <div className="text-xs text-white/60 mb-1 flex items-center justify-center gap-1">
-                        <span>{calendarDate.lunarMonth}/{calendarDate.lunarDay}</span>
-                        {calendarDate.isLeapMonth && (
-                          <span 
-                            className="text-indigo-300 animate-pulse" 
-                            title="윤달 (음력 특별한 달)"
-                          >
-                            🌙+
-                          </span>
+                        {calendarDate.lunarMonth === 0 || calendarDate.lunarDay === 0 ? (
+                          <span className="text-red-300 text-xs">음력 X</span>
+                        ) : (
+                          <>
+                            <span>{calendarDate.lunarMonth}/{calendarDate.lunarDay}</span>
+                            {calendarDate.isLeapMonth && (
+                              <span 
+                                className="text-indigo-300 animate-pulse" 
+                                title="윤달 (음력 특별한 달)"
+                              >
+                                🌙+
+                              </span>
+                            )}
+                          </>
                         )}
                       </div>
 
@@ -321,7 +328,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                 <div className="space-y-3">
                   <div className="text-center">
                     <div className="text-3xl mb-2">{todayFortune.zodiac === '쥐' ? '🐭' : todayFortune.zodiac === '소' ? '🐂' : todayFortune.zodiac === '호랑이' ? '🐅' : todayFortune.zodiac === '토끼' ? '🐰' : todayFortune.zodiac === '용' ? '🐉' : todayFortune.zodiac === '뱀' ? '🐍' : todayFortune.zodiac === '말' ? '🐴' : todayFortune.zodiac === '양' ? '🐑' : todayFortune.zodiac === '원숭이' ? '🐒' : todayFortune.zodiac === '닭' ? '🐓' : todayFortune.zodiac === '개' ? '🐕' : '🐷'}</div>
-                    <div className="font-bold text-white text-lg">{todayFortune.gapja}</div>
+                    <div className="font-bold text-white text-lg">{get갑자표시(todayFortune.gapja)}</div>
                     <div className="text-white/80 text-sm">{todayFortune.zodiac}의 해</div>
                   </div>
                   <div className="text-center">
@@ -362,7 +369,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   <div className="grid grid-cols-2 gap-3">
                     <div className="text-center">
                       <div className="text-white/80 text-xs">갑자</div>
-                      <div className="text-white font-bold">{selectedDate.gapja}</div>
+                      <div className="text-white font-bold text-sm leading-tight">{get갑자표시(selectedDate.gapja)}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-white/80 text-xs">띠</div>
@@ -481,14 +488,14 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   <span className="text-white/80">24절기</span>
                 </div>
                 <div className="mt-3 space-y-1">
-                  <div className="text-white/80">★5: 매우 좋음</div>
-                  <div className="text-white/80">★4: 좋음</div>
-                  <div className="text-white/80">★3: 보통</div>
-                  <div className="text-white/80">★2: 주의</div>
-                  <div className="text-white/80">★1: 매우 주의</div>
+                  <div className="theme-text-secondary">★5: 매우 좋음</div>
+                  <div className="theme-text-secondary">★4: 좋음</div>
+                  <div className="theme-text-secondary">★3: 보통</div>
+                  <div className="theme-text-secondary">★2: 주의</div>
+                  <div className="theme-text-secondary">★1: 매우 주의</div>
                 </div>
-                <div className="mt-3 pt-3 border-t border-white/10">
-                  <div className="text-white/60 text-xs">
+                <div className="mt-3 pt-3 border-t border-pink-200/20">
+                  <div className="theme-text-muted text-xs">
                     📅 M/D: 음력 월/일<br/>
                     🌙+: 윤달 (특별한 음력 달)<br/>
                     🌸: 24절기 (계절 변화)

@@ -400,12 +400,13 @@ const CrawlingDashboard: React.FC = () => {
       );
       
       if (aiStatsData && typeof aiStatsData === 'object') {
+        const statsData = aiStatsData as any;
         setAiStats({
-          totalProcessed: aiStatsData.totalProcessed || 0,
-          geminiFlash: aiStatsData.geminiFlash || 0,
-          gpt4o: aiStatsData.gpt4o || 0,
-          claudeSonnet: aiStatsData.claudeSonnet || 0,
-          successRate: aiStatsData.successRate || 0
+          totalProcessed: statsData.totalProcessed || 0,
+          geminiFlash: statsData.geminiFlash || 0,
+          gpt4o: statsData.gpt4o || 0,
+          claudeSonnet: statsData.claudeSonnet || 0,
+          successRate: statsData.successRate || 0
         });
       } else if (aiStatsError) {
         console.error('AI 통계 로드 실패:', aiStatsError.message);

@@ -47,7 +47,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       onClick={onClick}
       style={{ perspective: "1200px" }}
     >
-      <motion.img
+      <img
         src={imageSrc}
         alt={alt}
         loading={loading}
@@ -58,32 +58,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         }`}
         onLoad={handleImageLoad}
         onError={handleImageError}
-        style={{
-          transformStyle: "preserve-3d",
-          backfaceVisibility: "hidden"
-        }}
-        initial={isActive ? {
-          rotateY: -90,
-          scale: 0.8,
-          opacity: 0
-        } : {}}
-        animate={isActive ? {
-          rotateY: [360, 0],
-          scale: [0.8, 1.05, 1],
-          opacity: [0, 0.8, 1],
-          filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1.1)', 'brightness(1)']
-        } : {}}
-        transition={isActive ? {
-          duration: 3.5,
-          ease: [0.23, 1, 0.32, 1],
-          times: [0, 0.6, 0.8, 1]
-        } : {}}
-        whileHover={isActive ? { 
-          scale: 1.08,
-          rotateX: 5,
-          rotateY: 5,
-          transition: { duration: 0.3 }
-        } : {}}
       />
       
       {/* 로딩 스피너 */}
@@ -91,23 +65,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         <div className="absolute inset-0 flex items-center justify-center bg-white/5 backdrop-blur-sm">
           <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
         </div>
-      )}
-      
-      {/* 액티브 효과 - 글로우 */}
-      {isActive && isLoaded && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-blue-500/20 rounded-lg"
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: [0.3, 0.7, 0.3],
-            scale: [1, 1.02, 1]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatType: 'reverse'
-          }}
-        />
       )}
     </div>
   );

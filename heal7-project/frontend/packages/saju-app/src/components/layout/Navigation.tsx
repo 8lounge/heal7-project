@@ -32,6 +32,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange, view
     { id: 'calendar', label: '운세달력', icon: '📅' },
     { id: 'magazine', label: '매거진', icon: '📰' },
     { id: 'store', label: '스토어', icon: '🛍️' },
+    { id: 'subscription', label: '구독서비스', icon: '💎' },
     { id: 'notices', label: '공지사항', icon: '📢' },
     { id: 'admin', label: '관리자', icon: '⚙️' }
   ]

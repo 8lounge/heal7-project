@@ -55,7 +55,6 @@ export default defineConfig({
     proxy: {
       '/api/auth': 'http://127.0.0.1:8002',
       '/api/saju': 'http://127.0.0.1:8002',
-      '/api/dreams': 'http://127.0.0.1:8002',
       '/api': 'http://127.0.0.1:8005'
     }
   }

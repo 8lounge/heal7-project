@@ -12,6 +12,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeTextClasses } from '../../utils/themeStyles';
+import AppleToggle from '../ui/AppleToggle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@heal7/shared';
 import { Button } from '@heal7/shared';
 import { Badge } from '@heal7/shared';
@@ -366,35 +367,17 @@ const UnifiedSajuAdminDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              {/* 테마 토글 영역 */}
-              <div className={`flex items-center gap-3 px-4 py-2 rounded-xl backdrop-blur-sm border theme-transition glass-3
-              }`}>
-                <span className={`text-sm font-medium transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-200' : 'text-purple-200'
-                }`}>
-                  {theme === 'light' ? '☀️ 낮' : '🌙 밤'}
-                </span>
-                <button
-                  onClick={handleThemeToggle}
-                  className={`relative w-12 h-6 rounded-full transition-all duration-500 focus:outline-none focus:ring-2 ${
-                    theme === 'light'
-                      ? 'bg-orange-400 focus:ring-orange-300'
-                      : 'bg-purple-600 focus:ring-purple-400'
-                  }`}
-                >
-                  <div className={`absolute top-0.5 w-5 h-5 rounded-full transition-all duration-500 shadow-lg ${
-                    theme === 'light'
-                      ? 'left-6 bg-white border-orange-200'
-                      : 'left-0.5 bg-white border-purple-200'
-                  } border flex items-center justify-center text-xs`}>
-                    {theme === 'light' ? '☀️' : '🌙'}
-                  </div>
-                </button>
-                <span className={`text-sm font-medium transition-all duration-500 ${
-                  theme === 'light' ? 'text-orange-200/60' : 'text-purple-200/60'
-                }`}>
-                  {theme === 'light' ? '🌙 밤' : '☀️ 낮'}
-                </span>
+              {/* Apple-style 테마 토글 */}
+              <div className="px-4 py-2 rounded-xl backdrop-blur-sm border theme-transition glass-3">
+                <AppleToggle
+                  isOn={theme === 'dark'}
+                  onToggle={handleThemeToggle}
+                  leftIcon="☀️"
+                  rightIcon="🌙"
+                  leftLabel="낮"
+                  rightLabel="밤"
+                  size="md"
+                />
               </div>
               
               <Badge variant="outline" className={`transition-all duration-500 ${

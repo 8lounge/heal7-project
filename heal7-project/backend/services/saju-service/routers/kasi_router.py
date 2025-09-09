@@ -15,7 +15,10 @@ async def kasi_calendar_proxy(year: int, month: int, day: int):
     try:
         # 먼저 KASI Core 계산기를 통해 실제 음력 변환 시도
         try:
-            sys.path.append(str(Path(__file__).parent.parent.parent.parent / "app"))
+            # 올바른 경로로 수정: services/saju-service -> backend/app
+            app_path = str(Path(__file__).parent.parent.parent.parent / "app")
+            if app_path not in sys.path:
+                sys.path.insert(0, app_path)
             from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
             
             kasi_calc = KasiCalculatorCore()
@@ -98,7 +101,10 @@ async def kasi_calendar_proxy(year: int, month: int, day: int):
 async def kasi_solar_to_lunar_proxy(solYear: int, solMonth: int, solDay: int):
     """KASI API 양력→음력 변환 프록시"""
     try:
-        sys.path.append(str(Path(__file__).parent.parent.parent.parent / "app"))
+        # 올바른 경로로 수정: services/saju-service -> backend/app
+        app_path = str(Path(__file__).parent.parent.parent.parent / "app")
+        if app_path not in sys.path:
+            sys.path.insert(0, app_path)
         from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
         
         kasi_calc = KasiCalculatorCore()
@@ -129,7 +135,10 @@ async def kasi_solar_to_lunar_proxy(solYear: int, solMonth: int, solDay: int):
 async def kasi_lunar_to_solar_proxy(lunYear: int, lunMonth: int, lunDay: int, lunLeapmonth: str = "N"):
     """KASI API 음력→양력 변환 프록시"""
     try:
-        sys.path.append(str(Path(__file__).parent.parent.parent.parent / "app"))
+        # 올바른 경로로 수정: services/saju-service -> backend/app
+        app_path = str(Path(__file__).parent.parent.parent.parent / "app")
+        if app_path not in sys.path:
+            sys.path.insert(0, app_path)
         from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
         
         kasi_calc = KasiCalculatorCore()

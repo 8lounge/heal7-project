@@ -56,7 +56,7 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
             const apiResults = await response.json();
             
             // API 응답 구조 확인: List[DreamInterpretationResponse]
-            if (Array.isArray(apiResults)) {
+            if (Array.isArray(apiResults) && apiResults.length > 0) {
               // API 응답을 프론트엔드 형식으로 변환
               const formattedResults = apiResults.map((dream: any, index: number) => ({
                 id: (index + 1).toString(),
@@ -79,19 +79,25 @@ export const DreamInterpretation: React.FC<DreamInterpretationProps> = ({ onClos
               console.log('Formatted Results:', formattedResults);
               setSearchResults(formattedResults);
             } else {
-              console.warn('API 응답 형식 오류:', apiResults);
-              // API 응답이 예상 형식이 아닐 경우 빈 결과 표시
-              setSearchResults([]);
+              console.warn('API 응답이 빈 배열이거나 형식 오류:', apiResults);
+              // API 응답이 빈 배열이거나 형식이 맞지 않으면 로컬 데이터 사용
+              console.log('로컬 꿈풀이 데이터 사용');
+              const localResults = searchDreams(query);
+              setSearchResults(localResults.dreams);
             }
           } else {
-            // API 실패 시 빈 결과 표시
+            // API 실패 시 로컬 데이터 사용으로 폴백
             console.warn('API 호출 실패:', response.status, response.statusText);
-            setSearchResults([]);
+            console.log('로컬 꿈풀이 데이터 사용');
+            const localResults = searchDreams(query);
+            setSearchResults(localResults.dreams);
           }
         } catch (error) {
           console.error('API 호출 오류:', error);
-          // 오류 시 빈 결과 표시
-          setSearchResults([]);
+          // API 오류 시 로컬 데이터 사용으로 폴백
+          console.log('로컬 꿈풀이 데이터 사용');
+          const localResults = searchDreams(query);
+          setSearchResults(localResults.dreams);
         } finally {
           setIsSearching(false);
         }
