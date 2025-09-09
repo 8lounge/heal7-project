@@ -328,8 +328,9 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                 <div className="space-y-3">
                   <div className="text-center">
                     <div className="text-3xl mb-2">{todayFortune.zodiac === '쥐' ? '🐭' : todayFortune.zodiac === '소' ? '🐂' : todayFortune.zodiac === '호랑이' ? '🐅' : todayFortune.zodiac === '토끼' ? '🐰' : todayFortune.zodiac === '용' ? '🐉' : todayFortune.zodiac === '뱀' ? '🐍' : todayFortune.zodiac === '말' ? '🐴' : todayFortune.zodiac === '양' ? '🐑' : todayFortune.zodiac === '원숭이' ? '🐒' : todayFortune.zodiac === '닭' ? '🐓' : todayFortune.zodiac === '개' ? '🐕' : '🐷'}</div>
-                    <div className="font-bold text-white text-lg">{get갑자표시(todayFortune.gapja)}</div>
+                    <div className="font-bold text-white text-lg">{get갑자표시(todayFortune.yearPillar)}</div>
                     <div className="text-white/80 text-sm">{todayFortune.zodiac}의 해</div>
+                    <div className="text-white/60 text-xs mt-1">오늘 일주: {get갑자표시(todayFortune.gapja)}</div>
                   </div>
                   <div className="text-center">
                     <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getScoreBg(todayFortune.운세점수)} ${getScoreColor(todayFortune.운세점수)}`}>
@@ -366,18 +367,26 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                     <div className="text-white/80 text-sm">{selectedDate.lunarDate}</div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="text-center">
-                      <div className="text-white/80 text-xs">갑자</div>
-                      <div className="text-white font-bold text-sm leading-tight">{get갑자표시(selectedDate.gapja)}</div>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center">
+                        <div className="text-white/80 text-xs">연주(년)</div>
+                        <div className="text-white font-bold text-sm leading-tight">{get갑자표시(selectedDate.yearPillar)}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-white/80 text-xs">일주(일)</div>
+                        <div className="text-white font-bold text-sm leading-tight">{get갑자표시(selectedDate.gapja)}</div>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-white/80 text-xs">띠</div>
-                      <div className="text-white font-bold">{selectedDate.zodiac}</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-white/80 text-xs">오행</div>
-                      <div className="text-white font-bold">{selectedDate.element}</div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center">
+                        <div className="text-white/80 text-xs">띠</div>
+                        <div className="text-white font-bold">{selectedDate.zodiac}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-white/80 text-xs">오행</div>
+                        <div className="text-white font-bold">{selectedDate.element}</div>
+                      </div>
                     </div>
                     <div className="text-center">
                       <div className="text-white/80 text-xs">운세</div>

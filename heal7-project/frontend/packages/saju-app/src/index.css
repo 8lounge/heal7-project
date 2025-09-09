@@ -724,7 +724,7 @@ body {
     background-repeat: no-repeat;
   }
 
-  /* 🌙 다크 테마 배경 - 2가지 신비로운 그라데이션 30초 자동전환 */
+  /* 🌙 다크 테마 배경 - 롤링 이미지 시스템 (CDN 이미지 대기) */
   .theme-dark body {
     animation: darkThemeBackgroundRotation 60s infinite;
     background-size: 400% 400%;
@@ -733,27 +733,32 @@ body {
 
   @keyframes darkThemeBackgroundRotation {
     0%, 49.99% {
+      /* 📍 대기 중인 밤 이미지 1: https://cdn.midjourney.com/13722678-e541-4188-b5f0-4e01c42dc2e1/0_2.png */
       background: radial-gradient(circle at 20% 80%, #1a0d2e 0%, #2d1b4e 25%, #4c1d95 50%, #7c3aed 75%, #1e0a37 100%),
                   linear-gradient(135deg, #0f0c29 0%, #24243e 35%, #302b63 100%);
     }
     50%, 100% {
+      /* 📍 대기 중인 밤 이미지 2: https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png */
       background: radial-gradient(circle at 80% 20%, #1e0a37 0%, #4c1d95 25%, #6366f1 50%, #a855f7 75%, #2d1b4e 100%),
                   linear-gradient(225deg, #232526 0%, #414345 35%, #1a1a2e 100%);
     }
   }
 
-  /* ☀️ macOS 라이트 테마 배경 - 순수 화이트 */
+  /* ☀️ 라이트 테마 배경 - 롤링 이미지 시스템 (CDN 이미지 대기) */
   .theme-light body {
     background: #ffffff !important;
     background-attachment: fixed;
+    animation: lightThemeBackgroundRotation 60s infinite;
   }
 
   @keyframes lightThemeBackgroundRotation {
     0%, 49.99% {
+      /* 📍 대기 중인 낮 이미지 1: https://cdn.midjourney.com/b274426b-a59d-44e0-ab72-ea7fcc8da8e2/0_0.png */
       background: radial-gradient(circle at 30% 70%, #fff7ed 0%, #ffedd5 25%, #fed7aa 50%, #fb923c 75%, #f97316 100%),
                   linear-gradient(135deg, #fef7f0 0%, #fed7d7 35%, #fecaca 100%);
     }
     50%, 100% {
+      /* 📍 대기 중인 낮 이미지 2: https://cdn.midjourney.com/8abb3340-1cfe-4598-b56d-9406454080f7/0_0.png */
       background: radial-gradient(circle at 70% 30%, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #ec4899 75%, #db2777 100%),
                   linear-gradient(225deg, #fff1f2 0%, #ffe4e6 35%, #fecdd3 100%);
     }

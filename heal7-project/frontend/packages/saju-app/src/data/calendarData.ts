@@ -53,6 +53,10 @@ export interface CalendarDate {
   animal: string;
   element: string;
   lunarDate: string;
+  lunarYear: number;
+  lunarMonth: number;
+  lunarDay: number;
+  isLeapMonth: boolean;
   isToday: boolean;
   isWeekend: boolean;
   isHoliday: boolean;
@@ -305,8 +309,30 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
     // 년주 계산
     const yearPillar = get년주(date);
     
-    // 음력 변환 (간단 근사)
-    const lunarDate = `음력 ${month}월 ${day}일`;
+    // 음력 변환 (KASI API 활용)
+    let lunarYear = year;
+    let lunarMonth = 0;
+    let lunarDay = 0;
+    let isLeapMonth = false;
+    let lunarDate = "음력 정보 없음";
+    
+    try {
+      const lunarInfo = await getKasi음력정보(date);
+      if (lunarInfo) {
+        lunarYear = lunarInfo.lunYear;
+        lunarMonth = lunarInfo.lunMonth;  
+        lunarDay = lunarInfo.lunDay;
+        isLeapMonth = lunarInfo.lunLeapmonth === "윤";
+        lunarDate = `음력 ${lunarYear}년 ${lunarMonth}월 ${lunarDay}일${isLeapMonth ? ' (윤달)' : ''}`;
+      }
+    } catch (error) {
+      console.warn(`음력 변환 실패 (${year}-${month}-${day}):`, error);
+      // 폴백: 대략적인 근사값 (실제 사용에는 부정확)
+      lunarYear = year;
+      lunarMonth = month;
+      lunarDay = day; 
+      lunarDate = `음력 ${month}월 ${day}일 (근사)`;
+    }
     
     // 길흉 및 운세 점수 계산
     const 길흉결과 = get길흉(gapja, date);
@@ -323,6 +349,10 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
       animal,
       element,
       lunarDate,
+      lunarYear,
+      lunarMonth,
+      lunarDay,
+      isLeapMonth,
       isToday: date.toDateString() === today.toDateString(),
       isWeekend: date.getDay() === 0 || date.getDay() === 6,
       isHoliday: false, // TODO: 공휴일 계산 추가
