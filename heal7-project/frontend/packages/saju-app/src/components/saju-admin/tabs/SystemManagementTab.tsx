@@ -426,8 +426,6 @@ export const SystemManagementTab = () => {
           )}
         </div>
       )}
-        </div>
-      )}
 
       {/* 시스템 설정 */}
       {activeTab === 'system' && (

@@ -304,8 +304,6 @@ export const PointManagementTab = () => {
           )}
         </div>
       )}
-        </div>
-      )}
 
       {/* 거래 내역 */}
       {activeSection === 'transactions' && (

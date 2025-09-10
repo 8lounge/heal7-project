@@ -85,6 +85,33 @@ gh workflow run backend-services-build.yml
 gh workflow run service-selector.yml --field target_service=all-services
 ```
 
+## 📦 Build Artifacts Layout (표준화)
+
+이 프로젝트는 빌드 산출물을 루트에 난립시키지 않고, `heal7-project/artifacts/` 하위로 일원화해 보관합니다. 과거의 `*-build/` 폴더는 더 이상 사용하지 않습니다.
+
+- 루트: `heal7-project/artifacts/`
+  - 프론트엔드: `heal7-project/artifacts/frontend/`
+    - `saju-app/` ← GitHub Actions에서 받은 `saju-app-dist` 배치 위치
+    - `crawling-app/` ← GitHub Actions에서 받은 `crawling-app-dist` 배치 위치
+  - 백엔드: `heal7-project/artifacts/backend/`
+    - `saju/` ← `saju-service-build` 배치 위치
+    - `crawling/` ← `crawling-service-build` 배치 위치
+    - `paperwork/` ← `paperwork-service-build` 배치 위치
+    - `ai-monitoring/` ← `ai-monitoring-service-build` 배치 위치
+    - `dashboard/` ← `dashboard-service-build` 배치 위치
+
+사용 원칙
+- 프론트엔드 로컬 빌드 산출물은 각 패키지 내부 `dist/`에 유지
+  - `frontend/packages/saju-app/dist/`
+  - `frontend/packages/crawling-app/dist/`
+- 안전 로컬 빌드(메모리 제한) 사용 시, `/tmp/*-build-safe`로 생성 후 필요 시 `artifacts/frontend/*`로 복사
+- GitHub Actions로 받은 아티팩트는 반드시 `heal7-project/artifacts/**` 하위로 정리
+
+폐기(Deprecated) 경로
+- 더 이상 사용하지 않는 루트 폴더: `admin-frontend-build/`, `heal7-frontend-build/`, `keywords-frontend-build/`,
+  `saju-service-build/`, `crawling-service-build/`, `paperwork-service-build/`, `ai-monitoring-service-build/`, `dashboard-service-build/`
+- 루트 `.gitignore`는 `heal7-project/artifacts/` 및 `*-build/`를 무시하도록 설정되어 있어, 실수 커밋을 방지합니다.
+
 ### **로컬 개발 (권장하지 않음)**
 ```bash
 # ⚠️ 로컬 빌드는 서버 부담을 줄 수 있습니다

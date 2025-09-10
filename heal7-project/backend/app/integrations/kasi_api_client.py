@@ -27,8 +27,11 @@ class KasiApiClient:
             'AR2zMFQPIPBFak+MdXzznzVmtsICp7dwd3eo9XCUP62kXpr4GrX3eqi28erzZhXfIemuo6C5AK58eLMKBw8VGQ==')
         self.kasi_lunar_api = "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService"
         
-        self.daily_usage_limit = 300  # 일일 한계
-        self.monthly_usage_limit = 9500  # 월 한계 (여유분 500건)
+        # ⚠️ KASI API 사용량 제한 (2025-09-10 확인)
+        # 일일: 900회 / 월간: 10,000회
+        # 초과 시 서비스 중단 위험 - 철저한 관리 필요
+        self.daily_usage_limit = 900  # 일일 한계 (KASI 공식 제한)
+        self.monthly_usage_limit = 10000  # 월간 한계 (KASI 공식 제한)
         self.current_usage = 0
         self.usage_reset_date = datetime.now().date()
         
