@@ -3,17 +3,11 @@
   "version": "1.0.0",
   "description": "🔄 HEAL7 공통 모듈 - UI 컴포넌트, 3D 컴포넌트, 유틸리티",
   "type": "module",
-  "main": "./dist/shared.js",
-  "module": "./dist/shared.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "import": "./dist/shared.js",
-      "require": "./dist/shared.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./components/*": "./dist/components/*.js",
-    "./styles/*": "./dist/styles/*.css"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly",
