@@ -41,7 +41,7 @@ jobs:
     - name: Install dependencies and build
       run: |
         cd heal7-project/frontend
-        pnpm install --frozen-lockfile
+        pnpm install --no-frozen-lockfile
         
         TARGET_APP="${{ github.event.inputs.target_app }}"
         if [ -z "$TARGET_APP" ] || [ "$TARGET_APP" = "all-apps" ]; then
