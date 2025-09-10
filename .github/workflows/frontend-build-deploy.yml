@@ -11,6 +11,16 @@ on:
     paths:
       - 'heal7-project/frontend/**'
   workflow_dispatch:
+    inputs:
+      target_app:
+        description: '빌드할 앱 선택'
+        required: true
+        default: 'all-apps'
+        type: choice
+        options:
+        - all-apps
+        - saju-app
+        - crawling-app
 
 jobs:
   build-frontend:
@@ -28,49 +38,33 @@ jobs:
     - name: Install pnpm
       run: npm install -g pnpm
       
-    - name: Create optimized dist build
+    - name: Install dependencies and build
       run: |
         cd heal7-project/frontend
-        # Skip npm install - create direct build artifacts
-        mkdir -p packages/saju-app/dist
-        mkdir -p packages/crawling-app/dist
+        pnpm install --frozen-lockfile
         
-        # Create realistic HTML files with basic assets
-        cat > packages/saju-app/dist/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사주 운세 서비스 - Heal7</title>
-</head>
-<body>
-    <div id="root">
-        <h1>🔮 사주 운세 서비스</h1>
-        <p>Build: $(date)</p>
-        <p>Ready for deployment</p>
-    </div>
-</body>
-</html>
-EOF
-        
-        cat > packages/crawling-app/dist/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 크롤링 시스템 - Heal7</title>
-</head>
-<body>
-    <div id="root">
-        <h1>🕷️ AI 크롤링 시스템</h1>
-        <p>Build: $(date)</p>
-        <p>Ready for deployment</p>
-    </div>
-</body>
-</html>
-EOF
+        TARGET_APP="${{ github.event.inputs.target_app }}"
+        if [ -z "$TARGET_APP" ] || [ "$TARGET_APP" = "all-apps" ]; then
+          echo "🔮 Building saju-app..."
+          cd packages/saju-app
+          NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+          cd ../..
+          
+          echo "🕷️ Building crawling-app..."
+          cd packages/crawling-app
+          NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+          cd ../..
+        elif [ "$TARGET_APP" = "saju-app" ]; then
+          echo "🔮 Building saju-app only..."
+          cd packages/saju-app
+          NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+          cd ../..
+        elif [ "$TARGET_APP" = "crawling-app" ]; then
+          echo "🕷️ Building crawling-app only..."
+          cd packages/crawling-app
+          NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+          cd ../..
+        fi
         
     - name: Verify minimal builds
       run: |
