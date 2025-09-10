@@ -93,7 +93,18 @@ except ImportError as e:
 # 메인 백엔드의 사주 서비스 로직 추가 (필요한 경우)
 sys.path.append(str(Path(__file__).parent.parent / "app"))
 
-# TODO: 나머지 라우터들 (admin, point-cash, customer, community, interpretation 등)
+# 사주 관리자 라우터 추가
+try:
+    # 메인 백엔드의 routers 경로에서 import
+    import sys
+    sys.path.append("/home/ubuntu/heal7-project/backend/app/routers")
+    from saju_admin import router as admin_router
+    app.include_router(admin_router)
+    print("✅ Saju admin router loaded successfully")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import saju admin router: {e}")
+
+# TODO: 나머지 라우터들 (point-cash, customer, community, interpretation 등)
 # 현재는 기존 main.py에 남겨두고 점진적으로 분리 예정
 
 print(f"🚀 {config['service']['name']} (모듈화 버전) 시작...")

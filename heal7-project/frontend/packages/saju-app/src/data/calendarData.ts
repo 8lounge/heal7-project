@@ -60,11 +60,33 @@ export interface CalendarDate {
   isToday: boolean;
   isWeekend: boolean;
   isHoliday: boolean;
-  fortuneScore: number;
-  specialNotes: string[];
+  운세점수: number;
+  특이사항: string[];
   isGoodDay: boolean;
   isBadDay: boolean;
   yearPillar: string;
+  // 호환성을 위한 영어 속성들 (deprecated)
+  fortuneScore?: number;
+  specialNotes?: string[];
+  // 추가 한글 속성들
+  zodiac: string;
+  gilil?: boolean;
+  흉일?: boolean;
+  sonEobNeunNal?: boolean;
+  절기?: string;
+}
+
+// 월별 운세 데이터 타입 정의
+export interface MonthlyFortune {
+  averageScore: number;
+  goodDays: number;
+  badDays: number;
+  totalDays: number;
+  bestDay: CalendarDate | null;
+  worstDay: CalendarDate | null;
+  monthlyMessage: string;
+  bestDates: CalendarDate[];
+  importantDates: CalendarDate[];
 }
 
 // KASI API 오류 추적
@@ -336,10 +358,17 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
     
     // 길흉 및 운세 점수 계산 (방어적 코딩)
     const 길흉결과 = get길흉(gapja, date) || { 길일: false, 흉일: false };
-    const fortuneScore = get운세점수(gapja, date) || 3;
-    const specialNotes = get특이사항(date, gapja, false) || [];
+    const 운세점수 = get운세점수(gapja, date) || 3;
+    const 특이사항 = get특이사항(date, gapja, false) || [];
     
-    // 캘린더 데이터 객체 생성
+    // zodiac 매핑 (간단 버전)
+    const zodiacMap: { [key: string]: string } = {
+      '자': '쥐', '축': '소', '인': '호랑이', '묘': '토끼', '진': '용', '사': '뱀',
+      '오': '말', '미': '양', '신': '원숭이', '유': '닭', '술': '개', '해': '돼지'
+    };
+    const zodiac = zodiacMap[jiji] || '알수없음';
+    
+    // 캘린더 데이터 객체 생성 (한글 속성 사용)
     const calendarDate: CalendarDate = {
       date,
       day,
@@ -356,11 +385,18 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
       isToday: date.toDateString() === today.toDateString(),
       isWeekend: date.getDay() === 0 || date.getDay() === 6,
       isHoliday: false, // TODO: 공휴일 계산 추가
-      fortuneScore,
-      specialNotes,
+      운세점수,
+      특이사항,
       isGoodDay: 길흉결과.길일,
       isBadDay: 길흉결과.흉일,
-      yearPillar
+      yearPillar,
+      zodiac,
+      gilil: 길흉결과.길일,
+      흉일: 길흉결과.흉일,
+      sonEobNeunNal: is손없는날(date),
+      // 호환성을 위한 영어 속성들
+      fortuneScore: 운세점수,
+      specialNotes: 특이사항
     };
     
     calendarDates.push(calendarDate);
@@ -387,27 +423,40 @@ export const getTodayFortune = async (): Promise<CalendarDate> => {
 };
 
 // 월별 운세 요약
-export const getMonthlyFortune = async (year: number, month: number): Promise<{
-  averageScore: number;
-  goodDays: number;
-  badDays: number;
-  totalDays: number;
-  bestDay: CalendarDate | null;
-  worstDay: CalendarDate | null;
-}> => {
+export const getMonthlyFortune = async (year: number, month: number): Promise<MonthlyFortune> => {
   const monthData = await generateCalendarMonth(year, month);
   
-  const scores = monthData.map(d => d.fortuneScore);
+  const scores = monthData.map(d => d.운세점수);
   const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
   
   const goodDays = monthData.filter(d => d.isGoodDay).length;
   const badDays = monthData.filter(d => d.isBadDay).length;
   
   const bestDay = monthData.reduce((best, current) => 
-    current.fortuneScore > (best?.fortuneScore || 0) ? current : best, null as CalendarDate | null);
+    current.운세점수 > (best?.운세점수 || 0) ? current : best, null as CalendarDate | null);
   
   const worstDay = monthData.reduce((worst, current) => 
-    current.fortuneScore < (worst?.fortuneScore || 6) ? current : worst, null as CalendarDate | null);
+    current.운세점수 < (worst?.운세점수 || 6) ? current : worst, null as CalendarDate | null);
+  
+  // 좋은 날들 (운세점수 4 이상)
+  const bestDates = monthData.filter(d => d.운세점수 >= 4).slice(0, 5);
+  
+  // 중요한 날들 (절기, 특이사항 있는 날들)
+  const importantDates = monthData.filter(d => 
+    d.특이사항.length > 0 || is절기날(d.date)
+  ).slice(0, 5);
+  
+  // 월간 메시지 생성
+  const monthNames = ['', '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+  let monthlyMessage = `${year}년 ${monthNames[month]}은 `;
+  
+  if (averageScore >= 4) {
+    monthlyMessage += '매우 좋은 운세의 달입니다. 새로운 도전을 시작하기 좋은 시기입니다.';
+  } else if (averageScore >= 3) {
+    monthlyMessage += '평온한 운세의 달입니다. 꾸준함과 인내가 좋은 결과를 가져올 것입니다.';
+  } else {
+    monthlyMessage += '신중함이 필요한 달입니다. 중요한 결정은 미루시고 기초를 다지는 시간으로 활용하세요.';
+  }
   
   return {
     averageScore: Math.round(averageScore * 100) / 100,
@@ -415,7 +464,10 @@ export const getMonthlyFortune = async (year: number, month: number): Promise<{
     badDays,
     totalDays: monthData.length,
     bestDay,
-    worstDay
+    worstDay,
+    monthlyMessage,
+    bestDates,
+    importantDates
   };
 };
 
@@ -441,3 +493,6 @@ export default {
   is절기날,
   get갑자표시
 };
+
+// 타입 export 추가
+export type { CalendarDate, MonthlyFortune };

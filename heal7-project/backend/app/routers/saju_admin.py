@@ -33,7 +33,7 @@ def get_admin_settings():
     """실제 사주 관리자 설정 반환 (하드코딩 제거)"""
     return get_real_admin_settings()
 
-router = APIRouter(prefix="/admin/saju", tags=["사주 관리자"])
+router = APIRouter(prefix="/api/admin/saju", tags=["사주 관리자"])
 security = HTTPBearer()
 
 # 설정 파일 경로
@@ -1066,3 +1066,67 @@ async def backup_current_settings(token: str = Depends(verify_admin_token)) -> D
         return {"message": "설정이 백업되었습니다.", "backup_path": backup_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"백업 실패: {str(e)}")
+
+# Dashboard API 엔드포인트 추가
+@router.get("/dashboard/stats", summary="관리자 대시보드 통계")
+async def get_dashboard_stats(token: str = Depends(verify_admin_token)) -> Dict[str, Any]:
+    """관리자 대시보드용 통계 데이터를 반환합니다."""
+    try:
+        # Mock 데이터 (실제 데이터베이스 연동 시 교체)
+        return {
+            "today_users": 142,
+            "total_users": 8567,
+            "today_calculations": 89,
+            "total_calculations": 45238,
+            "system_status": "healthy",
+            "api_calls_today": 534,
+            "error_rate": 0.012,
+            "average_response_time": 125,
+            "active_sessions": 23,
+            "revenue_today": 89400,
+            "popular_services": [
+                {"name": "사주계산", "count": 234},
+                {"name": "꿈해몽", "count": 156},
+                {"name": "운세보기", "count": 98}
+            ],
+            "recent_alerts": [
+                {"level": "info", "message": "시스템 정상 운영 중", "time": "10분 전"},
+                {"level": "warning", "message": "KASI API 응답 지연", "time": "2시간 전"}
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"통계 조회 실패: {str(e)}")
+
+@router.get("/dashboard/recent-activities", summary="최근 활동 내역")
+async def get_recent_activities(
+    limit: int = 10,
+    token: str = Depends(verify_admin_token)
+) -> Dict[str, Any]:
+    """최근 시스템 활동 내역을 반환합니다."""
+    try:
+        # Mock 데이터 (실제 데이터베이스 연동 시 교체)
+        activities = [
+            {
+                "id": f"act_{i}",
+                "type": "calculation" if i % 3 == 0 else "user_register" if i % 3 == 1 else "payment",
+                "user_id": f"user_{1000 + i}",
+                "description": f"{'사주 계산 요청' if i % 3 == 0 else '신규 사용자 가입' if i % 3 == 1 else '포인트 결제'}",
+                "timestamp": f"2025-09-10T{14 - (i // 4):02d}:{45 - (i % 4) * 15:02d}:00Z",
+                "status": "completed" if i % 5 != 4 else "failed",
+                "details": {
+                    "ip": f"192.168.1.{100 + i}",
+                    "user_agent": "Mozilla/5.0",
+                    "duration_ms": 120 + i * 10
+                }
+            }
+            for i in range(limit)
+        ]
+        
+        return {
+            "activities": activities,
+            "total_count": 156,
+            "page": 1,
+            "per_page": limit
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"활동 내역 조회 실패: {str(e)}")
