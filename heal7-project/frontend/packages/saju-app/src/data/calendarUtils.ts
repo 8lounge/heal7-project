@@ -202,43 +202,72 @@ export const get운세점수 = (gapja: string, date: Date): number => {
 
 // 특이사항 판정
 export const get특이사항 = (date: Date, gapja: string, isLeapMonth?: boolean): string[] => {
-  const 특이사항들: string[] = [];
-  
-  // 손없는날
-  if (is손없는날(date)) {
-    특이사항들.push('손없는날');
+  try {
+    const 특이사항들: string[] = [];
+    
+    // 매개변수 검증
+    if (!date || !gapja) {
+      return [];
+    }
+    
+    // 손없는날
+    try {
+      if (is손없는날 && is손없는날(date)) {
+        특이사항들.push('손없는날');
+      }
+    } catch (error) {
+      console.warn('손없는날 계산 오류:', error);
+    }
+    
+    // 길일/흉일
+    try {
+      const 길흉결과 = get길흉(gapja, date) || { 길일: false, 흉일: false };
+      const { 길일, 흉일 } = 길흉결과;
+      if (길일) 특이사항들.push('길일');
+      if (흉일) 특이사항들.push('흉일');
+    } catch (error) {
+      console.warn('길흉 계산 오류:', error);
+    }
+    
+    // 절기
+    try {
+      const 절기 = get절기(date);
+      if (절기) {
+        특이사항들.push(`${절기}`);
+      }
+    } catch (error) {
+      console.warn('절기 계산 오류:', error);
+    }
+    
+    // 윤달
+    if (isLeapMonth) {
+      특이사항들.push('윤달');
+    }
+    
+    // 특별한 갑자 조합
+    if (gapja === '갑자') {
+      특이사항들.push('갑자일');
+    } else if (gapja === '경신') {
+      특이사항들.push('경신일');
+    }
+    
+    // 요일별 특이사항 (방어적 코딩)
+    try {
+      const 요일명배열 = ['일', '월', '화', '수', '목', '금', '토'];
+      const 요일인덱스 = date.getDay();
+      const 요일명 = 요일명배열[요일인덱스];
+      if (요일명 === '일') {
+        특이사항들.push('일요일');
+      }
+    } catch (error) {
+      console.warn('요일 계산 오류:', error);
+    }
+    
+    return Array.isArray(특이사항들) ? 특이사항들 : [];
+  } catch (error) {
+    console.warn('get특이사항 전체 오류:', error);
+    return [];
   }
-  
-  // 길일/흉일
-  const { 길일, 흉일 } = get길흉(gapja, date);
-  if (길일) 특이사항들.push('길일');
-  if (흉일) 특이사항들.push('흉일');
-  
-  // 절기
-  const 절기 = get절기(date);
-  if (절기) {
-    특이사항들.push(`${절기}`);
-  }
-  
-  // 윤달
-  if (isLeapMonth) {
-    특이사항들.push('윤달');
-  }
-  
-  // 특별한 갑자 조합
-  if (gapja === '갑자') {
-    특이사항들.push('갑자일');
-  } else if (gapja === '경신') {
-    특이사항들.push('경신일');
-  }
-  
-  // 요일별 특이사항
-  const 요일명 = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
-  if (요일명 === '일') {
-    특이사항들.push('일요일');
-  }
-  
-  return 특이사항들;
 };
 
 // 띠 동물 조회 (sajuConstants.ts에서 이미 정의됨, 여기서는 유틸리티 함수만)

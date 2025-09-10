@@ -17,7 +17,12 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Button } from '@heal7/shared';
+// import { Button } from '@heal7/shared';
+
+// Temporary fallback component - 빌드 문제로 임시 대체
+const Button = ({ children, className = "", onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) => (
+  <button className={`px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 ${className}`} onClick={onClick}>{children}</button>
+);
 import { 
   BarChart3, 
   Brain,

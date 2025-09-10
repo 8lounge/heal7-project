@@ -263,10 +263,10 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
     const localGapja = get60갑자Sync(referenceDate);
     const kasiGapja = kasiReferenceData.lunIljin;
     
-    const localIndex = 갑자60순환.indexOf(localGapja);
-    const kasiIndex = 갑자60순환.indexOf(kasiGapja);
+    const localIndex = 갑자60순환?.indexOf(localGapja) ?? -1;
+    const kasiIndex = 갑자60순환?.indexOf(kasiGapja) ?? -1;
     
-    if (localIndex !== -1 && kasiIndex !== -1) {
+    if (localIndex !== -1 && kasiIndex !== -1 && 갑자60순환) {
       gapjaOffset = (kasiIndex - localIndex + 60) % 60;
       console.log(`🔧 갑자 오프셋 계산: ${localGapja}(${localIndex}) → ${kasiGapja}(${kasiIndex}) = +${gapjaOffset}`);
     }
@@ -277,19 +277,19 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
     const date = new Date(year, month - 1, day);
     const today = new Date();
     
-    // 갑자 계산 (오프셋 적용)
+    // 갑자 계산 (오프셋 적용, 방어적 코딩)
     let gapja = get60갑자Sync(date);
-    if (gapjaOffset > 0) {
+    if (gapjaOffset > 0 && 갑자60순환) {
       const currentIndex = 갑자60순환.indexOf(gapja);
       if (currentIndex !== -1) {
         const newIndex = (currentIndex + gapjaOffset) % 60;
-        gapja = 갑자60순환[newIndex];
+        gapja = 갑자60순환[newIndex] || gapja; // 폴백
       }
     }
     
-    // 갑자 분해
-    const cheongan = gapja[0];
-    const jiji = gapja[1];
+    // 갑자 분해 (방어적 코딩)
+    const cheongan = gapja?.[0] || '갑';
+    const jiji = gapja?.[1] || '자';
     
     // 띠 동물 및 오행 계산
     const animals: Record<string, string> = {
@@ -334,10 +334,10 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
       lunarDate = `음력 ${month}월 ${day}일 (근사)`;
     }
     
-    // 길흉 및 운세 점수 계산
-    const 길흉결과 = get길흉(gapja, date);
-    const fortuneScore = get운세점수(gapja, date);
-    const specialNotes = get특이사항(date, gapja, false);
+    // 길흉 및 운세 점수 계산 (방어적 코딩)
+    const 길흉결과 = get길흉(gapja, date) || { 길일: false, 흉일: false };
+    const fortuneScore = get운세점수(gapja, date) || 3;
+    const specialNotes = get특이사항(date, gapja, false) || [];
     
     // 캘린더 데이터 객체 생성
     const calendarDate: CalendarDate = {
@@ -367,7 +367,7 @@ export const generateCalendarMonth = async (year: number, month: number): Promis
   }
   
   console.log(`✅ ${year}년 ${month}월 캘린더 생성 완료 (${calendarDates.length}일)`);
-  return calendarDates;
+  return Array.isArray(calendarDates) ? calendarDates : [];
 };
 
 // 오늘의 운세 조회

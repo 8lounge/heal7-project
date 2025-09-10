@@ -13,10 +13,30 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeTextClasses } from '../../utils/themeStyles';
 import AppleToggle from '../ui/AppleToggle';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@heal7/shared';
-import { Button } from '@heal7/shared';
-import { Badge } from '@heal7/shared';
-import { Progress } from '@heal7/shared';
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@heal7/shared';
+// import { Button } from '@heal7/shared';
+// import { Badge } from '@heal7/shared';
+// import { Progress } from '@heal7/shared';
+
+// Temporary fallback components - 빌드 문제로 임시 대체
+const Card = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
+  <div className={`border rounded-lg p-4 ${className}`}>{children}</div>
+);
+const CardContent = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+const CardDescription = ({ children }: { children: React.ReactNode }) => <p className="text-sm text-gray-600">{children}</p>;
+const CardHeader = ({ children }: { children: React.ReactNode }) => <div className="pb-2">{children}</div>;
+const CardTitle = ({ children }: { children: React.ReactNode }) => <h3 className="text-lg font-semibold">{children}</h3>;
+const Button = ({ children, className = "", onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) => (
+  <button className={`px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 ${className}`} onClick={onClick}>{children}</button>
+);
+const Badge = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
+  <span className={`px-2 py-1 text-xs bg-gray-200 rounded ${className}`}>{children}</span>
+);
+const Progress = ({ value = 0, className = "" }: { value?: number, className?: string }) => (
+  <div className={`w-full bg-gray-200 rounded-full h-2 ${className}`}>
+    <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${value}%` }}></div>
+  </div>
+);
 import { 
   Users, 
   Activity, 

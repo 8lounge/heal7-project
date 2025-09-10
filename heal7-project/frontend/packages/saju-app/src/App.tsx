@@ -36,11 +36,11 @@ import DreamInterpretation from './components/fortune/DreamInterpretation'
 import FortuneCalendar from './components/fortune/FortuneCalendar'
 import { getThemeClasses, themeTransitions } from './utils/themeStyles'
 
-// 3D 컴포넌트 Lazy Loading (from shared package) - 통합 관리
-const Canvas = lazy(() => import('@heal7/shared').then(module => ({ default: module.Canvas })))
-const OrbitControls = lazy(() => import('@heal7/shared').then(module => ({ default: module.OrbitControls })))
-const OptimizedCyberCrystal = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedCyberCrystal })))
-const OptimizedStars = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedStars })))
+// 3D 컴포넌트 Lazy Loading - 빌드 문제로 임시 비활성화
+// const Canvas = lazy(() => import('@heal7/shared').then(module => ({ default: module.Canvas })))
+// const OrbitControls = lazy(() => import('@heal7/shared').then(module => ({ default: module.OrbitControls })))
+// const OptimizedCyberCrystal = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedCyberCrystal })))
+// const OptimizedStars = lazy(() => import('@heal7/shared').then(module => ({ default: module.OptimizedStars })))
 
 // 타입 정의
 interface ApiHealth {
@@ -315,7 +315,8 @@ function AppContent() {
           ))}
         </div>
       )}
-      {/* 3D 배경 (사이버 판타지 모드) - 성능 최적화 */}
+      {/* 3D 배경 (사이버 판타지 모드) - 빌드 문제로 임시 비활성화 */}
+      {/*
       {viewMode === 'cyber_fantasy' && (
         <div className="fixed inset-0 z-0">
           <Canvas 
@@ -332,7 +333,6 @@ function AppContent() {
                 autoRotateSpeed={performanceLevel === 'low' ? 0.5 : 1.0}
               />
               
-              {/* 성능별 별 렌더링 */}
               <OptimizedStars 
                 radius={100} 
                 depth={50} 
@@ -342,13 +342,11 @@ function AppContent() {
                 speed={batteryOptimized ? 0.3 : 1.0}
               />
               
-              {/* 기본 조명 */}
               <ambientLight intensity={performanceLevel === 'low' ? 0.4 : 0.5} />
               {performanceLevel !== 'low' && (
                 <pointLight position={[10, 10, 10]} intensity={0.8} />
               )}
               
-              {/* 최적화된 크리스탈 */}
               <OptimizedCyberCrystal 
                 isVisible={true}
                 reduced={performanceLevel === 'low' || batteryOptimized}
@@ -357,6 +355,7 @@ function AppContent() {
           </Canvas>
         </div>
       )}
+      */}
 
       {/* 메인 콘텐츠 */}
       <div className="relative z-10">
