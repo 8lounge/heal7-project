@@ -1,0 +1,85 @@
+name: Frontend Build and Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_app:
+        description: 'Target app to build'
+        required: true
+        default: 'saju-app'
+        type: choice
+        options:
+        - 'saju-app'
+        - 'crawling-app'
+        - 'all-apps'
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: heal7-project/frontend/package-lock.json
+          
+      - name: Install pnpm
+        run: npm install -g pnpm
+        
+      - name: Install dependencies and build
+        run: |
+          cd heal7-project/frontend
+          pnpm install --no-frozen-lockfile
+          
+          # Build shared package first
+          echo "🔧 Building shared package..."
+          cd packages/shared
+          pnpm build
+          cd ../..
+          
+          TARGET_APP="${{ inputs.target_app }}"
+          if [ -z "$TARGET_APP" ] || [ "$TARGET_APP" = "all-apps" ]; then
+            echo "🔮 Building saju-app..."
+            cd packages/saju-app
+            NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+            cd ../..
+            
+            echo "🕷️ Building crawling-app..."
+            cd packages/crawling-app
+            NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+            cd ../..
+          elif [ "$TARGET_APP" = "saju-app" ]; then
+            echo "🔮 Building saju-app only..."
+            cd packages/saju-app
+            NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+            cd ../..
+          elif [ "$TARGET_APP" = "crawling-app" ]; then
+            echo "🕷️ Building crawling-app only..."
+            cd packages/crawling-app
+            NODE_OPTIONS="--max-old-space-size=1024" pnpm build
+            cd ../..
+          fi
+          
+      - name: Upload saju-app artifacts
+        if: ${{ inputs.target_app == 'saju-app' || inputs.target_app == 'all-apps' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: saju-app-dist
+          path: heal7-project/frontend/packages/saju-app/dist/
+          retention-days: 3
+          
+      - name: Upload crawling-app artifacts  
+        if: ${{ inputs.target_app == 'crawling-app' || inputs.target_app == 'all-apps' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: crawling-app-dist
+          path: heal7-project/frontend/packages/crawling-app/dist/
+          retention-days: 3
