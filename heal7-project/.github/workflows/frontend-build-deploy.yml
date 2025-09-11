@@ -39,11 +39,14 @@ jobs:
           cd heal7-project/frontend
           pnpm install --no-frozen-lockfile
           
-          # Build shared package first
+          # Build shared package first - critical step
           echo "🔧 Building shared package..."
           cd packages/shared
-          pnpm build
+          pnpm run build || exit 1
           cd ../..
+          
+          # Verify shared package was built
+          ls -la packages/shared/dist/
           
           TARGET_APP="${{ inputs.target_app }}"
           if [ -z "$TARGET_APP" ] || [ "$TARGET_APP" = "all-apps" ]; then
