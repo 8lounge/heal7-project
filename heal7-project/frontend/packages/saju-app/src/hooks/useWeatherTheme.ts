@@ -100,11 +100,14 @@ export const useWeatherTheme = () => {
     // 한국 시간대 기준 밤/낮 판단 (글로벌 상수 사용)
     const isNightTime = isNightTimeInKorea();
     
-    // 비/눈/구름 많음 등의 날씨 조건
+    // 비/눈/구름 많음/황사 등의 날씨 조건 (어두운 테마 적용 대상)
     const isDarkWeather = [
-      'rain', 'drizzle', 'thunderstorm', 
-      'snow', 'mist', 'fog', 'clouds'
-    ].includes(weather);
+      'rain', 'drizzle', 'thunderstorm',  // 비 관련
+      'snow', 'sleet',                    // 눈 관련
+      'mist', 'fog', 'haze',             // 안개 관련
+      'clouds', 'overcast',              // 구름 관련
+      'dust', 'sand', 'ash'              // 황사/미세먼지 관련
+    ].includes(weather.toLowerCase());
     
     // 밤 시간이거나 어두운 날씨일 때 어두운 테마
     if (isNightTime || isDarkWeather) {

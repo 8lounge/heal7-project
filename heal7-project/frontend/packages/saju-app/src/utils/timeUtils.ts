@@ -12,7 +12,8 @@ export const KOREA_TIMEZONE_MS = KOREA_TIMEZONE_OFFSET * 60 * 60 * 1000;
  * @returns {Date} 한국 시간대로 변환된 Date 객체
  */
 export const getKoreaTime = (): Date => {
-  return new Date(new Date().getTime() + KOREA_TIMEZONE_MS);
+  // 올바른 방법: 시간대를 명시적으로 지정하여 한국시간 획득
+  return new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
 };
 
 /**
@@ -26,11 +27,12 @@ export const getKoreaHour = (): number => {
 /**
  * 한국 시간 기준으로 낮인지 밤인지 판단
  * @param hour 시간 (선택사항, 기본값은 현재 한국 시간)
- * @returns {boolean} true: 밤(18:00-05:59), false: 낮(06:00-17:59)
+ * @returns {boolean} true: 밤(19:00-05:59), false: 낮(06:00-18:59)
  */
 export const isNightTimeInKorea = (hour?: number): boolean => {
   const currentHour = hour ?? getKoreaHour();
-  return currentHour >= 18 || currentHour < 6;
+  // 더 정확한 한국의 일출/일몰 시간 반영: 밤 19시~새벽 5시59분
+  return currentHour >= 19 || currentHour < 6;
 };
 
 /**

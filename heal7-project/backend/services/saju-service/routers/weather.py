@@ -37,9 +37,13 @@ WEATHER_MAPPING = {
     "흐림": "clouds",
     "비": "rain",
     "소나기": "rain",
+    "뇌우": "thunderstorm",
     "눈": "snow",
+    "진눈깨비": "sleet",
     "안개": "fog",
-    "황사": "mist"
+    "황사": "dust",
+    "연무": "haze",
+    "미세먼지": "dust"
 }
 
 @router.post("/api/weather/current", response_model=WeatherResponse)
