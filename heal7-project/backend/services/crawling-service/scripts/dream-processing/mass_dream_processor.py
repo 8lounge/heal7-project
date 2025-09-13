@@ -10,6 +10,7 @@ import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+from datetime import datetime
 
 def run_postgres_query(query, db='heal7'):
     """PostgreSQL 쿼리 실행"""
@@ -20,11 +21,11 @@ def run_postgres_query(query, db='heal7'):
 def get_batch_records(limit=500, offset=0):
     """대량 레코드 조회"""
     query = f"""
-    SELECT id, source_site, 
-           COALESCE(raw_content->>'keyword', '') as keyword, 
-           COALESCE(raw_content->>'interpretation', '') as interpretation
-    FROM dream_service.dream_raw_collection 
-    WHERE processing_status = 'pending'
+    SELECT id, source_site,
+           COALESCE(raw_content->>'keyword', '') as keyword,
+           COALESCE(raw_content->>'traditionInterpretation', '') as interpretation
+    FROM dream_raw_collection
+    WHERE collection_status = 'collected'
     ORDER BY id
     LIMIT {limit} OFFSET {offset};
     """
@@ -74,9 +75,9 @@ def process_batch_records(records):
     if values_list:
         # 배치 INSERT 실행
         batch_insert_query = f"""
-        INSERT INTO dream_service.dream_interpretations 
-        (keyword, traditional_meaning, modern_meaning, psychological_meaning, 
-         confidence_score, related_keywords, lucky_numbers, 
+        INSERT INTO dream_interpretations
+        (keyword, traditional_meaning, modern_meaning, psychological_meaning,
+         confidence_score, related_keywords, lucky_numbers,
          data_source, created_by)
         VALUES {', '.join(values_list)};
         """
@@ -88,10 +89,9 @@ def process_batch_records(records):
             # 배치 UPDATE 실행
             ids_str = ','.join(update_ids)
             batch_update_query = f"""
-            UPDATE dream_service.dream_raw_collection 
-            SET processing_status = 'completed',
-                processed_at = CURRENT_TIMESTAMP,
-                processing_notes = 'Processed by mass_processor'
+            UPDATE dream_raw_collection
+            SET collection_status = 'processed',
+                raw_content = raw_content || '{{"processed_at": "{datetime.now().isoformat()}"}}'::jsonb
             WHERE id IN ({ids_str});
             """
             run_postgres_query(batch_update_query)
@@ -108,7 +108,7 @@ def main():
     target_total = 25000  # 최대치 목표
     
     # 현재 완성된 레코드 수 확인
-    result, code = run_postgres_query("SELECT COUNT(*) FROM dream_service.dream_interpretations;")
+    result, code = run_postgres_query("SELECT COUNT(*) FROM dream_interpretations;")
     current_count = int(result) if code == 0 else 0
     print(f"현재 정형화된 레코드: {current_count:,}개")
     
@@ -150,7 +150,7 @@ def main():
         time.sleep(0.5)
     
     # 최종 통계
-    final_result, code = run_postgres_query("SELECT COUNT(*) FROM dream_service.dream_interpretations;")
+    final_result, code = run_postgres_query("SELECT COUNT(*) FROM dream_interpretations;")
     final_count = int(final_result) if code == 0 else 0
     
     print("🎉 대량 처리 완료!")

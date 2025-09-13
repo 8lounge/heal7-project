@@ -53,19 +53,19 @@ type ViewMode = 'basic' | 'cyber_fantasy'
 type CurrentPage = 'dashboard' | 'saju' | 'tarot' | 'magazine' | 'consultation' | 'store' | 'notices' | 'profile' | 
                   'fortune' | 'zodiac' | 'personality' | 'love' | 'compatibility' | 'admin' | 'dream' | 'calendar' | 'subscription'
 
-// ForeTeller-inspired solid color backgrounds
+// Background images for day/night theme rolling
 const getBackgroundForTheme = (theme: 'light' | 'dark') => {
   if (theme === 'light') {
-    // Day Theme: Clean white background
+    // Day Theme: Rolling background images
     return [
-      'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
-      'linear-gradient(135deg, #FFFFFF 0%, #FFF7ED 100%)'
+      'url("https://cdn.midjourney.com/b274426b-a59d-44e0-ab72-ea7fcc8da8e2/0_0.png")',
+      'url("https://cdn.midjourney.com/8abb3340-1cfe-4598-b56d-9406454080f7/0_0.png")'
     ]
   } else {
-    // Night Theme: Dark purple background
+    // Night Theme: Rolling background images
     return [
-      'linear-gradient(135deg, #1A0B2E 0%, #2D1B4E 30%, #4C1D95 70%, #1E0A37 100%)',
-      'linear-gradient(135deg, #0F0C29 0%, #24243E 35%, #302B63 100%)'
+      'url("https://cdn.midjourney.com/13722678-e541-4188-b5f0-4e01c42dc2e1/0_2.png")',
+      'url("https://cdn.midjourney.com/9c6a6d65-ec6d-4690-868e-81af9a15310c/0_0.png")'
     ]
   }
 }
@@ -269,26 +269,42 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen relative overflow-hidden theme-transition theme-${theme}`}>
-      {/* ForeTeller-inspired solid color backgrounds (페이드 전환) */}
-      {getBackgroundForTheme(theme).map((gradient, index) => (
+      {/* Rolling background images with fade transition */}
+      {getBackgroundForTheme(theme).map((backgroundImage, index) => (
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-3000 ease-in-out ${
             index === currentBgImage ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
-            background: gradient
+            backgroundImage: backgroundImage,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
           }}
         />
       ))}
       
-      {/* Minimal overlay for glassmorphism effect */}
+      {/* Enhanced glassmorphism overlay for frosted glass effect */}
       <div className="absolute inset-0 theme-transition" 
            style={{
              background: theme === 'light' 
-               ? 'rgba(255, 255, 255, 0.05)'
-               : 'rgba(0, 0, 0, 0.1)'
+               ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.35) 100%)'
+               : 'linear-gradient(135deg, rgba(102, 51, 153, 0.3) 0%, rgba(75, 0, 130, 0.25) 50%, rgba(138, 43, 226, 0.35) 100%)',
+             backdropFilter: 'blur(8px)',
+             WebkitBackdropFilter: 'blur(8px)',
            }} />
+      
+      {/* Additional frosted glass texture overlay */}
+      <div 
+        className="absolute inset-0 theme-transition opacity-30"
+        style={{
+          background: theme === 'light'
+            ? 'radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.3) 0%, transparent 50%)'
+            : 'radial-gradient(circle at 25% 25%, rgba(147, 51, 234, 0.4) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(109, 40, 217, 0.3) 0%, transparent 50%)',
+          mixBlendMode: 'soft-light'
+        }}
+      />
       
       {/* 배경 이미지 인디케이터 - 헤더와 겹치지 않도록 위치 조정 */}
       {!isAuthModalOpen && (

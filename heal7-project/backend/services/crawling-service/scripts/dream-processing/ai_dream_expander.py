@@ -104,7 +104,7 @@ class AIDreamExpander:
 
     def get_existing_keywords(self) -> Set[str]:
         """기존 키워드 목록 조회"""
-        query = "SELECT keyword FROM dream_service.clean_dream_interpretations;"
+        query = "SELECT keyword FROM dream_interpretations;"
         results = self.query_database(query)
         return {row[0].lower() for row in results if row}
 
@@ -254,12 +254,12 @@ class AIDreamExpander:
                 fortune_aspect = '흉몽'
             
             insert_query = f"""
-            INSERT INTO dream_service.clean_dream_interpretations 
-            (keyword, category, traditional_meaning, modern_meaning, psychological_meaning,
-             fortune_aspect, confidence_score, related_keywords, lucky_numbers, created_at)
+            INSERT INTO dream_interpretations
+            (keyword, category_id, traditional_meaning, modern_meaning, psychological_meaning,
+             fortune_aspect, confidence_score, related_keywords, lucky_numbers, created_by)
             VALUES (
                 '{keyword.replace("'", "''")}',
-                '{category}',
+                1,
                 '{interpretations["traditional"].replace("'", "''")}',
                 '{interpretations["modern"].replace("'", "''")}',
                 '{interpretations["psychological"].replace("'", "''")}',
@@ -267,9 +267,9 @@ class AIDreamExpander:
                 {quality_score},
                 '{related_pg}',
                 '{lucky_numbers_pg}',
-                CURRENT_TIMESTAMP
+                'ai_dream_expander'
             )
-            ON CONFLICT (keyword, category) DO NOTHING;
+            ON CONFLICT (keyword) DO NOTHING;
             """
             
             cmd = ['sudo', '-u', 'postgres', 'psql', 'heal7', '-c', insert_query]
@@ -348,7 +348,7 @@ class AIDreamExpander:
             logger.info(f"✅ {category} 완료: {len(unique_keywords):,}개 처리")
         
         # 최종 검증
-        final_count_query = "SELECT COUNT(*) FROM dream_service.clean_dream_interpretations;"
+        final_count_query = "SELECT COUNT(*) FROM dream_interpretations;"
         final_results = self.query_database(final_count_query)
         final_count = int(final_results[0][0]) if final_results and final_results[0] else 0
         
@@ -371,7 +371,7 @@ def main():
     expander = AIDreamExpander()
     
     try:
-        final_count = expander.expand_dreams_ai(target_total=15000)
+        final_count = expander.expand_dreams_ai(target_total=2000)
         
         print(f"\n🏆 === HEAL7 꿈풀이 AI 확장 시스템 완성 ===")
         print(f"🎯 최종 달성: {final_count:,}개 키워드")

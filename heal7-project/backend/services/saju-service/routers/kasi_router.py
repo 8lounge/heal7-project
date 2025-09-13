@@ -2,17 +2,33 @@
 KASI API Proxy Router
 한국천문연구원 API 프록시 서비스
 
-⚠️ KASI API 사용량 제한 (2025-09-10 시뮬레이션 스테이션 진단 완료):
-- 일일: 900회 호출 제한
-- 월간: 10,000회 호출 제한
-- 현재 상태: API 키 유효하지만 사용량 한도 도달
-- getLunCalInfo (양력→음력): ❌ 제한됨 
-- getSolCalInfo (음력→양력): ✅ 여전히 이용 가능
+🚨 KASI API 시간차 호출 절대 필수 (2025-09-10 긴급 발견):
+❌ 절대 금지: 연속 API 호출 (사용량 한도 즉시 초과)
+✅ 반드시 준수: 3-5초 시간차 적용
+
+✅ KASI API 직접 연동 활성화 (2025-09-11):
+- 일일: 10,000회 호출 제한 (충분함)
+- 월간: 300,000회 호출 제한 (충분함)
+- 현재 상태: 실제 KASI API 직접 호출 활성화
+- getLunCalInfo (양력→음력): ✅ 직접 호출 활성화
+- getSolCalInfo (음력→양력): ✅ 직접 호출 활성화
+- 3초 시간차 정책 적용으로 Policy Falsified 오류 방지
+
+🚨 2025-09-10 발견된 치명적 데이터 오류:
+- 24절기 날짜: 2025년 10개 절기가 1일씩 늦음 (경칩, 소만, 망종, 하지 등)
+- 음력 변환: 태양력과 동일 날짜로 표시되는 완전 오류
+- KASI 지원범위: 실제로는 2025-2027년만 지원 (1900-2050년 불가능)
 
 💡 최적화 전략:
 - Pattern-based calculation reduces API calls by 97% (30 to 1 call)
 - 월 중순 1회 호출로 전체 달 60갑자 계산
 - 스마트 폴백 시스템: KASI 실패시 정확한 로컬 계산 자동 전환
+
+⚠️ 대용량 데이터 처리 시 주의사항:
+import time
+for request in batch_requests:
+    time.sleep(3)  # 최소 3초 대기 필수
+    response = kasi_api.call(request)
 """
 from fastapi import APIRouter
 from datetime import datetime
@@ -23,70 +39,140 @@ router = APIRouter(prefix="/api/kasi", tags=["kasi-proxy"])
 
 @router.get("/calendar")
 async def kasi_calendar_proxy(year: int, month: int, day: int):
-    """KASI API 캘린더 프록시 엔드포인트 - 단일 접속 정책 (폴백 없음)"""
+    """KASI API 캘린더 프록시 엔드포인트 - 실제 KASI API 직접 호출"""
     
-    # 최상위 예외 처리: KASI API 실패 시 정확한 fallback 계산
+    import asyncio
+    import httpx
+    import os
+    from datetime import datetime as dt
+    
+    # KASI API 직접 호출
     try:
-        # KASI Calculator Core 시도
-        import os
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        app_path = os.path.join(current_dir, "..", "..", "..", "app")
-        app_path = os.path.abspath(app_path)
+        # API 키 로드
+        api_key = os.getenv('KASI_LUNAR_API_KEY', '')
+        if not api_key:
+            # .env 파일에서 로드
+            env_path = '/home/ubuntu/heal7-project/.env.ai'
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    for line in f:
+                        if line.startswith('KASI_LUNAR_API_KEY='):
+                            api_key = line.split('=', 1)[1].strip()
+                            break
         
-        if app_path not in sys.path:
-            sys.path.insert(0, app_path)
+        if not api_key:
+            raise Exception("KASI API 키가 없습니다")
+        
+        # 시간차 호출 정책: 3초 대기 (정책 준수)
+        await asyncio.sleep(3)
+        
+        # KASI API 직접 호출
+        url = "https://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo"
+        
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(url, params={
+                'serviceKey': api_key,
+                'solYear': year,
+                'solMonth': f"{month:02d}",
+                'solDay': f"{day:02d}",
+                '_type': 'json'
+            })
             
-        from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
-        
-        kasi_calc = KasiCalculatorCore()
-        
-        # KASI API 실패 시 정확한 fallback 계산 직접 호출
+            if response.status_code != 200:
+                raise Exception(f"KASI API HTTP {response.status_code}: {response.text}")
+            
+            data = response.json()
+            
+            # 응답 검증
+            if data.get('response', {}).get('header', {}).get('resultCode') != '00':
+                error_msg = data.get('response', {}).get('header', {}).get('resultMsg', 'Unknown error')
+                raise Exception(f"KASI API Error: {error_msg}")
+            
+            # 데이터 추출
+            item = data.get('response', {}).get('body', {}).get('items', {}).get('item', {})
+            if not item:
+                raise Exception("KASI API 응답에 데이터가 없습니다")
+            
+            return {
+                "success": True,
+                "mode": "kasi_direct_api_call",
+                "year": year,
+                "month": month,
+                "day": day,
+                "solYear": str(year),
+                "solMonth": f"{month:02d}",
+                "solDay": f"{day:02d}",
+                "lunYear": str(item.get('lunYear', year)),
+                "lunMonth": f"{int(item.get('lunMonth', month)):02d}",
+                "lunDay": f"{int(item.get('lunDay', day)):02d}",
+                "lunLeapmonth": item.get('lunLeapmonth', '평'),
+                "lunIljin": item.get('lunIljin', '').split('(')[0],  # 한자 부분 제거
+                "lunSecha": item.get('lunSecha', '').split('(')[0],   # 한자 부분 제거
+                "lunWolgeon": item.get('lunWolgeon', '').split('(')[0], # 한자 부분 제거
+                "solWeek": str(dt(year, month, day).weekday() + 1),
+                "message": "KASI API 직접 호출 성공 (3초 시간차 정책 준수)",
+                "timestamp": datetime.now().isoformat()
+            }
+            
+    except Exception as direct_error:
+        # KASI API 직접 호출 실패 시에만 fallback 사용
         try:
-            lunar_info = kasi_calc._solar_to_lunar_kasi(year, month, day)
-            if not lunar_info:
-                raise Exception("KASI API failed")
-        except:
-            # 정확한 fallback 계산 사용
-            lunar_info = kasi_calc._fallback_solar_to_lunar(year, month, day)
-        
-        if not lunar_info:
-            raise Exception("Both KASI and fallback failed")
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            app_path = os.path.join(current_dir, "..", "..", "..", "app")
+            app_path = os.path.abspath(app_path)
             
-        # 60갑자 계산
-        from datetime import datetime as dt
-        date_obj = dt(year, month, day)
-        days_since_base = (date_obj - dt(1900, 1, 31)).days
-        gapja_index = (days_since_base + 10) % 60
-        
-        gapja_names = [
-            "갑자", "을축", "병인", "정묘", "무진", "기사", "경오", "신미", "임신", "계유",
-            "갑술", "을해", "병자", "정축", "무인", "기묘", "경진", "신사", "임오", "계미",
-            "갑신", "을유", "병술", "정해", "무자", "기축", "경인", "신묘", "임진", "계사",
-            "갑오", "을미", "병신", "정유", "무술", "기해", "경자", "신축", "임인", "계묘",
-            "갑진", "을사", "병오", "정미", "무신", "기유", "경술", "신해", "임자", "계축",
-            "갑인", "을묘", "병진", "정사", "무오", "기미", "경신", "신유", "임술", "계해"
-        ]
-        
-        return {
-            "success": True,
-            "mode": "fallback_calculation",
-            "year": year,
-            "month": month,
-            "day": day,
-            "solYear": str(year),
-            "solMonth": f"{month:02d}",
-            "solDay": f"{day:02d}",
-            "lunYear": str(lunar_info['year']),
-            "lunMonth": f"{lunar_info['month']:02d}",
-            "lunDay": f"{lunar_info['day']:02d}",
-            "lunLeapmonth": "윤" if lunar_info.get('is_leap', False) else "평",
-            "lunIljin": gapja_names[gapja_index],
-            "lunSecha": f"{year}년주",
-            "lunWolgeon": f"{month}월주",
-            "solWeek": str(date_obj.weekday() + 1),
-            "message": "KASI API 사용량 한도 도달로 정확한 fallback 계산 사용 (API 키는 유효함)",
-            "timestamp": datetime.now().isoformat()
-        }
+            if app_path not in sys.path:
+                sys.path.insert(0, app_path)
+                
+            from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
+            
+            # Fallback 비활성화 - 순수 오류 확인을 위해
+            raise Exception("KASI API failure - Fallback disabled for error debugging")
+                
+            # 60갑자 계산
+            from datetime import datetime as dt
+            date_obj = dt(year, month, day)
+            days_since_base = (date_obj - dt(1900, 1, 31)).days
+            gapja_index = (days_since_base + 40) % 60
+            
+            gapja_names = [
+                "갑자", "을축", "병인", "정묘", "무진", "기사", "경오", "신미", "임신", "계유",
+                "갑술", "을해", "병자", "정축", "무인", "기묘", "경진", "신사", "임오", "계미",
+                "갑신", "을유", "병술", "정해", "무자", "기축", "경인", "신묘", "임진", "계사",
+                "갑오", "을미", "병신", "정유", "무술", "기해", "경자", "신축", "임인", "계묘",
+                "갑진", "을사", "병오", "정미", "무신", "기유", "경술", "신해", "임자", "계축",
+                "갑인", "을묘", "병진", "정사", "무오", "기미", "경신", "신유", "임술", "계해"
+            ]
+            
+            return {
+                "success": True,
+                "mode": "fallback_after_kasi_api_failure",
+                "year": year,
+                "month": month,
+                "day": day,
+                "solYear": str(year),
+                "solMonth": f"{month:02d}",
+                "solDay": f"{day:02d}",
+                "lunYear": str(lunar_info['year']),
+                "lunMonth": f"{lunar_info['month']:02d}",
+                "lunDay": f"{lunar_info['day']:02d}",
+                "lunLeapmonth": "윤" if lunar_info.get('is_leap', False) else "평",
+                "lunIljin": gapja_names[gapja_index],
+                "lunSecha": f"{year}년주",
+                "lunWolgeon": f"{month}월주",
+                "solWeek": str(date_obj.weekday() + 1),
+                "message": f"KASI API 직접 호출 실패 ({str(direct_error)}), fallback 계산 사용",
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as fallback_error:
+            return {
+                "success": False,
+                "error": "KASI API 및 fallback 모두 실패",
+                "kasi_error": str(direct_error),
+                "fallback_error": str(fallback_error),
+                "timestamp": datetime.now().isoformat()
+            }
     
     except Exception as global_error:
         # 완전 실패 시 최소한의 응답
@@ -105,33 +191,65 @@ async def kasi_calendar_proxy(year: int, month: int, day: int):
 
 @router.get("/solar-to-lunar")
 async def kasi_solar_to_lunar_proxy(solYear: int, solMonth: int, solDay: int):
-    """KASI API solar-to-lunar conversion proxy - single connection policy (no fallback)"""
+    """KASI API solar-to-lunar conversion proxy - 실제 KASI API 직접 호출 (3초 시간차 정책)"""
+    
+    import asyncio
+    import httpx
+    import os
+    
     try:
-        app_path = str(Path(__file__).parent.parent.parent.parent / "app")
-        if app_path not in sys.path:
-            sys.path.insert(0, app_path)
-        from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
+        # API 키 로드
+        api_key = os.getenv('KASI_LUNAR_API_KEY', '')
+        if not api_key:
+            env_path = '/home/ubuntu/heal7-project/.env.ai'
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    for line in f:
+                        if line.startswith('KASI_LUNAR_API_KEY='):
+                            api_key = line.split('=', 1)[1].strip()
+                            break
         
-        kasi_calc = KasiCalculatorCore()
-        lunar_info = kasi_calc._solar_to_lunar_kasi(solYear, solMonth, solDay)
+        if not api_key:
+            raise Exception("KASI API 키가 없습니다")
         
-        if not lunar_info:
-            return {
-                "success": False,
-                "error": "KASI API solar-to-lunar conversion failed",
-                "error_type": "KASI_SOLAR_TO_LUNAR_FAILED",
-                "error_details": "No valid lunar data returned from KASI API",
-                "requested_date": f"{solYear}-{solMonth:02d}-{solDay:02d}",
-                "timestamp": datetime.now().isoformat()
-            }
+        # 정책 준수: 3초 시간차 적용
+        await asyncio.sleep(3)
+        
+        # KASI API 직접 호출
+        url = "https://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo"
+        
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(url, params={
+                'serviceKey': api_key,
+                'solYear': solYear,
+                'solMonth': f"{solMonth:02d}",
+                'solDay': f"{solDay:02d}",
+                '_type': 'json'
+            })
+            
+            if response.status_code != 200:
+                raise Exception(f"KASI API HTTP {response.status_code}")
+            
+            data = response.json()
+            
+            # 응답 검증
+            if data.get('response', {}).get('header', {}).get('resultCode') != '00':
+                error_msg = data.get('response', {}).get('header', {}).get('resultMsg', 'Unknown error')
+                raise Exception(f"KASI API Error: {error_msg}")
+            
+            # 데이터 추출
+            item = data.get('response', {}).get('body', {}).get('items', {}).get('item', {})
+            if not item:
+                raise Exception("KASI API 응답에 데이터가 없습니다")
         
         return {
             "success": True,
-            "lunYear": str(lunar_info['year']),
-            "lunMonth": str(lunar_info['month']).zfill(2), 
-            "lunDay": str(lunar_info['day']).zfill(2),
-            "lunLeapmonth": "Y" if lunar_info.get('is_leap', False) else "N",
-            "source": "kasi_calculator_core_only",
+            "lunYear": str(item.get('lunYear', solYear)),
+            "lunMonth": f"{int(item.get('lunMonth', solMonth)):02d}",
+            "lunDay": f"{int(item.get('lunDay', solDay)):02d}",
+            "lunLeapmonth": "Y" if item.get('lunLeapmonth') == '윤' else "N",
+            "source": "kasi_direct_api_call_3sec_policy",
+            "message": "KASI API 직접 호출 성공 (3초 시간차 정책 준수)",
             "timestamp": datetime.now().isoformat()
         }
         
@@ -156,33 +274,67 @@ async def kasi_solar_to_lunar_proxy(solYear: int, solMonth: int, solDay: int):
 
 @router.get("/lunar-to-solar") 
 async def kasi_lunar_to_solar_proxy(lunYear: int, lunMonth: int, lunDay: int, lunLeapmonth: str = "N"):
-    """KASI API lunar-to-solar conversion proxy - single connection policy (no fallback)"""
+    """KASI API lunar-to-solar conversion proxy - 실제 KASI API 직접 호출 (3초 시간차 정책)"""
+    
+    import asyncio
+    import httpx
+    import os
+    
     try:
-        app_path = str(Path(__file__).parent.parent.parent.parent / "app")
-        if app_path not in sys.path:
-            sys.path.insert(0, app_path)
-        from core.engines.saju_system.kasi_calculator_core import KasiCalculatorCore
+        # API 키 로드
+        api_key = os.getenv('KASI_LUNAR_API_KEY', '')
+        if not api_key:
+            env_path = '/home/ubuntu/heal7-project/.env.ai'
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    for line in f:
+                        if line.startswith('KASI_LUNAR_API_KEY='):
+                            api_key = line.split('=', 1)[1].strip()
+                            break
         
-        kasi_calc = KasiCalculatorCore()
+        if not api_key:
+            raise Exception("KASI API 키가 없습니다")
+        
+        # 정책 준수: 3초 시간차 적용
+        await asyncio.sleep(3)
+        
+        # 음력→양력 변환용 KASI API 호출
+        url = "https://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getSolCalInfo"
+        
         is_leap = lunLeapmonth.upper() == "Y"
-        solar_info = kasi_calc._lunar_to_solar_kasi(lunYear, lunMonth, lunDay, is_leap)
         
-        if not solar_info:
-            return {
-                "success": False,
-                "error": "KASI API lunar-to-solar conversion failed",
-                "error_type": "KASI_LUNAR_TO_SOLAR_FAILED", 
-                "error_details": "No valid solar data returned from KASI API",
-                "requested_date": f"음력 {lunYear}-{lunMonth:02d}-{lunDay:02d}" + (" (윤달)" if is_leap else ""),
-                "timestamp": datetime.now().isoformat()
-            }
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(url, params={
+                'serviceKey': api_key,
+                'lunYear': lunYear,
+                'lunMonth': f"{lunMonth:02d}",
+                'lunDay': f"{lunDay:02d}",
+                'lunLeapmonth': 'Y' if is_leap else 'N',
+                '_type': 'json'
+            })
+            
+            if response.status_code != 200:
+                raise Exception(f"KASI API HTTP {response.status_code}")
+            
+            data = response.json()
+            
+            # 응답 검증
+            if data.get('response', {}).get('header', {}).get('resultCode') != '00':
+                error_msg = data.get('response', {}).get('header', {}).get('resultMsg', 'Unknown error')
+                raise Exception(f"KASI API Error: {error_msg}")
+            
+            # 데이터 추출
+            item = data.get('response', {}).get('body', {}).get('items', {}).get('item', {})
+            if not item:
+                raise Exception("KASI API 응답에 데이터가 없습니다")
         
         return {
             "success": True,
-            "solYear": str(solar_info['year']),
-            "solMonth": str(solar_info['month']).zfill(2),
-            "solDay": str(solar_info['day']).zfill(2),
-            "source": "kasi_calculator_core_only",
+            "solYear": str(item.get('solYear', lunYear)),
+            "solMonth": f"{int(item.get('solMonth', lunMonth)):02d}",
+            "solDay": f"{int(item.get('solDay', lunDay)):02d}",
+            "source": "kasi_direct_api_call_3sec_policy",
+            "message": "KASI API 음력→양력 직접 호출 성공 (3초 시간차 정책 준수)",
             "timestamp": datetime.now().isoformat()
         }
         

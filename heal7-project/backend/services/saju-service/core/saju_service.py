@@ -339,12 +339,12 @@ class SajuService:
     
     def _get_day_pillar(self, target_date: date) -> Tuple[str, str]:
         """일주 계산 (만세력 기준)"""
-        # 기준일: 1900년 1월 1일을 갑자일로 설정
-        base_date = date(1900, 1, 1)
+        # 기준일: 1900년 1월 31일을 갑진일로 설정
+        base_date = date(1900, 1, 31)
         days_diff = (target_date - base_date).days
         
-        # 60갑자 주기로 계산
-        day_offset = days_diff % 60
+        # 60갑자 주기로 계산 (갑진일 = 인덱스 40)
+        day_offset = (40 + days_diff) % 60
         cheonan_index = day_offset % 10
         jiji_index = day_offset % 12
         

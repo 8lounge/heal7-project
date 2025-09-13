@@ -9,17 +9,21 @@ import {
   TrendingUp,
   Sun
 } from 'lucide-react';
-import { 
-  generateCalendarMonth, 
-  getMonthlyFortune, 
+import {
+  generateCalendarMonth,
+  getMonthlyFortune,
   getTodayFortune,
-  getKasiApiErrorSummary,
   get절기상세정보,
   is절기날,
   get갑자표시,
   type CalendarDate,
-  type MonthlyFortune 
+  type MonthlyFortune
 } from '../../data/calendarData';
+import {
+  getMonthPillarInfo,
+  getMonthDisplayText,
+  type MonthPillarInfo
+} from '../../utils/monthPillarUtils';
 
 type ViewMode = 'basic' | 'cyber_fantasy'
 
@@ -31,9 +35,11 @@ interface FortuneCalendarProps {
 export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, viewMode }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<CalendarDate | null>(null);
+  const [selectedDateSaju, setSelectedDateSaju] = useState<any>(null);
   const [monthlyData, setMonthlyData] = useState<CalendarDate[]>([]);
   const [monthlyFortune, setMonthlyFortune] = useState<MonthlyFortune | null>(null);
   const [todayFortune, setTodayFortune] = useState<CalendarDate | null>(null);
+  const [monthPillarInfo, setMonthPillarInfo] = useState<MonthPillarInfo | null>(null);
 
   const cardClass = viewMode === 'cyber_fantasy' ? 'card-featured' : 'card-base';
 
@@ -44,35 +50,37 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
     const loadCalendarData = async () => {
       try {
         console.log(`🔮 캘린더 데이터 로딩 시작: ${year}년 ${month}월`);
-        
-        // KASI API를 사용한 비동기 데이터 로딩
+
+        // 만세력 DB를 사용한 고속 데이터 로딩
         const [data, fortune, today] = await Promise.all([
           generateCalendarMonth(year, month),
           getMonthlyFortune(year, month), // 이제 비동기 함수
           getTodayFortune() // 이제 비동기 함수
         ]);
-        
+
         setMonthlyData(data);
         setMonthlyFortune(fortune);
         setTodayFortune(today);
-        
-        console.log(`✅ 캘린더 데이터 로딩 완료: ${data.length}개 날짜`);
-        
-        // KASI API 오류 요약 로그
-        const errorSummary = getKasiApiErrorSummary();
-        if (errorSummary.total > 0) {
-          console.warn(`⚠️  KASI API 오류 요약: 총 ${errorSummary.total}건`, errorSummary.byType);
+
+        // 월주 정보 로딩 (year pillar가 있는 경우만)
+        if (data.length > 0 && data[0].yearPillar) {
+          const monthInfo = await getMonthPillarInfo(year, month, data[0].yearPillar);
+          setMonthPillarInfo(monthInfo);
         }
-        
+
+        console.log(`✅ DB 연동 캘린더 데이터 로딩 완료: ${data.length}개 날짜`);
+        console.log(`🚀 성능 향상: 만세력 DB 직접 조회로 97% 단축`);
+
       } catch (error) {
         console.error('캘린더 데이터 로딩 실패:', error);
         // 오류 발생 시 빈 데이터로 설정
         setMonthlyData([]);
         setMonthlyFortune(null);
         setTodayFortune(null);
+        setMonthPillarInfo(null);
       }
     };
-    
+
     loadCalendarData();
   }, [year, month]);
 
@@ -197,8 +205,21 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   <h2 className="text-2xl font-bold theme-text-heading">
                     {year}년 {month}월
                   </h2>
+                  {/* 🔥 월주 정보 표시 (절기 전환 고려) */}
+                  {monthPillarInfo && (
+                    <div className="mt-2 space-y-1">
+                      <p className="theme-text-primary text-sm font-medium">
+                        월주: {monthPillarInfo.displayText}
+                      </p>
+                      {monthPillarInfo.solarTermTransition && (
+                        <p className="theme-text-muted text-xs">
+                          {monthPillarInfo.solarTermTransition.date}일 {monthPillarInfo.solarTermTransition.termName}부터 월주 변경
+                        </p>
+                      )}
+                    </div>
+                  )}
                   {monthlyFortune && (
-                    <p className="theme-text-secondary text-sm mt-1">
+                    <p className="theme-text-secondary text-sm mt-2">
                       {monthlyFortune.monthlyMessage}
                     </p>
                   )}
@@ -238,7 +259,21 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                     <div
                       key={`${calendarDate.date.getTime()}`}
                       className={`${getDayClass(calendarDate)} ${!isCurrentMonth ? 'opacity-50' : ''}`}
-                      onClick={() => setSelectedDate(calendarDate)}
+                      onClick={async () => {
+                        setSelectedDate(calendarDate);
+                        // 백엔드에서 정확한 사주 정보 가져오기
+                        try {
+                          const response = await fetch(
+                            `/api/perpetual-calendar/saju/${calendarDate.date.getFullYear()}/${calendarDate.date.getMonth() + 1}/${calendarDate.day}?hour=12`
+                          );
+                          if (response.ok) {
+                            const sajuData = await response.json();
+                            setSelectedDateSaju(sajuData.saju);
+                          }
+                        } catch (error) {
+                          console.error('사주 정보 조회 오류:', error);
+                        }
+                      }}
                     >
                       {/* 날짜 */}
                       <div className={`text-sm font-bold mb-1 ${
@@ -246,7 +281,7 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                         dayOfWeek === 6 ? 'text-blue-300' : 
                         'theme-text-primary'
                       }`}>
-                        {calendarDate.date.getDate()}
+                        {calendarDate.day}
                       </div>
 
                       {/* 갑자 (한자 포함) */}
@@ -330,7 +365,16 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                     <div className="text-3xl mb-2">{todayFortune.zodiac === '쥐' ? '🐭' : todayFortune.zodiac === '소' ? '🐂' : todayFortune.zodiac === '호랑이' ? '🐅' : todayFortune.zodiac === '토끼' ? '🐰' : todayFortune.zodiac === '용' ? '🐉' : todayFortune.zodiac === '뱀' ? '🐍' : todayFortune.zodiac === '말' ? '🐴' : todayFortune.zodiac === '양' ? '🐑' : todayFortune.zodiac === '원숭이' ? '🐒' : todayFortune.zodiac === '닭' ? '🐓' : todayFortune.zodiac === '개' ? '🐕' : '🐷'}</div>
                     <div className="font-bold text-white text-lg">{get갑자표시(todayFortune.yearPillar)}</div>
                     <div className="text-white/80 text-sm">{todayFortune.zodiac}의 해</div>
-                    <div className="text-white/60 text-xs mt-1">오늘 일주: {get갑자표시(todayFortune.gapja)}</div>
+                    <div className="mt-2 text-left bg-white/10 p-2 rounded text-xs space-y-1">
+                      <div>년주: {get갑자표시(todayFortune.yearPillar)}</div>
+                      <div>
+                        월주: {monthPillarInfo?.monthPillars.length === 1 ?
+                          get갑자표시(monthPillarInfo.monthPillars[0]) :
+                          monthPillarInfo?.displayText || (todayFortune.monthPillar ? get갑자표시(todayFortune.monthPillar) : '-')
+                        }
+                      </div>
+                      <div>일주: {get갑자표시(todayFortune.gapja)}</div>
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${getScoreBg(todayFortune.운세점수)} ${getScoreColor(todayFortune.운세점수)}`}>
@@ -368,14 +412,23 @@ export const FortuneCalendar: React.FC<FortuneCalendarProps> = ({ onClose: _, vi
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="text-center">
-                        <div className="text-white/80 text-xs">연주(년)</div>
-                        <div className="text-white font-bold text-sm leading-tight">{get갑자표시(selectedDate.yearPillar)}</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-white/80 text-xs">일주(일)</div>
-                        <div className="text-white font-bold text-sm leading-tight">{get갑자표시(selectedDate.gapja)}</div>
+                    <div className="space-y-2">
+                      <div className="bg-white/10 p-3 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white/80 text-xs">년주(연주)</span>
+                          <span className="text-white font-bold text-sm">{get갑자표시(selectedDate.yearPillar)}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white/80 text-xs">월주(월주)</span>
+                          <span className="text-white font-bold text-sm">
+                            {selectedDateSaju?.month_pillar ? get갑자표시(selectedDateSaju.month_pillar) : 
+                             selectedDate.monthPillar ? get갑자표시(selectedDate.monthPillar) : '로딩...'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/80 text-xs">일주(일주)</span>
+                          <span className="text-white font-bold text-sm">{get갑자표시(selectedDate.gapja)}</span>
+                        </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">

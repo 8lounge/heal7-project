@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { TrendingUp, CreditCard, Settings, Download, RefreshCw } from 'lucide-react'
+import { useAuth } from '../../../hooks/useSajuAdmin'
 
 interface PointOverview {
   total_issued: number
@@ -48,6 +49,7 @@ interface PaginationInfo {
 }
 
 export const PointManagementTab = () => {
+  const { token } = useAuth()
   const [activeSection, setActiveSection] = useState('overview')
   const [overview, setOverview] = useState<PointOverview | null>(null)
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
@@ -56,6 +58,7 @@ export const PointManagementTab = () => {
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [policies, setPolicies] = useState<any>({})
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   
@@ -68,23 +71,130 @@ export const PointManagementTab = () => {
   // API 호출 함수들
   const fetchOverview = async () => {
     setLoading(true)
+    setError(null)
     try {
-      const response = await fetch('/api/admin/saju/points/overview', {
+      if (!token) {
+        setError('인증 토큰이 없습니다')
+        return
+      }
+
+      // 실제 포인트 정책 API 호출
+      const policiesResponse = await fetch('http://localhost:8002/api/points/policies', {
         headers: {
-          'Authorization': 'Bearer heal7-admin-2025',
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       })
       
-      if (response.ok) {
-        const data = await response.json()
-        setOverview(data.overview)
-        setPaymentMethods(data.payment_methods)
-        setUsagePatterns(data.usage_patterns)
+      if (policiesResponse.ok) {
+        const policiesData = await policiesResponse.json()
+        
+        // 정책 데이터를 카테고리별로 그룹화
+        const groupedPolicies = policiesData.reduce((acc: any, policy: any) => {
+          if (!acc[policy.policy_type]) {
+            acc[policy.policy_type] = []
+          }
+          acc[policy.policy_type].push(policy)
+          return acc
+        }, {})
+        
+        setPolicies(groupedPolicies)
+        
+        // 실제 포인트 잔액 및 통계 데이터 가져오기
+        const testUserId = '123e4567-e89b-12d3-a456-426614174000'
+        
+        // 잔액 조회
+        const balanceResponse = await fetch(`http://localhost:8002/api/points/balance/${testUserId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if (balanceResponse.ok) {
+          const balanceData = await balanceResponse.json()
+          
+          // 거래 내역 통계 계산
+          const historyResponse = await fetch(`http://localhost:8002/api/points/history/${testUserId}?page=1&page_size=1000`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          
+          let totalIssued = 0
+          let totalUsed = 0
+          let totalRevenue = 0
+          let totalTransactions = 0
+          let paymentMethodStats: { [key: string]: { amount: number, count: number } } = {}
+          let serviceUsageStats: { [key: string]: { points_used: number, count: number } } = {}
+          
+          if (historyResponse.ok) {
+            const historyData = await historyResponse.json()
+            totalTransactions = historyData.total_count
+            
+            historyData.transactions.forEach((tx: any) => {
+              if (tx.transaction_type === 'charge') {
+                totalIssued += Math.abs(tx.amount)
+                if (tx.source === 'charge') {
+                  totalRevenue += Math.abs(tx.amount)
+                  const method = '카드결제'
+                  if (!paymentMethodStats[method]) {
+                    paymentMethodStats[method] = { amount: 0, count: 0 }
+                  }
+                  paymentMethodStats[method].amount += Math.abs(tx.amount)
+                  paymentMethodStats[method].count += 1
+                }
+              } else if (tx.transaction_type === 'spend') {
+                totalUsed += Math.abs(tx.amount)
+                const service = tx.description || '사주 서비스'
+                if (!serviceUsageStats[service]) {
+                  serviceUsageStats[service] = { points_used: 0, count: 0 }
+                }
+                serviceUsageStats[service].points_used += Math.abs(tx.amount)
+                serviceUsageStats[service].count += 1
+              }
+            })
+          }
+          
+          const overview = {
+            total_issued: totalIssued,
+            total_used: totalUsed,
+            total_revenue: totalRevenue,
+            remaining_points: balanceData.total_balance || 0,
+            total_transactions: totalTransactions
+          }
+          setOverview(overview)
+          
+          // 결제 방법 통계
+          const paymentMethods = Object.entries(paymentMethodStats).map(([method, stats]) => ({
+            method,
+            amount: stats.amount,
+            count: stats.count
+          }))
+          setPaymentMethods(paymentMethods.length > 0 ? paymentMethods : [
+            { method: '데이터 없음', amount: 0, count: 0 }
+          ])
+          
+          // 서비스 사용 패턴
+          const usagePatterns = Object.entries(serviceUsageStats).map(([service, stats]) => ({
+            service,
+            points_used: stats.points_used,
+            usage_count: stats.count
+          }))
+          setUsagePatterns(usagePatterns.length > 0 ? usagePatterns : [
+            { service: '데이터 없음', points_used: 0, usage_count: 0 }
+          ])
+          
+        } else {
+          setError('포인트 잔액 정보를 불러올 수 없습니다')
+        }
+        
       } else {
-        console.error('Failed to fetch overview:', response.status)
+        setError('포인트 정책 데이터를 불러올 수 없습니다')
       }
     } catch (error) {
+      setError('네트워크 오류가 발생했습니다')
       console.error('Error fetching overview:', error)
     } finally {
       setLoading(false)
@@ -93,28 +203,60 @@ export const PointManagementTab = () => {
 
   const fetchTransactions = async (page = 1, search = '') => {
     setLoading(true)
+    setError(null)
     try {
+      if (!token) {
+        setError('인증 토큰이 없습니다')
+        return
+      }
+
+      // 테스트 사용자 ID로 포인트 거래 내역 조회
+      const testUserId = '123e4567-e89b-12d3-a456-426614174000'
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '20',
-        search: search
+        page_size: '20'
       })
       
-      const response = await fetch(`/api/admin/saju/points/transactions?${params}`, {
+      const response = await fetch(`http://localhost:8002/api/points/history/${testUserId}?${params}`, {
         headers: {
-          'Authorization': 'Bearer heal7-admin-2025',
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       })
       
       if (response.ok) {
         const data = await response.json()
-        setTransactions(data.transactions)
-        setPagination(data.pagination)
+        
+        // 백엔드 데이터를 프론트엔드 형식으로 변환
+        const transformedTransactions = data.transactions.map((tx: any, index: number) => ({
+          id: index + 1,
+          user_name: '테스트 사용자',
+          email: 'test@heal7.com',
+          transaction_type: tx.transaction_type === 'charge' ? '충전' : 
+                          tx.transaction_type === 'spend' ? '사용' : 
+                          tx.transaction_type === 'earn' ? '적립' : '기타',
+          amount: Math.abs(tx.amount),
+          points: tx.amount,
+          payment_method: tx.source === 'charge' ? '카드결제' : 
+                        tx.source === 'purchase' ? '서비스이용' : '기타',
+          status: '완료',
+          description: tx.description || '포인트 거래',
+          created_at: new Date(tx.created_at).toLocaleString('ko-KR')
+        }))
+        
+        setTransactions(transformedTransactions)
+        setPagination({
+          current_page: data.page,
+          per_page: data.page_size,
+          total_count: data.total_count,
+          total_pages: Math.ceil(data.total_count / data.page_size)
+        })
+        
       } else {
-        console.error('Failed to fetch transactions:', response.status)
+        setError('포인트 거래 내역을 불러올 수 없습니다')
       }
     } catch (error) {
+      setError('네트워크 오류가 발생했습니다')
       console.error('Error fetching transactions:', error)
     } finally {
       setLoading(false)
@@ -123,24 +265,143 @@ export const PointManagementTab = () => {
 
   const fetchPolicies = async () => {
     setLoading(true)
+    setError(null)
     try {
-      const response = await fetch('/api/admin/saju/points/policies', {
+      if (!token) {
+        setError('인증 토큰이 없습니다')
+        return
+      }
+
+      // 실제 포인트 정책 API 호출
+      const response = await fetch('http://localhost:8002/api/points/policies', {
         headers: {
-          'Authorization': 'Bearer heal7-admin-2025',
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       })
       
       if (response.ok) {
-        const data = await response.json()
-        setPolicies(data.policies)
+        const policiesData = await response.json()
+        
+        // 정책 데이터를 카테고리별로 그룹화
+        const groupedPolicies = policiesData.reduce((acc: any, policy: any) => {
+          if (!acc[policy.policy_type]) {
+            acc[policy.policy_type] = []
+          }
+          acc[policy.policy_type].push(policy)
+          return acc
+        }, {})
+        
+        setPolicies(groupedPolicies)
       } else {
-        console.error('Failed to fetch policies:', response.status)
+        setError('포인트 정책 데이터를 불러올 수 없습니다')
       }
     } catch (error) {
+      setError('네트워크 오류가 발생했습니다')
       console.error('Error fetching policies:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // 포인트 충전 함수 (TossPayments 테스트 연동)
+  const handlePointCharge = async (amount: number) => {
+    if (!token) {
+      setError('인증 토큰이 없습니다')
+      return
+    }
+
+    try {
+      const testUserId = '123e4567-e89b-12d3-a456-426614174000'
+      
+      // 포인트 충전 API 호출 (테스트 결제)
+      const chargeData = {
+        user_id: testUserId,
+        charge_amount: amount,
+        payment_method: 'test_card',
+        payment_id: `test-payment-${Date.now()}`,
+        pg_name: 'tosspayments_test'
+      }
+
+      const response = await fetch('http://localhost:8002/api/points/charge', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(chargeData)
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('포인트 충전 성공:', result)
+        
+        // 충전 후 데이터 새로고침
+        if (activeSection === 'overview') {
+          fetchOverview()
+        } else if (activeSection === 'transactions') {
+          fetchTransactions(currentPage, searchTerm)
+        }
+        
+        // 성공 메시지 표시
+        setError(null)
+        alert(`${amount}원 포인트 충전이 완료되었습니다! (보너스 포함: ${result.total_charged_points}P)`)
+      } else {
+        const errorData = await response.json()
+        setError(`포인트 충전 실패: ${errorData.detail || '알 수 없는 오류'}`)
+      }
+    } catch (error) {
+      setError('포인트 충전 중 네트워크 오류가 발생했습니다')
+      console.error('Point charge error:', error)
+    }
+  }
+
+  // 포인트 사용 함수 (테스트용)
+  const handlePointUsage = async (amount: number, description: string) => {
+    if (!token) {
+      setError('인증 토큰이 없습니다')
+      return
+    }
+
+    try {
+      const testUserId = '123e4567-e89b-12d3-a456-426614174000'
+      
+      const usageData = {
+        user_id: testUserId,
+        amount: amount,
+        service_type: 'saju_basic',
+        description: description
+      }
+
+      const response = await fetch('http://localhost:8002/api/points/use', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(usageData)
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('포인트 사용 성공:', result)
+        
+        // 사용 후 데이터 새로고침
+        if (activeSection === 'overview') {
+          fetchOverview()
+        } else if (activeSection === 'transactions') {
+          fetchTransactions(currentPage, searchTerm)
+        }
+        
+        setError(null)
+        alert(`${amount}P 포인트 사용이 완료되었습니다!`)
+      } else {
+        const errorData = await response.json()
+        setError(`포인트 사용 실패: ${errorData.detail || '알 수 없는 오류'}`)
+      }
+    } catch (error) {
+      setError('포인트 사용 중 네트워크 오류가 발생했습니다')
+      console.error('Point usage error:', error)
     }
   }
 
@@ -224,6 +485,12 @@ export const PointManagementTab = () => {
               <RefreshCw className="w-8 h-8 animate-spin text-purple-400" />
               <span className="ml-2 text-gray-200">데이터를 불러오는 중...</span>
             </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-yellow-400 mb-2">⚠️ 포인트 관리 시스템</p>
+              <p className="text-gray-400 text-sm">{error}</p>
+              <p className="text-gray-500 text-xs mt-2">현재 Phase 1 (관리자 기본 기능)이 완료된 상태입니다</p>
+            </div>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -241,6 +508,80 @@ export const PointManagementTab = () => {
                     <p className="text-xs text-gray-400">최근 30일 기준</p>
                   </div>
                 ))}
+              </div>
+
+              {/* 포인트 충전/사용 테스트 버튼 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* 포인트 충전 섹션 */}
+                <div className="card-base p-6">
+                  <h4 className="text-white font-semibold mb-4">💳 포인트 충전 (TossPayments 테스트)</h4>
+                  <p className="text-gray-400 text-sm mb-4">테스트 환경에서 포인트를 충전할 수 있습니다. 실제 결제는 발생하지 않습니다.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button 
+                      onClick={() => handlePointCharge(50000)}
+                      className="px-4 py-3 bg-blue-600/20 border border-blue-400/30 rounded-lg text-blue-400 hover:bg-blue-600/30 transition-colors"
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-bold">₩50,000</div>
+                        <div className="text-xs">→ 53,000P</div>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => handlePointCharge(100000)}
+                      className="px-4 py-3 bg-green-600/20 border border-green-400/30 rounded-lg text-green-400 hover:bg-green-600/30 transition-colors"
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-bold">₩100,000</div>
+                        <div className="text-xs">→ 106,000P</div>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => handlePointCharge(200000)}
+                      className="px-4 py-3 bg-purple-600/20 border border-purple-400/30 rounded-lg text-purple-400 hover:bg-purple-600/30 transition-colors"
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-bold">₩200,000</div>
+                        <div className="text-xs">→ 212,000P</div>
+                      </div>
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">※ 6% 보너스 포인트 자동 적용</p>
+                </div>
+
+                {/* 포인트 사용 섹션 */}
+                <div className="card-base p-6">
+                  <h4 className="text-white font-semibold mb-4">💎 포인트 사용 테스트</h4>
+                  <p className="text-gray-400 text-sm mb-4">사주 서비스 이용 시뮬레이션을 테스트할 수 있습니다.</p>
+                  <div className="space-y-3">
+                    <button 
+                      onClick={() => handlePointUsage(3000, '기본 사주 해석 서비스')}
+                      className="w-full px-4 py-3 bg-yellow-600/20 border border-yellow-400/30 rounded-lg text-yellow-400 hover:bg-yellow-600/30 transition-colors"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span>기본 사주 해석</span>
+                        <span className="font-bold">3,000P</span>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => handlePointUsage(5000, '프리미엄 사주 해석 서비스')}
+                      className="w-full px-4 py-3 bg-orange-600/20 border border-orange-400/30 rounded-lg text-orange-400 hover:bg-orange-600/30 transition-colors"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span>프리미엄 사주 해석</span>
+                        <span className="font-bold">5,000P</span>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={() => handlePointUsage(8000, '궁합 분석 서비스')}
+                      className="w-full px-4 py-3 bg-red-600/20 border border-red-400/30 rounded-lg text-red-400 hover:bg-red-600/30 transition-colors"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span>궁합 분석</span>
+                        <span className="font-bold">8,000P</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -332,6 +673,12 @@ export const PointManagementTab = () => {
               <div className="flex justify-center items-center py-12">
                 <RefreshCw className="w-8 h-8 animate-spin text-purple-400" />
                 <span className="ml-2 text-gray-200">거래 내역을 불러오는 중...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-yellow-400 mb-2">⚠️ 포인트 거래 시스템</p>
+                <p className="text-gray-400 text-sm">{error}</p>
+                <p className="text-gray-500 text-xs mt-2">Phase 2에서 구현 예정입니다</p>
               </div>
             ) : (
               <>
@@ -444,6 +791,12 @@ export const PointManagementTab = () => {
             <div className="flex justify-center items-center py-12">
               <RefreshCw className="w-8 h-8 animate-spin text-purple-400" />
               <span className="ml-2 text-gray-200">정책 데이터를 불러오는 중...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-yellow-400 mb-2">⚠️ 포인트 정책 시스템</p>
+              <p className="text-gray-400 text-sm">{error}</p>
+              <p className="text-gray-500 text-xs mt-2">Phase 2에서 구현 예정입니다</p>
             </div>
           ) : (
             <>

@@ -1,6 +1,20 @@
 import { SajuAdminSettings } from '../types/sajuAdminTypes';
 
-// 더미 설정 데이터 (API 실패 시 사용) - fallback 용도로 유지
+/**
+ * 🚨 FALLBACK MOCK DATA - Emergency Use Only
+ * 
+ * ⚠️ 이 파일은 실제 API가 완전히 실패했을 때만 사용되는 응급용 mock data입니다.
+ * 
+ * 사용 시나리오:
+ * 1. 네트워크 연결 실패
+ * 2. 데이터베이스 연결 불가
+ * 3. API 서버 다운
+ * 4. 데이터 유효성 검증 완전 실패
+ * 
+ * 정상 운영 시에는 http://localhost:8002/api/admin/settings 를 사용해야 합니다.
+ * 
+ * @deprecated 실제 운영에서는 사용하지 않음 - 개발 및 응급상황용만
+ */
 export const getDummySettings = (): SajuAdminSettings => ({
   version: "v2.1.0",
   last_updated: new Date().toISOString(),

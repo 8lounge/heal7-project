@@ -1,8 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { SajuAdminSettings } from '../types/sajuAdminTypes';
 import { validateSajuSettings, safeGetLogicSettings, safeGetTimeSettings, safeGetGeographicSettings, safeGetKasiSettings } from '../utils/sajuDataHelpers';
-
-const API_BASE = "/api/admin/saju";
+import { api } from '../services/apiService';
 
 // 동적 토큰 관리 시스템 (하드코딩 제거)
 export const useAuth = () => {
@@ -35,21 +34,17 @@ export const useSajuSettings = (token: string | null) => {
       setIsLoading(false);
       return;
     }
-    
+
     try {
-      const response = await fetch(`${API_BASE}/settings`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (response.ok) {
-        const rawSettings = await response.json();
-        
+      // 통합 API 서비스 사용
+      const response = await api.admin.getSettings();
+
+      if (response.success && response.data) {
+        const rawSettings = response.data;
+
         // 데이터 유효성 검증
         const validation = validateSajuSettings(rawSettings);
-        
+
         if (validation.isValid) {
           // 안전한 설정 객체 생성
           const safeSettings: SajuAdminSettings = {
@@ -64,7 +59,7 @@ export const useSajuSettings = (token: string | null) => {
             jiji_interpretations: rawSettings.jiji_interpretations || {},
             gapja_interpretations: rawSettings.gapja_interpretations || {}
           };
-          
+
           setData(safeSettings);
           setError(null);
         } else {
@@ -75,16 +70,25 @@ export const useSajuSettings = (token: string | null) => {
           setError(`데이터 검증 실패 - Mock 데이터 사용 중: ${validation.errors.join(', ')}`);
         }
       } else {
-        // API 오류 시 mock 데이터로 fallback
+        // API 응답 구조 오류
         const { getDummySettings } = await import('../utils/sajuAdminMockData');
         setData(getDummySettings());
-        setError(`API 연결 실패 (${response.status}) - Mock 데이터 사용 중`);
+        setError('API 응답 구조 오류 - Mock 데이터 사용 중');
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Settings fetch error:', err);
+
       // 네트워크 오류 시 mock 데이터로 fallback
       const { getDummySettings } = await import('../utils/sajuAdminMockData');
       setData(getDummySettings());
-      setError('네트워크 오류 - Mock 데이터 사용 중');
+
+      if (err.status === 401) {
+        setError('인증이 만료되었습니다. 다시 로그인해주세요.');
+      } else if (err.status === 403) {
+        setError('설정 조회 권한이 없습니다.');
+      } else {
+        setError('설정 로드 실패 - Mock 데이터 사용 중');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -108,26 +112,20 @@ export const useSaveSettings = (token: string | null, mutate: () => void) => {
   
   const saveSettings = async (settings: SajuAdminSettings) => {
     if (!settings || !token) return false;
-    
+
     setSaving(true);
     try {
-      const response = await fetch(`${API_BASE}/settings`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(settings)
-      });
-      
-      if (response.ok) {
+      // 통합 API 서비스 사용
+      const response = await api.admin.updateSettings(settings);
+
+      if (response.success) {
         mutate(); // 저장 후 자동 데이터 새로고침
         return true;
       } else {
-        console.error('설정 저장 실패:', response.status);
+        console.error('설정 저장 실패:', response.error);
         return false;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('설정 저장 오류:', error);
       return false;
     } finally {

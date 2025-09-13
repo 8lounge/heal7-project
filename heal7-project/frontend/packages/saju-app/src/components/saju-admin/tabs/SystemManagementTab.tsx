@@ -8,8 +8,9 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   AlertTriangle, Eye, MessageSquare, Database,
-  Clock, Bell, RefreshCw, Send, X
+  Clock, Bell, RefreshCw, Send, X, Save
 } from 'lucide-react'
+import { useSajuSettings, useSaveSettings, useAuth } from '../../../hooks/useSajuAdmin'
 
 interface InquiryOverview {
   status_stats: { status: string; count: number }[]
@@ -49,6 +50,12 @@ export const SystemManagementTab = () => {
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null)
   const [replyText, setReplyText] = useState('')
   const [showReplyModal, setShowReplyModal] = useState(false)
+  
+  // Real API integration for settings
+  const { token } = useAuth()
+  const { data: settings, error: settingsError, isLoading: settingsLoading, mutate } = useSajuSettings(token)
+  const { saveSettings, saving } = useSaveSettings(token, mutate)
+  const [localSettings, setLocalSettings] = useState(settings)
   
   // 필터 상태
   const [statusFilter, setStatusFilter] = useState('all')
@@ -154,6 +161,13 @@ export const SystemManagementTab = () => {
     }
   }, [activeTab, currentPage, statusFilter, categoryFilter, priorityFilter])
 
+  // Update local settings when settings change
+  useEffect(() => {
+    if (settings) {
+      setLocalSettings(settings)
+    }
+  }, [settings])
+
   // 검색 처리
   const handleSearch = (term: string) => {
     setSearchTerm(term)
@@ -173,7 +187,34 @@ export const SystemManagementTab = () => {
     if (activeTab === 'inquiries') {
       fetchInquiryOverview()
       fetchInquiries(currentPage, statusFilter, categoryFilter, priorityFilter, searchTerm)
+    } else if (activeTab === 'system') {
+      mutate() // Refresh settings
     }
+  }
+
+  // 설정 저장
+  const handleSaveSettings = async () => {
+    if (localSettings) {
+      const success = await saveSettings(localSettings)
+      if (success) {
+        alert('설정이 성공적으로 저장되었습니다.')
+      } else {
+        alert('설정 저장에 실패했습니다. 다시 시도해주세요.')
+      }
+    }
+  }
+
+  // 설정 값 업데이트 헬퍼
+  const updateSettingValue = (category: string, key: string, value: any) => {
+    if (!localSettings) return
+    
+    setLocalSettings({
+      ...localSettings,
+      [category]: {
+        ...localSettings[category as keyof typeof localSettings],
+        [key]: value
+      }
+    })
   }
 
   return (
@@ -430,62 +471,111 @@ export const SystemManagementTab = () => {
       {/* 시스템 설정 */}
       {activeTab === 'system' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 사주 엔진 설정 */}
+          {settingsLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <RefreshCw className="w-8 h-8 animate-spin text-purple-400" />
+              <span className="ml-2 text-gray-200">설정을 불러오는 중...</span>
+            </div>
+          ) : settingsError ? (
+            <div className="text-center py-12">
+              <p className="text-red-400 mb-2">설정 로드 실패</p>
+              <p className="text-gray-400 text-sm">{settingsError}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 사주 엔진 설정 */}
+              <div className="card-base p-6">
+                <h4 className="text-white font-semibold mb-4">사주 엔진 설정</h4>
+                {localSettings && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-200">로직 타입</span>
+                      <select 
+                        value={localSettings.logic_settings?.logic_type || 'hybrid'}
+                        onChange={(e) => updateSettingValue('logic_settings', 'logic_type', e.target.value)}
+                        className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-sm"
+                      >
+                        <option value="hybrid">하이브리드</option>
+                        <option value="traditional">전통 방식</option>
+                        <option value="modern">현대 방식</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-200">치유마녀 만세력 DB 연동</span>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={localSettings.logic_settings?.use_healwitch_perpetual_calendar || true}
+                          onChange={(e) => updateSettingValue('logic_settings', 'use_healwitch_perpetual_calendar', e.target.checked)}
+                          className="sr-only peer" 
+                        />
+                        <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      </label>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-200 text-sm">📊 73,442개 레코드 (1900-2100)</span>
+                      <span className="text-green-400 text-xs">✅ 활성화됨</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-200">시두법 사용</span>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={localSettings.time_settings?.use_sidubup || false}
+                          onChange={(e) => updateSettingValue('time_settings', 'use_sidubup', e.target.checked)}
+                          className="sr-only peer" 
+                        />
+                        <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+            {/* 지리적 설정 */}
             <div className="card-base p-6">
-              <h4 className="text-white font-semibold mb-4">사주 엔진 설정</h4>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-200">고급 분석 모드</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" defaultChecked className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-200">자동 해석 업데이트</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" defaultChecked className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-200">캐시 자동 갱신</span>
-                  <div className="flex items-center gap-2">
-                    <input type="number" defaultValue="24" className="w-16 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" />
-                    <span className="text-gray-400">시간</span>
+              <h4 className="text-white font-semibold mb-4">지리적 설정</h4>
+              {localSettings && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-200">기본 국가</span>
+                    <select 
+                      value={localSettings.geographic_settings?.default_country || 'KR'}
+                      onChange={(e) => updateSettingValue('geographic_settings', 'default_country', e.target.value)}
+                      className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-sm"
+                    >
+                      <option value="KR">한국</option>
+                      <option value="US">미국</option>
+                      <option value="JP">일본</option>
+                      <option value="CN">중국</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-200">경도 오프셋</span>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="number" 
+                        value={localSettings.geographic_settings?.longitude_offset || 127.0}
+                        onChange={(e) => updateSettingValue('geographic_settings', 'longitude_offset', parseFloat(e.target.value))}
+                        className="w-20 px-2 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-center" 
+                      />
+                      <span className="text-gray-400">°E</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-200">시간대 시스템</span>
+                    <select 
+                      value={localSettings.time_settings?.timezone_system || 'apparent_solar'}
+                      onChange={(e) => updateSettingValue('time_settings', 'timezone_system', e.target.value)}
+                      className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-sm"
+                    >
+                      <option value="apparent_solar">진태양시</option>
+                      <option value="mean_solar">평균태양시</option>
+                      <option value="standard">표준시</option>
+                    </select>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* 알림 설정 */}
-            <div className="card-base p-6">
-              <h4 className="text-white font-semibold mb-4">알림 설정</h4>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-200">새 문의 알림</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" defaultChecked className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-200">시스템 오류 알림</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" defaultChecked className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-200">매출 리포트</span>
-                  <select className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-white text-sm">
-                    <option value="daily">매일</option>
-                    <option value="weekly">매주</option>
-                    <option value="monthly">매월</option>
-                  </select>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* 운영 정책 */}
@@ -542,12 +632,27 @@ export const SystemManagementTab = () => {
               </div>
             </div>
           </div>
-
+          )}
+          
           <div className="flex justify-end">
-            <button className="px-6 py-2 bg-purple-600/20 border border-purple-400/30 rounded-lg text-purple-400 hover:bg-purple-600/30">
-              설정 저장
-            </button>
-          </div>
+              <button 
+                onClick={handleSaveSettings}
+                disabled={saving || !localSettings}
+                className="px-6 py-2 bg-purple-600/20 border border-purple-400/30 rounded-lg text-purple-400 hover:bg-purple-600/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {saving ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    저장 중...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    설정 저장
+                  </>
+                )}
+              </button>
+            </div>
         </div>
       )}
 

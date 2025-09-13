@@ -14,41 +14,13 @@ sys.path.append(str(Path(__file__).parent.parent.parent / "app"))
 # 스키마 import
 from schemas.saju_schemas import SajuRequest, SajuResult, FortuneResult
 
-# 사주 서비스 import (fallback 포함)
+# 사주 서비스 import (fallback 비활성화)
 try:
     from services_new.saju_service import SajuService, BirthInfo, SajuResult as SajuServiceResult, Gender
-except ImportError:
-    # Fallback 클래스들 (실제 import 실패 시 사용)
-    print("⚠️ WARNING: Using fallback classes - main saju engine not available")
-    class SajuService:
-        async def initialize(self): 
-            print("⚠️ Fallback SajuService initialized")
-        async def calculate_saju(self, birth_info): 
-            print(f"⚠️ Using fallback calculation for {birth_info}")
-            return type('FallbackResult', (), {
-                'birth_info': birth_info,
-                'year_pillar': '갑자', 'month_pillar': '을축', 
-                'day_pillar': '병인', 'time_pillar': '정묘',
-                'day_master': '병', 'element_balance': {},
-                'sipsin_analysis': {}, 'sinsal': [],
-                'palcha': 'Fallback 계산 결과', 'is_strong_day_master': True,
-                'created_at': datetime.now(), 'calculation_method': 'fallback'
-            })()
-    
-    class BirthInfo:
-        def __init__(self, year, month, day, hour, minute, gender, name=None, is_lunar=False):
-            self.year = year
-            self.month = month
-            self.day = day
-            self.hour = hour
-            self.minute = minute
-            self.gender = gender
-            self.name = name
-            self.is_lunar = is_lunar
-    
-    class Gender:
-        MALE = "male"
-        FEMALE = "female"
+except ImportError as e:
+    # Fallback 비활성화 - 순수 오류 확인을 위해
+    print(f"❌ CRITICAL ERROR: Cannot import main saju engine: {e}")
+    raise ImportError(f"Main saju service engine not available: {e}") from e
 
 router = APIRouter(prefix="/api/saju", tags=["saju"])
 

@@ -13,6 +13,11 @@ import yaml
 from pathlib import Path
 from datetime import datetime
 import sys
+import os
+from dotenv import load_dotenv
+
+# 환경변수 로드
+load_dotenv()
 
 # 설정 로드
 config_path = Path(__file__).parent / "config.yaml"
@@ -93,18 +98,55 @@ except ImportError as e:
 # 메인 백엔드의 사주 서비스 로직 추가 (필요한 경우)
 sys.path.append(str(Path(__file__).parent.parent / "app"))
 
-# 사주 관리자 라우터 추가
+# 사주 관리자 라우터 추가 (새로 구현된 실제 API)
 try:
-    # 메인 백엔드의 routers 경로에서 import
-    import sys
-    sys.path.append("/home/ubuntu/heal7-project/backend/app/routers")
-    from saju_admin import router as admin_router
+    from routers.admin_router import router as admin_router
     app.include_router(admin_router)
-    print("✅ Saju admin router loaded successfully")
+    print("✅ Admin system router loaded successfully (real implementation)")
 except ImportError as e:
-    print(f"⚠️ WARNING: Could not import saju admin router: {e}")
+    print(f"⚠️ WARNING: Could not import admin router: {e}")
 
-# TODO: 나머지 라우터들 (point-cash, customer, community, interpretation 등)
+# 포인트/캐시 시스템 라우터 추가 (포스텔러 정책 기반 구현)
+try:
+    from routers.points_router import router as points_router
+    app.include_router(points_router)
+    print("✅ Point system router loaded successfully (Forceteller-based implementation)")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import points router: {e}")
+
+# 3단계 스토어 시스템 라우터 추가 (새로 구현)
+try:
+    from routers.store_router import router as store_router
+    app.include_router(store_router)
+    print("✅ Store system router loaded successfully (3-tier implementation)")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import store router: {e}")
+
+# 치유마녀 만세력 DB 연동 라우터 추가 (2025-09-12 신규 구현)
+try:
+    from routers.perpetual_calendar_router import router as perpetual_calendar_router
+    app.include_router(perpetual_calendar_router)
+    print("✅ Perpetual calendar router loaded successfully (HealWitch DB integration)")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import perpetual calendar router: {e}")
+
+# 1:1 문의 관리 라우터 추가 (실제 구현)
+try:
+    from routers.inquiry_router import router as inquiry_router
+    app.include_router(inquiry_router)
+    print("✅ Inquiry management router loaded successfully (Real implementation)")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import inquiry router: {e}")
+
+# 실제 데이터 기반 분석 라우터 추가 (통계, AI 메트릭)
+try:
+    from routers.analytics_router import router as analytics_router
+    app.include_router(analytics_router)
+    print("✅ Analytics router loaded successfully (Real data implementation)")
+except ImportError as e:
+    print(f"⚠️ WARNING: Could not import analytics router: {e}")
+
+# TODO: 나머지 라우터들 (customer, community, interpretation 등)
 # 현재는 기존 main.py에 남겨두고 점진적으로 분리 예정
 
 print(f"🚀 {config['service']['name']} (모듈화 버전) 시작...")
